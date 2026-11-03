@@ -1,14 +1,14 @@
 id = 13
-name = "Trait Tower"
-blurb = "Write code once, for many types."
+name = "Trait 高塔"
+blurb = "寫一次程式，讓多種型別都能使用。"
 
 [[level]]
 id = "13.1"
-title = "One function, many types"
+title = "一個函式，多種型別"
 kind = "fill"
 book = ["10.1"]
 xp = 45
-goal = "Replace the two copy-pasted functions with one generic largest that works for numbers, chars and words."
+goal = '''把兩個重複貼上的函式合併成一個泛型 largest，讓它能處理數字、字元和文字。'''
 lesson = '''
 These two functions are the same apart from the type:
 
@@ -110,11 +110,11 @@ hints = [
 
 [[level]]
 id = "13.2"
-title = "Boxes for anything"
+title = "裝得下任何型別的盒子"
 kind = "fix"
 book = ["10.1"]
 xp = 40
-goal = '''Make Point generic, and add a Pair whose two fields may have different types, so it prints:
+goal = '''將 Point 改為泛型，並新增 Pair，讓兩個欄位可以使用不同型別，最後印出：
 int point: (5, 10)
 float point: (1.5, 4)
 pair: (5, c)'''
@@ -197,11 +197,11 @@ hints = [
 
 [[level]]
 id = "13.3"
-title = "Methods for everyone"
+title = "讓所有型別都能使用的方法"
 kind = "fill"
 book = ["10.1"]
 xp = 45
-goal = "Add a method for every Point<T>, one only for Point<f64>, and a mixup that combines two points."
+goal = '''為所有 Point<T> 新增一個方法，為 Point<f64> 新增專屬方法，再實作能組合兩個點的 mixup。'''
 lesson = '''
 To write methods for a generic struct, declare `T` after `impl` too:
 
@@ -343,11 +343,11 @@ hints = [
 
 [[level]]
 id = "13.4"
-title = "Generics are free"
+title = "泛型不額外收費"
 kind = "predict"
 book = ["10.1"]
 xp = 25
-goal = "One generic function, called with three types. What does this print?"
+goal = '''一個泛型函式以三種型別呼叫。它會印出什麼？'''
 lesson = '''
 Is generic code slower? **No.** When you compile, Rust looks at every type a generic is used with and writes a separate, specialized copy for each. This is called **monomorphization**.
 
@@ -395,11 +395,11 @@ explanation = "The compiler makes three versions of `describe`, one per type. De
 
 [[level]]
 id = "13.5"
-title = "Teaching skills: traits"
+title = "傳授技能：trait"
 kind = "fill"
 book = ["10.2"]
 xp = 50
-goal = "Implement the Summary trait for Tweet and NewsArticle; the article overrides the default summarize."
+goal = '''為 Tweet 和 NewsArticle 實作 Summary trait；讓文章覆寫預設的 summarize 方法。'''
 lesson = '''
 A **trait** describes behavior that many types can share, like an interface:
 
@@ -529,11 +529,11 @@ hints = [
 
 [[level]]
 id = "13.6"
-title = "Only skilled helpers allowed"
+title = "只讓符合條件的幫手上場"
 kind = "fix"
 book = ["10.2"]
 xp = 45
-goal = '''Add the trait bounds these generic functions need, so it prints:
+goal = '''替泛型函式加上所需的 trait 限制，讓程式印出：
 Breaking news! Ferris learns traits
 bigger: 9
 pair: 7 & Some("seven")
@@ -667,11 +667,11 @@ hints = [
 
 [[level]]
 id = "13.7"
-title = "Mystery boxes"
+title = "神秘盒子"
 kind = "predict"
 book = ["10.2"]
 xp = 25
-goal = "One impl gives a trait to many types at once. What does this print?"
+goal = '''一個 impl 就能讓多種型別同時取得某個 trait。這會印出什麼？'''
 lesson = '''
 Two more trait tricks:
 
@@ -738,11 +738,11 @@ explanation = "The blanket impl gives `Greet` to every `Display` type, so `&str`
 
 [[level]]
 id = "13.8"
-title = "Free skills with derive"
+title = "用 derive 自動取得技能"
 kind = "fix"
 book = ["C"]
 xp = 40
-goal = "Ferris' tests print, copy, compare, sort, count and default Cards. Derive the traits they need."
+goal = '''Ferris 的測試會列印、複製、比較、排序、計數並建立預設的 Card。請 derive 所需的 traits。'''
 lesson = '''
 Some traits are so common that Rust can write them for you. Put **`#[derive(...)]`** above a struct or enum:
 
@@ -833,12 +833,11 @@ hints = [
 
 [[level]]
 id = "13.9"
-title = "BOSS: The shape zoo"
+title = "頭目：形狀動物園"
 kind = "boss"
 book = ["10.1", "10.2"]
 xp = 120
-goal = '''Give Circle, Rect and Triangle the Shape trait, then write the generic
-largest and compare functions that work with any shape.'''
+goal = '''讓 Circle、Rect 和 Triangle 實作 Shape trait，再撰寫適用於所有形狀的泛型 largest 和 compare 函式。'''
 lesson = '''
 **Boss fight!** The `Shape` trait:
 

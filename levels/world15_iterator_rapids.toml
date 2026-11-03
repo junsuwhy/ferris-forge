@@ -1,10 +1,10 @@
 id = 15
-name = "Iterator Rapids"
-blurb = "Little functions and conveyor belts."
+name = "Iterator 急流"
+blurb = "短小函式與迭代器輸送帶。"
 
 [[level]]
 id = "15.1"
-title = "Little functions: closures"
+title = "小函式：閉包"
 kind = "fill"
 book = ["13.1"]
 xp = 45
@@ -166,7 +166,7 @@ hints = [
 
 [[level]]
 id = "15.2"
-title = "Borrow, change or keep?"
+title = "借用、修改還是保留？"
 kind = "predict"
 book = ["13.1"]
 xp = 25
@@ -217,7 +217,7 @@ explanation = "`push_four` mutably borrows `list` and runs twice, adding two 4s.
 
 [[level]]
 id = "15.3"
-title = "Next, please!"
+title = "下一個，請！"
 kind = "fill"
 book = ["13.2"]
 xp = 50
@@ -350,7 +350,7 @@ hints = [
 
 [[level]]
 id = "15.4"
-title = "Down the conveyor belt"
+title = "沿著輸送帶前進"
 kind = "fill"
 book = ["13.2"]
 xp = 50
@@ -471,7 +471,7 @@ hints = [
 
 [[level]]
 id = "15.5"
-title = "Lazy belts"
+title = "延遲運作的輸送帶"
 kind = "predict"
 book = ["13.2"]
 xp = 25
@@ -522,7 +522,7 @@ explanation = "`map` is lazy, so creating `doubled` prints nothing. `sum` pulls 
 
 [[level]]
 id = "15.6"
-title = "Loops vs iterators: the race"
+title = "迴圈與迭代器競速"
 kind = "quiz"
 book = ["13.4"]
 xp = 20
@@ -553,7 +553,7 @@ explanation = "Iterators are a zero-cost abstraction: closures get inlined and t
 
 [[level]]
 id = "15.7"
-title = "BOSS: The log analyzer"
+title = "頭目：記錄檔分析器"
 kind = "boss"
 book = ["13.1", "13.2"]
 xp = 120

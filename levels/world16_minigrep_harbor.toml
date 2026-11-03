@@ -1,11 +1,11 @@
 id = 16
-name = "Minigrep Harbor"
-blurb = "A project island: build a real command-line search tool."
+name = "Minigrep 港口"
+blurb = "專案小島：打造真正的命令列搜尋工具。"
 tag = "project"
 
 [[level]]
 id = "16.1"
-title = "Orders from the command line"
+title = "來自命令列的指令"
 kind = "fill"
 book = ["12.1"]
 xp = 40
@@ -87,7 +87,7 @@ hints = [
 
 [[level]]
 id = "16.2"
-title = "Opening the treasure map"
+title = "打開藏寶圖"
 kind = "fill"
 book = ["12.2"]
 xp = 40
@@ -187,7 +187,7 @@ To an admiring bog!
 
 [[level]]
 id = "16.3"
-title = "Tidying the ship"
+title = "整理船隻"
 kind = "fix"
 book = ["12.3"]
 xp = 55
@@ -378,7 +378,7 @@ To an admiring bog!
 
 [[level]]
 id = "16.4"
-title = "Test first, then build"
+title = "先寫測試，再實作"
 kind = "fill"
 book = ["12.4"]
 xp = 55
@@ -505,7 +505,7 @@ hints = [
 
 [[level]]
 id = "16.5"
-title = "Secret settings"
+title = "秘密設定"
 kind = "fill"
 book = ["12.5"]
 xp = 55
@@ -709,7 +709,7 @@ To an admiring bog!
 
 [[level]]
 id = "16.6"
-title = "Errors to the right place"
+title = "把錯誤送到正確位置"
 kind = "fix"
 book = ["12.6"]
 xp = 45
@@ -815,7 +815,7 @@ To an admiring bog!
 
 [[level]]
 id = "16.7"
-title = "Polish with iterators"
+title = "用迭代器潤飾程式"
 kind = "fix"
 book = ["13.3"]
 xp = 55
@@ -972,7 +972,7 @@ hints = [
 
 [[level]]
 id = "16.8"
-title = "BOSS: minigrep"
+title = "頭目：minigrep"
 kind = "boss"
 book = ["12.1", "12.2", "12.3", "12.4", "12.5", "12.6"]
 xp = 120

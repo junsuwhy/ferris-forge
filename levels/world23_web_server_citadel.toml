@@ -1,11 +1,11 @@
 id = 23
-name = "Web Server Citadel"
-blurb = "The final project: a multithreaded web server."
+name = "網頁伺服器城堡"
+blurb = "最終專案：多執行緒網頁伺服器。"
 tag = "project"
 
 [[level]]
 id = "23.1"
-title = "Knock knock: TCP"
+title = "叩叩：TCP"
 kind = "fill"
 book = ["21.1"]
 xp = 50
@@ -172,7 +172,7 @@ hints = [
 
 [[level]]
 id = "23.2"
-title = "Sending a page back"
+title = "回傳網頁"
 kind = "fill"
 book = ["21.1"]
 xp = 55
@@ -380,7 +380,7 @@ hints = [
 
 [[level]]
 id = "23.3"
-title = "The slow customer"
+title = "慢吞吞的訪客"
 kind = "quiz"
 book = ["21.2"]
 xp = 20
@@ -432,7 +432,7 @@ explanation = "The loop handles one connection at a time. Your `/` request waits
 
 [[level]]
 id = "23.4"
-title = "Hiring workers"
+title = "聘用工作執行緒"
 kind = "fill"
 book = ["21.2"]
 xp = 70
@@ -667,7 +667,7 @@ hints = [
 
 [[level]]
 id = "23.5"
-title = "Closing time"
+title = "打烊時間"
 kind = "fix"
 book = ["21.3"]
 xp = 65
@@ -899,7 +899,7 @@ hints = [
 
 [[level]]
 id = "23.6"
-title = "FINAL BOSS: The web server"
+title = "最終頭目：網頁伺服器"
 kind = "boss"
 book = ["21.1", "21.2", "21.3"]
 xp = 200

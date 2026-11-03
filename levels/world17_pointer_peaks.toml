@@ -1,10 +1,10 @@
 id = 17
-name = "Pointer Peaks"
-blurb = "Smart pointers: Box, Rc, RefCell and friends."
+name = "智慧指標山峰"
+blurb = "認識 Box、Rc、RefCell 等智慧指標。"
 
 [[level]]
 id = "17.1"
-title = "Box it up"
+title = "用 Box 裝起來"
 kind = "fill"
 book = ["15.1"]
 xp = 45
@@ -148,7 +148,7 @@ hints = [
 
 [[level]]
 id = "17.2"
-title = "Act like a reference"
+title = "像參照一樣運作"
 kind = "predict"
 book = ["15.2"]
 xp = 25
@@ -236,7 +236,7 @@ explanation = "`*y` calls MyBox's `deref` once, so `deref!` prints before `6`. F
 
 [[level]]
 id = "17.3"
-title = "Cleaning up: Drop"
+title = "清理資源：Drop"
 kind = "predict"
 book = ["15.3"]
 xp = 25
@@ -305,7 +305,7 @@ explanation = "`green` is dropped at the end of its inner block. `drop(blue)` lo
 
 [[level]]
 id = "17.4"
-title = "Shared treasure: Rc"
+title = "共享寶藏：Rc"
 kind = "fill"
 book = ["15.4"]
 xp = 50
@@ -465,7 +465,7 @@ hints = [
 
 [[level]]
 id = "17.5"
-title = "Change it anyway: RefCell"
+title = "照樣修改：RefCell"
 kind = "fix"
 book = ["15.5"]
 xp = 55
@@ -687,7 +687,7 @@ hints = [
 
 [[level]]
 id = "17.6"
-title = "Round and round"
+title = "循環往復"
 kind = "predict"
 book = ["15.6"]
 xp = 30
@@ -755,7 +755,7 @@ explanation = "`Rc::downgrade` adds a weak reference, not an owner, so the count
 
 [[level]]
 id = "17.7"
-title = "BOSS: The family tree"
+title = "頭目：家族樹"
 kind = "boss"
 book = ["15.1", "15.4", "15.5", "15.6"]
 xp = 120

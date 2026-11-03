@@ -1,14 +1,14 @@
 id = 14
-name = "Lifetime Labyrinth"
-blurb = "How long does a reference live?"
+name = "生命週期迷宮"
+blurb = "參照的生命會持續多久？"
 
 [[level]]
 id = "14.1"
-title = "How long does it live?"
+title = "它能活多久？"
 kind = "predict"
 book = ["10.3"]
 xp = 25
-goal = "Does this compile? If so, what does it print?"
+goal = '''這段程式能編譯嗎？如果可以，會印出什麼？'''
 lesson = '''
 Every reference has a **lifetime**: the stretch of code where it's valid. A reference must never outlive the value it points to.
 
@@ -54,11 +54,11 @@ explanation = "`x` is dropped at the inner `}`, but `r` is used after that. Erro
 
 [[level]]
 id = "14.2"
-title = "The longest string"
+title = "最長的字串"
 kind = "fix"
 book = ["10.3"]
 xp = 45
-goal = '''Add the lifetime annotation longest needs, so it prints:
+goal = '''替 longest 加上所需的生命週期標註，讓它印出：
 The longest string is abcd'''
 lesson = '''
 This function returns one of its two references, but which one depends on the values:
@@ -119,11 +119,11 @@ hints = [
 
 [[level]]
 id = "14.3"
-title = "The shorter one wins"
+title = "較短的那個決定期限"
 kind = "fix"
 book = ["10.3"]
 xp = 45
-goal = '''longest's signature is right; the caller is wrong. Fix main so it prints:
+goal = '''longest 的簽章正確，呼叫端才有問題。修正 main，讓它印出：
 The longest string is long string is long'''
 lesson = '''
 With `fn longest<'a>(x: &'a str, y: &'a str) -> &'a str`, the result is only valid while **both** inputs are. The compiler uses the **shorter** lifetime:
@@ -187,11 +187,11 @@ hints = [
 
 [[level]]
 id = "14.4"
-title = "Structs that borrow"
+title = "借用資料的結構"
 kind = "fill"
 book = ["10.3"]
 xp = 50
-goal = "Finish Highlight, a struct that holds a slice of someone else's text, plus first_sentence and its methods."
+goal = '''完成 Highlight（保存他人文字切片的結構體）、first_sentence 函式和相關方法。'''
 lesson = '''
 A struct can hold references, but then it needs a lifetime parameter:
 
@@ -311,11 +311,11 @@ hints = [
 
 [[level]]
 id = "14.5"
-title = "Lifetimes you can skip"
+title = "可以省略的生命週期"
 kind = "quiz"
 book = ["10.3"]
 xp = 20
-goal = "Which of these signatures won't compile without an explicit lifetime?"
+goal = '''以下哪些函式簽章若沒有明確的生命週期標註，就無法編譯？'''
 lesson = '''
 You've written many functions with references and no `'a`. That's **lifetime elision**: three rules the compiler applies to fill them in.
 
@@ -348,11 +348,11 @@ explanation = "`longest` has two input references and no `self`, so none of the 
 
 [[level]]
 id = "14.6"
-title = "Forever: 'static"
+title = "永遠有效：'static"
 kind = "predict"
 book = ["10.3"]
 xp = 25
-goal = "Does this compile? If so, what does it print?"
+goal = '''這段程式能編譯嗎？如果可以，會印出什麼？'''
 lesson = '''
 One lifetime is special: **`'static`**, "valid for the whole program".
 
@@ -399,11 +399,11 @@ explanation = "`pick` returns a string literal, which lives for the whole progra
 
 [[level]]
 id = "14.7"
-title = "Ownership Inventory #3"
+title = "所有權盤點 #3"
 kind = "predict"
 book = ["10.4"]
 xp = 30
-goal = "Does this compile? If so, what does it print?"
+goal = '''這段程式能編譯嗎？如果可以，會印出什麼？'''
 lesson = '''
 **Ownership Inventory #3**: a checkpoint from the Brown edition of the Rust Book, mixing references, lifetimes and collections.
 
@@ -445,12 +445,12 @@ explanation = "`best` has lifetime `'a`, tied to the borrow of `names`, and it's
 
 [[level]]
 id = "14.8"
-title = "BOSS: The text splitter"
+title = "頭目：文字切分器"
 kind = "boss"
 book = ["10.3"]
 xp = 120
-goal = '''Write a Splitter that hands out pieces of a text one at a time,
-plus longest_word and key_value, all without copying any text.'''
+goal = '''撰寫 Splitter，讓它一次傳回文字中的一個片段，
+並實作 longest_word 和 key_value，全程不複製文字。'''
 lesson = '''
 **Boss fight!** Every function here returns slices that point into the **original** text, never copies. The tests check that.
 

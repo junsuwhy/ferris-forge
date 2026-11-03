@@ -1,15 +1,15 @@
 id = 24
-name = "Ferris' Library"
-blurb = "A bonus island: the book's appendices as quick quizzes."
+name = "Ferris 的圖書館"
+blurb = "額外島嶼：透過快問快答認識《Rust 程式設計語言》的附錄。"
 tag = "bonus"
 
 [[level]]
 id = "24.1"
-title = "Rust's reserved words"
+title = "Rust 的保留字"
 kind = "predict"
 book = ["A"]
 xp = 25
-goal = "A function called match and a variable called type. Does it compile? If so, what does it print?"
+goal = "有個函式叫做 match，還有個變數叫做 type。這段程式能編譯嗎？如果可以，會印出什麼？"
 lesson = '''
 **Keywords** are words the language reserves for itself, so you can't use them as names of functions, variables, types and so on.
 
@@ -68,11 +68,11 @@ explanation = "`r#` turns a keyword into an ordinary name, so `r#match` and `r#t
 
 [[level]]
 id = "24.2"
-title = "Every symbol explained"
+title = "符號大解密"
 kind = "predict"
 book = ["B"]
 xp = 25
-goal = "Five operators you may not use every day. What does this print?"
+goal = "五個你不一定常用的運算子。這段程式會印出什麼？"
 lesson = '''
 Appendix B lists every operator and symbol in Rust. Some you use all the time; here are a few worth a second look:
 
@@ -122,11 +122,11 @@ explanation = "`6 ^ 3` is XOR: 110 ^ 011 = 101, which is 5. `1 << 4` is 16. `1..
 
 [[level]]
 id = "24.3"
-title = "Handy tools"
+title = "好用的工具"
 kind = "quiz"
 book = ["D"]
 xp = 20
-goal = "Which tool tells you that `if done == true` can just be `if done`, and that a `&Vec<String>` parameter should be `&[String]`?"
+goal = "哪個工具會提醒你，`if done == true` 可以簡化成 `if done`，而 `&Vec<String>` 參數應改用 `&[String]`？"
 lesson = '''
 Rust comes with tools that make everyday coding nicer:
 
@@ -164,11 +164,11 @@ explanation = "Both programs compile without warnings; they're just not idiomati
 
 [[level]]
 id = "24.4"
-title = "Rust's editions"
+title = "Rust 版本世代"
 kind = "quiz"
 book = ["E"]
 xp = 20
-goal = "Your crate uses `edition = \"2021\"`, and it depends on a crate that uses `edition = \"2024\"`. What happens?"
+goal = "你的 crate 使用 `edition = \"2021\"`，並依賴一個使用 `edition = \"2024\"` 的 crate。會發生什麼事？"
 lesson = '''
 Rust ships a new release every six weeks, full of small improvements. Every few years, the changes that **aren't** backward compatible (like a new keyword) are bundled into an **edition**: 2015, 2018, 2021 and 2024.
 
@@ -202,11 +202,11 @@ explanation = "Editions are chosen per crate. The compiler reads each crate's co
 
 [[level]]
 id = "24.5"
-title = "The book in other languages"
+title = "其他語言版本的 Rust 書"
 kind = "quiz"
 book = ["F"]
 xp = 15
-goal = "You'd like to read the Rust Book in your own language. What's true about the translations?"
+goal = "你想用自己的語言閱讀《Rust 程式設計語言》。關於各語言的翻譯，哪個敘述正確？"
 lesson = '''
 The Rust Book has been translated by volunteers into many languages: Português (Brasil), 简体中文, 正體中文, Українська, Español, Italiano, Русский, 한국어, 日本語, Français, Polski, Cebuano, Tagalog, Esperanto, ελληνική, Svenska, Farsi, Deutsch, हिंदी, ไทย, Danske and more.
 
@@ -235,11 +235,11 @@ explanation = "Appendix F points to community translations in many languages. Th
 
 [[level]]
 id = "24.6"
-title = "How Rust is made"
+title = "Rust 是如何打造的"
 kind = "quiz"
 book = ["G"]
 xp = 25
-goal = "A new feature is merged into Rust's main branch today, with no feature flag needed. Roughly when can it reach stable Rust at the earliest?"
+goal = "今天有項新功能合併進 Rust 主分支，而且不需要功能旗標。最快大約何時會進入穩定版 Rust？"
 lesson = '''
 Rust is made on a **release train** with three channels:
 

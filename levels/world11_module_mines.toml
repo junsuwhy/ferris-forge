@@ -1,14 +1,14 @@
 id = 11
-name = "Module Mines"
-blurb = "Organize bigger programs into neat tunnels."
+name = "模組礦坑"
+blurb = "把大型程式整理成一條條清楚的隧道。"
 
 [[level]]
 id = "11.1"
-title = "Crates and packages"
+title = "Crate 與套件"
 kind = "quiz"
 book = ["7.1"]
 xp = 20
-goal = "A package has both src/main.rs and src/lib.rs. What does Cargo build?"
+goal = '''套件同時有 src/main.rs 和 src/lib.rs。Cargo 會建置什麼？'''
 lesson = '''
 Three words to keep apart:
 
@@ -39,11 +39,11 @@ explanation = "`src/main.rs` and `src/lib.rs` are two crate roots, so the packag
 
 [[level]]
 id = "11.2"
-title = "Private property"
+title = "私有屬性"
 kind = "fix"
 book = ["7.2"]
 xp = 40
-goal = '''Make the hosting module and its function public, so it prints:
+goal = '''讓 hosting 模組和其中的函式成為公開項目，讓程式印出：
 Ferris is on the waitlist'''
 lesson = '''
 A **module** groups related code under a name, and modules can nest:
@@ -110,11 +110,11 @@ hints = [
 
 [[level]]
 id = "11.3"
-title = "The chef picks the fruit"
+title = "由主廚挑選水果"
 kind = "fix"
 book = ["7.3"]
 xp = 40
-goal = '''Order breakfast without touching the chef's private fruit, so it prints:
+goal = '''不直接碰主廚的私有水果，也能點早餐，讓程式印出：
 I'd like Wheat toast please
 with peaches'''
 lesson = '''
@@ -230,11 +230,11 @@ hints = [
 
 [[level]]
 id = "11.4"
-title = "Finding your way"
+title = "找到正確路徑"
 kind = "fix"
 book = ["7.3"]
 xp = 45
-goal = '''Fix the three paths, so it prints:
+goal = '''修正三個路徑，讓程式印出：
 Seating Ferris
 Cooking soup
 Delivering soup'''
@@ -328,11 +328,11 @@ hints = [
 
 [[level]]
 id = "11.5"
-title = "Shortcuts with use"
+title = "用 use 建立捷徑"
 kind = "fix"
 book = ["7.4"]
 xp = 45
-goal = '''Fix the clashing imports and the shed's missing shortcut, so it prints:
+goal = '''修正互相衝突的匯入，並補上棚屋缺少的捷徑，讓程式印出：
 shed: rake and hoe
 soil ok
 watering plot 1
@@ -467,11 +467,11 @@ hints = [
 
 [[level]]
 id = "11.6"
-title = "One module per file"
+title = "每個檔案一個模組"
 kind = "predict"
 book = ["7.5"]
 xp = 25
-goal = "This program is split across three files. What does it print?"
+goal = '''這個程式分成三個檔案。它會印出什麼？'''
 lesson = '''
 As modules grow, move each one into its own file. Instead of writing the body in braces, write just the declaration:
 
@@ -552,11 +552,11 @@ pub fn grow() {
 
 [[level]]
 id = "11.7"
-title = "Wire up the tunnels"
+title = "串起隧道"
 kind = "fix"
 book = ["7.5"]
 xp = 45
-goal = '''The mine's code is already in its own files. Declare the module and import Cart, so it prints:
+goal = '''礦坑程式碼已放在自己的檔案中。宣告模組並匯入 Cart，讓程式印出：
 the mine is open
 cart holds 5'''
 lesson = '''
@@ -651,12 +651,12 @@ impl Cart {
 
 [[level]]
 id = "11.8"
-title = "BOSS: Tidy up the mine"
+title = "頭目：整理礦坑"
 kind = "boss"
 book = ["7.2", "7.3", "7.4"]
 xp = 120
-goal = '''Sort the messy mine program into modules, so the tests can reach
-mine::ore::Ore, mine::Ore, mine::tunnels::dig and mine::Cart.'''
+goal = '''把凌亂的礦坑程式整理成模組，讓測試可以存取
+mine::ore::Ore、mine::Ore、mine::tunnels::dig 和 mine::Cart。'''
 lesson = '''
 **Boss fight!** Everything in this program sits at the top level. Sort it into this module tree:
 

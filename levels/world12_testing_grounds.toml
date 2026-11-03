@@ -1,15 +1,15 @@
 id = 12
-name = "Testing Grounds"
-blurb = "Prove your code works, automatically."
+name = "測試訓練場"
+blurb = "用自動化測試證明程式能正常運作。"
 
 [[level]]
 id = "12.1"
-title = "Did it work?"
+title = "成功了嗎？"
 kind = "fill"
 book = ["11.1"]
 xp = 45
 min_tests = 3
-goal = "The functions already work. Write at least three tests of your own that prove it."
+goal = '''這些函式已經能正常運作。請自行撰寫至少三個測試來證明。'''
 lesson = '''
 A **test** is a function that checks your code, marked with `#[test]`:
 
@@ -128,11 +128,11 @@ hints = [
 
 [[level]]
 id = "12.2"
-title = "Reading a failed test"
+title = "讀懂失敗的測試"
 kind = "predict"
 book = ["11.1"]
 xp = 25
-goal = "This check fails. What does Rust print?"
+goal = '''這個檢查會失敗。Rust 會印出什麼？'''
 lesson = '''
 When `assert_eq!` fails it panics, and the message shows **both sides**, so you can see what went wrong without adding prints:
 
@@ -176,12 +176,12 @@ explanation = "`assert_eq!` works anywhere, not just in tests. `4 != 5`, so it p
 
 [[level]]
 id = "12.3"
-title = "Tests that expect a crash"
+title = "預期程式崩潰的測試"
 kind = "fix"
 book = ["11.1"]
 xp = 45
 min_tests = 3
-goal = "Fix the three tests: one must expect a panic, one must return a Result, and one has the wrong expected message."
+goal = '''修正這三個測試：一個要預期發生 panic，一個要回傳 Result，另一個的預期訊息有誤。'''
 lesson = '''
 Sometimes the right behavior **is** a panic. Mark that test with `#[should_panic]`:
 
@@ -332,11 +332,11 @@ hints = [
 
 [[level]]
 id = "12.4"
-title = "Choosing which tests run"
+title = "選擇要執行的測試"
 kind = "quiz"
 book = ["11.2"]
 xp = 20
-goal = "Your tests are add_two, add_three and multiply. You run `cargo test add`. Which tests run?"
+goal = '''你的測試名稱是 add_two、add_three 和 multiply。執行 `cargo test add` 時，哪些測試會執行？'''
 lesson = '''
 `cargo test` runs every test, but you can pick:
 
@@ -372,11 +372,11 @@ explanation = "The filter matches any test whose name **contains** the text, so 
 
 [[level]]
 id = "12.5"
-title = "Where tests live"
+title = "測試放在哪裡"
 kind = "quiz"
 book = ["11.3"]
 xp = 20
-goal = "Code in a crate's tests/ folder (an integration test) wants to call your library's functions. What can it call?"
+goal = '''crate 的 tests/ 資料夾中的程式（整合測試）想呼叫函式庫函式。它可以呼叫哪些函式？'''
 lesson = '''
 Rust has two kinds of tests:
 
@@ -424,13 +424,13 @@ explanation = "Each file in `tests/` is a separate crate, so it sees only your l
 
 [[level]]
 id = "12.6"
-title = "BOSS: Bug hunt"
+title = "頭目：獵捕錯誤"
 kind = "boss"
 book = ["11.1", "11.3"]
 xp = 120
 min_tests = 3
-goal = '''The scoreboard has three hidden bugs. Write at least three tests of your own
-that catch them, then fix the code so every test passes.'''
+goal = '''計分板藏著三個錯誤。請自行撰寫至少三個測試找出它們，
+再修正程式，讓所有測試都通過。'''
 lesson = '''
 **Boss fight!** What each function should do:
 

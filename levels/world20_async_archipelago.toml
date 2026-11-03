@@ -1,13 +1,13 @@
 id = 20
-name = "Async Archipelago"
-blurb = "Waiting for many things without wasting time."
+name = "Async 群島"
+blurb = "等待多件事情完成，同時不浪費時間。"
 
 # Every level here (except the quiz) comes with `runtime.rs`, Ferris' tiny async
 # runtime: block_on, sleep, join, join_all, race, channels and streams, using only std.
 
 [[level]]
 id = "20.1"
-title = "Promises of later"
+title = "稍後兌現的承諾"
 kind = "predict"
 book = ["17.1"]
 xp = 30

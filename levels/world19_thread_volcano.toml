@@ -1,10 +1,10 @@
 id = 19
-name = "Thread Volcano"
-blurb = "Doing many things at once, safely."
+name = "執行緒火山"
+blurb = "安全地同時處理多件事。"
 
 [[level]]
 id = "19.1"
-title = "Two things at once"
+title = "同時處理兩件事"
 kind = "fill"
 book = ["16.1"]
 xp = 50
@@ -123,7 +123,7 @@ hints = [
 
 [[level]]
 id = "19.2"
-title = "Passing notes"
+title = "傳遞訊息"
 kind = "fill"
 book = ["16.2"]
 xp = 55
@@ -247,7 +247,7 @@ hints = [
 
 [[level]]
 id = "19.3"
-title = "One at a time, please"
+title = "請一次處理一件"
 kind = "fix"
 book = ["16.3"]
 xp = 45
@@ -323,7 +323,7 @@ hints = [
 
 [[level]]
 id = "19.4"
-title = "Sharing across threads"
+title = "跨執行緒共享資料"
 kind = "fill"
 book = ["16.3"]
 xp = 60
@@ -471,7 +471,7 @@ hints = [
 
 [[level]]
 id = "19.5"
-title = "Safe to send?"
+title = "可以安全傳送嗎？"
 kind = "predict"
 book = ["16.4"]
 xp = 30
@@ -531,7 +531,7 @@ explanation = "`Rc` is not `Send`: its reference count isn't updated atomically,
 
 [[level]]
 id = "19.6"
-title = "BOSS: The parallel downloader"
+title = "頭目：平行下載器"
 kind = "boss"
 book = ["16.1", "16.2", "16.3"]
 xp = 130
