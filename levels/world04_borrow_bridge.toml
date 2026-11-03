@@ -1,34 +1,34 @@
 id = 4
-name = "Borrow Bridge"
-blurb = "Lend things out without giving them away."
+name = "借用橋"
+blurb = "借出值，卻不交出所有權。"
 
 [[level]]
 id = "4.1"
-title = "Just looking, thanks!"
+title = "我只看看，謝謝！"
 kind = "fix"
 book = ["4.2"]
 xp = 40
-goal = "Make it print: ferris has 6 letters"
+goal = "修正程式，讓它印出：ferris has 6 letters"
 lesson = '''
-Moving a value into a function every time is a pain. Instead, you can **lend** it with `&`:
+每次把值移進函式都很麻煩。你可以改用 `&` **借出**它：
 
 ```rust
-fn count(word: &String) -> usize {   // borrows, doesn't own
+fn count(word: &String) -> usize {   // 借用，不取得所有權
     word.len()
 }
 
 let w = String::from("crab");
-let n = count(&w);   // lend w...
-println!("{w}");     // ...and it's still ours!
+let n = count(&w);   // 借出 w⋯⋯
+println!("{w}");     // ⋯⋯它仍然屬於我們！
 ```
 
-`&w` is a **reference**: a pointer that is guaranteed to be valid. The function can look, but the owner keeps the value.
+`&w` 是**參照**：能確保有效的指標。函式可以讀取值，但值仍由原擁有者持有。
 '''
 c_compare = '''
-Like passing `const char *` instead of handing over the buffer. But Rust *proves* the pointer stays valid for as long as it's used.
+類似傳入 `const char *`，而不是交出整個緩衝區。但 Rust 會*證明*指標在使用期間都有效。
 '''
 py_compare = '''
-Python passes references all the time without telling you. In Rust you write `&` on purpose, and the type says "borrowed".
+Python 會在背後傳遞參照。Rust 則要求你明確寫出 `&`，而型別也會標示這是「借用」。
 '''
 check = "output"
 expected_output = "ferris has 6 letters"
@@ -55,34 +55,34 @@ fn main() {
 }
 '''
 hints = [
-    "The function takes ownership of the word, so main can't print it afterwards. Could the function just borrow it?",
-    "Change the parameter type to a reference, and pass a reference at the call site.",
-    "`fn count_letters(word: &String)` and call it with `count_letters(&word)`.",
+    "函式取得了字串的所有權，所以 `main` 之後無法再印出它。能不能讓函式只借用字串？",
+    "把參數型別改成參照，並在呼叫函式時傳入參照。",
+    "`fn count_letters(word: &String)`，呼叫時使用 `count_letters(&word)`。",
 ]
 
 [[level]]
 id = "4.2"
-title = "The three keys: Read, Write, Own"
+title = "三把鑰匙：讀取、寫入、擁有"
 kind = "predict"
 book = ["4.2"]
 xp = 25
-goal = "Does this compile? If so, what does it print?"
+goal = "這段程式能編譯嗎？如果可以，會印出什麼？"
 lesson = '''
-The Brown edition of the Rust Book explains borrowing with **permissions**. Every variable holds up to three keys:
+Brown 版《Rust 程式設計語言》用**權限**解釋借用。每個變數最多持有三把鑰匙：
 
-- **R**ead: you can look at it
-- **W**rite: you can change it
-- **O**wn: you can move or drop it
+- **R**ead（讀取）：可以讀取值
+- **W**rite（寫入）：可以修改值
+- **O**wn（擁有）：可以移動或丟棄值
 
-`let mut v = vec![1, 2, 3];` gives `v` all three: **R W O**.
+`let mut v = vec![1, 2, 3];` 會讓 `v` 擁有三把鑰匙：**R W O**。
 
-When you borrow with `let first = &v[0];`, `v` **lends out its W and O keys** until the last time `first` is used. While the borrow is alive, `v` can only be read.
+使用 `let first = &v[0];` 借用時，直到最後一次使用 `first` 為止，`v` 都會**借出 W 和 O 鑰匙**。借用期間只能讀取 `v`。
 '''
 c_compare = '''
-In C, `int *first = &v[0];` and then growing the array could move it to new memory, leaving `first` dangling. Rust's permissions catch that before the program runs.
+在 C 中，執行 `int *first = &v[0];` 後再擴充陣列，可能會把陣列搬到新的記憶體位置，讓 `first` 變成懸空指標。Rust 的權限檢查會在程式執行前抓出問題。
 '''
 py_compare = '''
-Python lists can change while you hold a reference to an item, and nothing stops you. Rust's permission check is about memory safety, not just style.
+在 Python 中，即使你持有某個項目的參照，清單仍可被修改，沒有任何限制。Rust 的權限檢查是為了記憶體安全，不只是程式風格。
 '''
 starter = '''
 fn main() {
@@ -94,23 +94,23 @@ fn main() {
 '''
 choices = [
     "1",
-    "It doesn't compile: v can't be changed while first is still borrowing it",
-    "It crashes: first points to freed memory",
+    "無法編譯：first 仍在借用 v，因此不能修改 v",
+    "程式崩潰：first 指向已釋放的記憶體",
     "4",
 ]
 answer = 1
 compile_fails = true
-explanation = "`first` borrows from `v`, so `v` loses its Write permission until `first`'s last use on line 5. `v.push(4)` needs Write, so it's error E0502. Pushing could reallocate the vector and leave `first` dangling, which is exactly the bug Rust prevents."
+explanation = "`first` 借用了 `v`，因此直到第 5 行最後一次使用 `first` 前，`v` 都沒有寫入權限。`v.push(4)` 需要寫入權限，所以會產生錯誤 E0502。推入項目可能重新配置向量，讓 `first` 變成懸空指標；Rust 正是要防止這種錯誤。"
 
 [[level]]
 id = "4.3"
-title = "Borrowing the paintbrush"
+title = "借出畫筆"
 kind = "fix"
 book = ["4.2"]
 xp = 40
-goal = "Make it print: Ferris★"
+goal = "修正程式，讓它印出：Ferris★"
 lesson = '''
-A plain `&` borrow is **read-only**. To let a function change your value, lend it with **`&mut`**:
+一般的 `&` 借用是**唯讀**的。若要讓函式修改值，請使用 **`&mut`** 借出可變參照：
 
 ```rust
 fn paint(wall: &mut String) {
@@ -121,16 +121,16 @@ let mut wall = String::from("fence");
 paint(&mut wall);
 ```
 
-Three things must line up:
-1. the variable is declared `mut`
-2. the parameter type is `&mut T`
-3. the call passes `&mut value`
+以下三處必須一致：
+1. 變數宣告為 `mut`
+2. 參數型別為 `&mut T`
+3. 呼叫時傳入 `&mut value`
 '''
 c_compare = '''
-`&mut String` is like a non-const pointer `char *`. A plain `&String` is like `const char *`.
+`&mut String` 類似非 const 指標 `char *`；一般的 `&String` 則類似 `const char *`。
 '''
 py_compare = '''
-In Python any function can change a list you pass in. In Rust you must say `&mut`, so changes are never a surprise.
+在 Python 中，任何函式都能修改你傳入的清單。在 Rust 中必須明確寫出 `&mut`，因此修改不會出乎意料。
 '''
 check = "output"
 expected_output = "Ferris★"
@@ -157,41 +157,41 @@ fn main() {
 }
 '''
 hints = [
-    "The function wants to change the String, but it only got a read-only borrow.",
-    "You need `&mut` in two places, and `mut` on the variable itself.",
-    "`fn add_star(name: &mut String)`, `let mut name = ...`, and `add_star(&mut name)`.",
+    "函式想修改 `String`，但目前拿到的只是唯讀借用。",
+    "有兩個地方需要加上 `&mut`，變數本身也要加上 `mut`。",
+    "`fn add_star(name: &mut String)`、`let mut name = ...`，並呼叫 `add_star(&mut name)`。",
 ]
 
 [[level]]
 id = "4.4"
-title = "One painter at a time"
+title = "一次只能有一位畫家"
 kind = "fix"
 book = ["4.2"]
 xp = 40
-goal = "Make it print: Score: 20"
+goal = "修正程式，讓它印出：Score: 20"
 lesson = '''
-Rust's golden rule of borrowing:
+Rust 借用的黃金法則：
 
-> At any moment you can have **either** many readers (`&`) **or** one writer (`&mut`), never both.
+> 在任何時刻，你**可以有多個**讀取者（`&`），**或一個**寫入者（`&mut`），但不能同時存在。
 
-Two `&mut` borrows of the same value at the same time is error **E0499**.
+同一時間對同一個值建立兩個 `&mut` 借用會產生錯誤 **E0499**。
 
-But a borrow only lasts until its **last use**. So use the first one, and *then* make the second:
+不過借用只會持續到**最後一次使用**。因此先使用第一個借用，*再*建立第二個：
 
 ```rust
 let a = &mut x;
-*a += 1;         // last use of a
-let b = &mut x;  // fine now!
+*a += 1;         // a 最後一次使用
+let b = &mut x;  // 現在就可以了！
 *b += 1;
 ```
 
-`*a` means "the value `a` points to".
+`*a` 表示「`a` 所指向的值」。
 '''
 c_compare = '''
-Two pointers changing the same data at once is how data races and aliasing bugs happen in C. Rust simply doesn't allow it.
+在 C 中，同時透過兩個指標修改相同資料會造成資料競爭和別名錯誤。Rust 直接禁止這種情況。
 '''
 py_compare = '''
-Two names changing the same object is normal in Python. Rust requires the changes to take turns.
+在 Python 中，透過兩個名稱修改同一個物件很常見。Rust 則要求修改必須依序進行。
 '''
 check = "output"
 expected_output = "Score: 20"
@@ -216,28 +216,28 @@ fn main() {
 }
 '''
 hints = [
-    "Two mutable borrows are alive at the same time. Can you finish with the first before making the second?",
-    "Move `*a += 5;` up, so `a` is done before `b` is created.",
-    "Order the lines: `let a = &mut score;` `*a += 5;` `let b = &mut score;` `*b += 5;`",
+    "目前同時存在兩個可變借用。能不能先用完第一個，再建立第二個？",
+    "把 `*a += 5;` 移到前面，讓 `a` 在建立 `b` 之前就結束使用。",
+    "依序排列這幾行：`let a = &mut score;`、`*a += 5;`、`let b = &mut score;`、`*b += 5;`。",
 ]
 
 [[level]]
 id = "4.5"
-title = "The bridge to nowhere"
+title = "通往虛無的橋"
 kind = "predict"
 book = ["4.2", "4.3"]
 xp = 25
-goal = "Does this compile? If so, what does it print?"
+goal = "這段程式能編譯嗎？如果可以，會印出什麼？"
 lesson = '''
-A reference must never outlive the value it points to. A reference to something that's gone is called a **dangling reference**.
+參照的生命週期絕不能超過它所指向的值。指向已消失資料的參照稱為**懸空參照**。
 
-What happens when a function returns a reference to its own local variable?
+函式回傳指向自己區域變數的參照時，會發生什麼事？
 '''
 c_compare = '''
-Returning `&local` from a C function compiles (maybe with a warning) and returns a pointer to dead stack memory. Undefined behaviour!
+C 函式回傳 `&local` 時仍可能編譯成功（或只顯示警告），但回傳的是指向已失效堆疊記憶體的指標。這是未定義行為！
 '''
 py_compare = '''
-Python's garbage collector keeps the object alive as long as anything refers to it. Rust has no GC, so it checks at compile time instead.
+只要仍有參照，Python 的垃圾回收器就會讓物件保持存活。Rust 沒有垃圾回收器，因此會在編譯時檢查。
 '''
 starter = '''
 fn make_sign() -> &String {
@@ -251,38 +251,38 @@ fn main() {
 '''
 choices = [
     "Bridge closed",
-    "Garbage text, like in C",
-    "It doesn't compile: s is dropped when make_sign ends, so the reference would dangle",
-    "It panics at runtime",
+    "像 C 一樣印出亂碼",
+    "無法編譯：make_sign 結束時 s 就會被丟棄，因此參照會懸空",
+    "執行時會 panic",
 ]
 answer = 2
 compile_fails = true
-explanation = "`s` is dropped at the end of `make_sign`, so `&s` would point at freed memory. Rust refuses to compile it. The fix is to return the `String` itself, which moves ownership out instead."
+explanation = "`make_sign` 結束時 `s` 就會被丟棄，因此 `&s` 會指向已釋放的記憶體。Rust 會拒絕編譯。解法是直接回傳 `String`，將所有權移交給呼叫端。"
 
 [[level]]
 id = "4.6"
-title = "The troll under the bridge"
+title = "橋下的巨魔"
 kind = "fix"
 book = ["4.3"]
 xp = 50
-goal = '''Fix every borrow-checker error so it prints:
+goal = '''修正所有借用檢查器錯誤，讓程式印出：
 Hello, Ferris!
 left right!
 Biggest was 3'''
 lesson = '''
-The troll asks riddles from the Brown book's chapter **"Fixing Ownership Errors"**. Real errors you'll meet:
+巨魔會考你 Brown 版 Rust 書籍中**「修正所有權錯誤」**一章的內容。你會遇到以下實際錯誤：
 
-1. **Moving out of a collection.** `let x = v[0];` tries to take a `String` out of a Vec. Borrow it instead: `&v[0]`.
-2. **Aliasing + mutation.** Holding a reference into a Vec while pushing to it. Copy the value out first (for numbers, `*` copies).
-3. **Not actually an error!** Borrowing one tuple field while changing a *different* field is fine. Rust tracks fields separately.
+1. **從集合中移出值。**`let x = v[0];` 試圖將 `String` 從 Vec 中取出。應改為借用：`&v[0]`。
+2. **別名加上修改。**持有 Vec 內部參照時又推入新值。先複製值出來（數字可用 `*` 複製）。
+3. **其實不是錯誤！**借用元組的一個欄位時，修改*另一個*欄位是允許的。Rust 會分別追蹤各個欄位。
 
-Fix the errors one at a time, starting from the first.
+從第一個錯誤開始，一次修正一個。
 '''
 c_compare = '''
-Each of these would be a real memory bug in C: a double free, a dangling pointer into a reallocated array.
+這些問題在 C 中都會造成真正的記憶體錯誤：重複釋放，或指向重新配置陣列的懸空指標。
 '''
 py_compare = '''
-In Python these all "just work" because everything is reference-counted. Rust gets the same safety without a garbage collector.
+在 Python 中，這些寫法通常都能運作，因為物件使用參照計數。Rust 不需垃圾回收器，也能提供相同的安全性。
 '''
 check = "output"
 expected_output = '''
@@ -325,42 +325,42 @@ fn main() {
 }
 '''
 hints = [
-    "There are two real errors (and one thing that looks wrong but is fine). Start with E0507 on line 3.",
-    "Line 3: borrow the name instead of moving it. Line 12: `biggest` is a reference into `scores`; copy the number out so `scores` is free to change.",
-    "`let first = &names[0];` and `let biggest = *scores.iter().max().unwrap();`",
+    "這裡有兩個真正的錯誤（還有一處看起來不對、實際上沒問題）。先處理第 3 行的 E0507。",
+    "第 3 行：借用名稱，不要移動它。第 12 行：`biggest` 是指向 `scores` 的參照；把數字複製出來，`scores` 才能繼續修改。",
+    "`let first = &names[0];`，並寫成 `let biggest = *scores.iter().max().unwrap();`。",
 ]
 
 [[level]]
 id = "4.7"
-title = "A slice of pie"
+title = "一片字串"
 kind = "fill"
 book = ["4.4"]
 xp = 45
-goal = "Write first_word: return the first word of a string (everything before the first space)."
+goal = "撰寫 `first_word`：回傳字串中的第一個單字（第一個空格之前的內容）。"
 lesson = '''
-A **slice** borrows *part* of something. A string slice has type **`&str`**:
+**切片**會借用某個值的*一部分*。字串切片的型別是 **`&str`**：
 
 ```rust
 let s = String::from("hello world");
-let hello = &s[0..5];   // bytes 0 up to (not including) 5
-let world = &s[6..];    // from 6 to the end
+let hello = &s[0..5];   // 從位元組索引 0 到 5（不包含 5）
+let world = &s[6..];    // 從索引 6 到結尾
 ```
 
-String literals like `"hi"` are `&str` too. A `&String` automatically works where a `&str` is wanted, so `&str` parameters accept both.
+`"hi"` 這類字串常值也是 `&str`。需要 `&str` 的地方可以自動使用 `&String`，因此 `&str` 參數兩種都接受。
 
-To find a space, you can walk the bytes:
+要尋找空格，可以逐一檢查位元組：
 
 ```rust
 for (i, b) in s.bytes().enumerate() {
-    if b == b' ' { /* found a space at index i */ }
+    if b == b' ' { /* 在索引 i 找到空格 */ }
 }
 ```
 '''
 c_compare = '''
-A `&str` is a pointer plus a length, like a `(const char *, size_t)` pair. No null terminator, and no copying.
+`&str` 是指標加上長度，類似 `(const char *, size_t)` 配對。不需要空字元結尾，也不會複製文字。
 '''
 py_compare = '''
-Like `s[0:5]` in Python, but Rust's slice doesn't copy the text. It borrows a window into the original.
+類似 Python 的 `s[0:5]`，但 Rust 切片不會複製文字，而是借用原字串的一段內容。
 '''
 check = "tests"
 starter = '''
@@ -414,35 +414,35 @@ mod tests {
 }
 '''
 hints = [
-    "Look at each byte until you find a space. What do you return then, and what if there's no space at all?",
-    "Use `for (i, b) in s.bytes().enumerate()`. If `b == b' '`, return the slice before it. After the loop, the whole string is one word.",
+    "逐一檢查位元組，直到找到空格。找到時要回傳什麼？如果完全沒有空格呢？",
+    "使用 `for (i, b) in s.bytes().enumerate()`。如果 `b == b' '`，就回傳空格前的切片。迴圈結束後，整個字串就是一個單字。",
     "```rust\nfor (i, b) in s.bytes().enumerate() {\n    if b == b' ' {\n        return &s[..i];\n    }\n}\ns\n```",
 ]
 
 [[level]]
 id = "4.8"
-title = "Slicing the bread"
+title = "切片吐司"
 kind = "fill"
 book = ["4.4"]
 xp = 45
-goal = "Write middle: return everything except the first and last item (empty if there are fewer than two)."
+goal = "撰寫 `middle`：回傳除了第一個和最後一個項目以外的內容（少於兩項時回傳空切片）。"
 lesson = '''
-Arrays and Vecs can be sliced too. A slice of `i32`s has type **`&[i32]`**:
+陣列和 Vec 也可以切片。`i32` 的切片型別是 **`&[i32]`**：
 
 ```rust
 let v = vec![10, 20, 30, 40];
 let some = &v[1..3];   // [20, 30]
 ```
 
-Taking `&[i32]` as a parameter is flexible: it accepts a borrowed array *and* a borrowed Vec.
+將 `&[i32]` 作為參數很有彈性：借用的陣列和借用的 Vec 都能傳入。
 
-An empty slice is written `&[]`.
+空切片寫成 `&[]`。
 '''
 c_compare = '''
-In C you'd pass `int *arr, size_t len`. A Rust slice bundles both, and every index is bounds-checked.
+在 C 中要傳入 `int *arr, size_t len`。Rust 切片把兩者包在一起，而且每次索引都會檢查範圍。
 '''
 py_compare = '''
-Like `items[1:-1]`, but without making a new list.
+類似 `items[1:-1]`，但不會建立新的清單。
 '''
 check = "tests"
 starter = '''
@@ -491,32 +491,32 @@ mod tests {
 }
 '''
 hints = [
-    "Two cases: fewer than two items, or enough to cut off both ends.",
-    "If `items.len() < 2` return `&[]`, otherwise slice from index 1 up to (not including) the last index.",
+    "分成兩種情況：元素少於兩個，或足以去掉前後兩端。",
+    "如果 `items.len() < 2`，就回傳 `&[]`；否則取從索引 1 開始、到最後一個索引之前為止的切片。",
     "`if items.len() < 2 { &[] } else { &items[1..items.len() - 1] }`",
 ]
 
 [[level]]
 id = "4.9"
-title = "Looking back across the bridge"
+title = "回望借用橋"
 kind = "predict"
 book = ["4.5"]
 xp = 25
-goal = "Does this compile? If so, what does it print?"
+goal = "這段程式能編譯嗎？如果可以，會印出什麼？"
 lesson = '''
-**Ownership recap:**
+**所有權重點回顧：**
 
-- Every value has one owner; it's dropped when the owner goes away.
-- You can lend it: many `&` readers, or one `&mut` writer.
-- A borrow lasts until its **last use**, not until the end of the block.
+- 每個值都有一位擁有者；擁有者離開時，值就會被丟棄。
+- 你可以借出值：提供多個 `&` 讀取者，或一個 `&mut` 寫入者。
+- 借用會持續到**最後一次使用**，不一定到區塊結尾。
 
-That last rule makes Rust friendlier than it first looks. Watch where each reference is last used.
+最後一條規則讓 Rust 比乍看之下更容易使用。留意每個參照最後一次被使用的位置。
 '''
 c_compare = '''
-These rules give you C's speed (no garbage collector) without C's memory bugs.
+這些規則讓你享有 C 的速度（沒有垃圾回收器），同時避開 C 的記憶體錯誤。
 '''
 py_compare = '''
-Python decides at runtime when to free memory. Rust decides at compile time, so there's no pause and no surprise.
+Python 在執行時決定何時釋放記憶體；Rust 則在編譯時決定，因此不會暫停，也不會有意外。
 '''
 starter = '''
 fn main() {
@@ -531,8 +531,8 @@ fn main() {
 '''
 choices = [
     "hi hi / hi!",
-    "It doesn't compile: s is borrowed twice",
-    "It doesn't compile: r3 is a writer while r1 and r2 exist",
+    "無法編譯：s 被重複借用",
+    "無法編譯：r1、r2 尚存在時，r3 就成為寫入者",
     "hi hi / hi",
 ]
 answer = 0
@@ -540,35 +540,35 @@ expected_output = '''
 hi hi
 hi!
 '''
-explanation = "Two readers are fine. `r1` and `r2` are last used on line 5, so by the time `r3` borrows mutably, they're finished. No overlap, no error."
+explanation = "多個讀取者可以同時存在。`r1` 和 `r2` 最後在第 5 行使用，因此 `r3` 可變借用時，它們已經結束。借用沒有重疊，就不會出錯。"
 
 [[level]]
 id = "4.10"
-title = "BOSS: The word counter"
+title = "頭目戰：單字計數器"
 kind = "boss"
 book = ["4.4", "4.5"]
 xp = 100
-goal = '''Write three functions:
-count_words: how many words are in the text
-longest_word: the first longest word ("" if there are none)
-shout: change the String in place to UPPERCASE and add "!"'''
+goal = '''撰寫三個函式：
+count_words：計算文字中的單字數量
+longest_word：回傳第一個最長的單字（沒有單字時回傳 ""）
+shout：直接將 String 改為大寫，並在最後加上 "!"'''
 lesson = '''
-**Boss fight!** Everything from Borrow Bridge, in one place.
+**頭目戰！**在同一關中運用借用橋學過的所有內容。
 
-New helpers you can use:
+可使用以下新方法：
 
 ```rust
-for word in text.split_whitespace() { /* each word, as a &str */ }
-let loud = text.to_uppercase();   // a new String
+for word in text.split_whitespace() { /* 每個單字都是 &str */ }
+let loud = text.to_uppercase();   // 建立新的 String
 ```
 
-Think about which functions only **read** (take `&str`), and which **change** the text (take `&mut String`). `longest_word` returns a slice borrowed from its input.
+想想哪些函式只會**讀取**文字（接收 `&str`），哪些會**修改**文字（接收 `&mut String`）。`longest_word` 會回傳從輸入借用的切片。
 '''
 c_compare = '''
-In C you'd write the word splitting by hand with `strtok` (which modifies the string!). Here, `split_whitespace` gives you safe borrowed slices.
+在 C 中，你得手動用 `strtok` 切分單字（而且它會修改字串！）。這裡的 `split_whitespace` 會提供安全的借用切片。
 '''
 py_compare = '''
-`split_whitespace` is like Python's `str.split()` with no arguments, but it yields borrowed slices instead of new strings.
+`split_whitespace` 類似不帶參數的 Python `str.split()`，但它會產生借用切片，而不是新的字串。
 '''
 check = "tests"
 starter = '''
@@ -646,7 +646,7 @@ mod tests {
 }
 '''
 hints = [
-    "Start with count_words: `split_whitespace()` gives you the words. For longest_word, keep the best word so far in a variable.",
-    "count_words: `.count()` the words. longest_word: start with `let mut best = \"\";` and replace it when a word is longer. shout: replace `*text` with the uppercase version, then push '!'.",
+    "先完成 `count_words`：用 `split_whitespace()` 取得單字。`longest_word` 則用變數記住目前最長的單字。",
+    "`count_words`：用 `.count()` 計算單字數。`longest_word`：先寫 `let mut best = \"\";`，遇到更長的單字就更新它。`shout`：把 `*text` 換成大寫版本，再附加 `!`。",
     "```rust\nfn count_words(text: &str) -> usize { text.split_whitespace().count() }\n\nfn longest_word(text: &str) -> &str {\n    let mut best = \"\";\n    for word in text.split_whitespace() {\n        if word.len() > best.len() { best = word; }\n    }\n    best\n}\n\nfn shout(text: &mut String) {\n    *text = text.to_uppercase();\n    text.push('!');\n}\n```",
 ]

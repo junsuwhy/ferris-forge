@@ -116,8 +116,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Each thread needs to own its half: `thread::spawn(move || first.iter().sum::<u64>())`. Keep the handles and call `.join().unwrap()` on each.",
-    "For greet_all, first start **all** the threads (collect the handles into a Vec), then join them in order. Joining right after each spawn would make them run one at a time.",
+    "每個執行緒都需要取得自己那一半資料的所有權：`thread::spawn(move || first.iter().sum::<u64>())`。保留所有 handle，並各自呼叫 `.join().unwrap()`。",
+    "在 `greet_all` 中，先啟動**所有**執行緒（把 handles 收集到 `Vec`），再依序 join。若每次 spawn 後立刻 join，執行緒就會一個接一個執行。",
     "```rust\nlet a = thread::spawn(move || first.iter().sum::<u64>());\nlet b = thread::spawn(move || second.iter().sum::<u64>());\na.join().unwrap() + b.join().unwrap()\n\n// greet_all:\nlet handles: Vec<_> = names\n    .into_iter()\n    .map(|name| thread::spawn(move || format!(\"Hello from {name}!\")))\n    .collect();\nhandles.into_iter().map(|h| h.join().unwrap()).collect()\n```",
 ]
 
@@ -240,8 +240,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "In the helper thread: `for word in words { tx.send(word.to_uppercase()).unwrap(); }`. In the main thread, the receiver is an iterator: `rx.iter().collect()` gathers everything until the sender hangs up.",
-    "For the workers: clone `tx` for each thread (`let tx = tx.clone();` before `thread::spawn(move || ...)`). Then **drop the original** `tx`, or `rx.iter()` waits forever. Finish with `rx.iter().sum()`.",
+    "在輔助執行緒中寫 `for word in words { tx.send(word.to_uppercase()).unwrap(); }`。主執行緒中的接收端是 iterator：`rx.iter().collect()` 會收集所有訊息，直到傳送端關閉。",
+    "對 worker 而言，每個執行緒都要複製一份 `tx`（在 `thread::spawn(move || ...)` 前寫 `let tx = tx.clone();`）。接著**丟棄原本的** `tx`，否則 `rx.iter()` 會永遠等待。最後使用 `rx.iter().sum()`。",
     "```rust\nlet (tx, rx) = mpsc::channel();\nfor i in 0..workers {\n    let tx = tx.clone();\n    thread::spawn(move || {\n        tx.send(i * 10).unwrap();\n    });\n}\ndrop(tx);\nrx.iter().sum()\n```",
 ]
 
@@ -316,8 +316,8 @@ fn main() {
 }
 '''
 hints = [
-    "`first` is still alive (still holding the lock) when `second` asks for it. A guard only lets go when it's dropped.",
-    "Put each guard in its own `{ ... }` block, or call `drop(first);` before locking again (and the same for `second` before the print).",
+    "`second` 嘗試取得鎖時，`first` 還在使用中（仍持有鎖）。guard 被 drop 後才會釋放鎖。",
+    "把每個 guard 放在各自的 `{ ... }` 區塊中，或在再次鎖定前呼叫 `drop(first);`（印出前也要對 `second` 做同樣處理）。",
     "```rust\n{\n    let mut first = score.lock().unwrap();\n    *first += 10;\n}\n{\n    let mut second = score.lock().unwrap();\n    *second += 5;\n}\n```",
 ]
 
@@ -464,8 +464,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Make the shared value once: `Arc::new(Mutex::new(0))`. For each thread, `let counter = Arc::clone(&counter);` and move that clone into the thread. Keep the handles and join them all before reading the result.",
-    "Inside a thread, `*counter.lock().unwrap() += 1;`. For the words, share `Arc<Mutex<HashMap<String, usize>>>` and do `*tally.lock().unwrap().entry(word.to_string()).or_insert(0) += 1;`. At the end, `tally.lock().unwrap().clone()` gives you the map.",
+    "先建立共享值：`Arc::new(Mutex::new(0))`。每個執行緒都用 `let counter = Arc::clone(&counter);` 複製一份，再將副本移入執行緒。保留所有 handles，全部 join 後再讀取結果。",
+    "執行緒內使用 `*counter.lock().unwrap() += 1;`。若要統計單字，使用共享的 `Arc<Mutex<HashMap<String, usize>>>`，並寫 `*tally.lock().unwrap().entry(word.to_string()).or_insert(0) += 1;`。最後呼叫 `tally.lock().unwrap().clone()` 取得 map。",
     "```rust\nlet counter = Arc::new(Mutex::new(0));\nlet mut handles = vec![];\nfor _ in 0..threads {\n    let counter = Arc::clone(&counter);\n    handles.push(thread::spawn(move || {\n        for _ in 0..per_thread {\n            *counter.lock().unwrap() += 1;\n        }\n    }));\n}\nfor handle in handles {\n    handle.join().unwrap();\n}\n*counter.lock().unwrap()\n```",
 ]
 
@@ -702,7 +702,7 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Put the URLs in an `Arc<Mutex<Vec<&str>>>` and make a channel. Start `workers` threads, each with its own `Arc::clone` of the queue and its own `tx.clone()`.",
-    "Each worker loops: `let next = queue.lock().unwrap().pop();` (the lock is released at the end of that line), stop when it's None, otherwise fetch, count with `split_whitespace().count()`, and send `(url.to_string(), count)`. After starting the workers, `drop(tx)`, collect `rx.iter()`, and sort.",
+    "把網址放進 `Arc<Mutex<Vec<&str>>>`，並建立 channel。啟動 `workers` 個執行緒，每個都取得 queue 的 `Arc::clone` 和自己的 `tx.clone()`。",
+    "每個 worker 都在迴圈中執行：`let next = queue.lock().unwrap().pop();`（該行結束時鎖就會釋放）；若結果是 `None` 就停止，否則取得內容、用 `split_whitespace().count()` 計數，並傳送 `(url.to_string(), count)`。啟動所有 worker 後，呼叫 `drop(tx)`，收集 `rx.iter()` 並排序。",
     "```rust\nlet queue = Arc::new(Mutex::new(urls));\nlet (tx, rx) = mpsc::channel();\nfor _ in 0..workers {\n    let queue = Arc::clone(&queue);\n    let tx = tx.clone();\n    thread::spawn(move || loop {\n        let next = queue.lock().unwrap().pop();\n        let Some(url) = next else { break };\n        let words = fetch(url).split_whitespace().count();\n        tx.send((url.to_string(), words)).unwrap();\n    });\n}\ndrop(tx);\nlet mut results: Vec<(String, usize)> = rx.iter().collect();\nresults.sort();\nresults\n```",
 ]

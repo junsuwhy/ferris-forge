@@ -103,8 +103,8 @@ mod tests {
 }
 '''
 hints = [
-    "Copy the body of either function into `largest`. Then read the compiler's suggestion.",
-    "Comparing `item > largest` needs `T` to be comparable: write `fn largest<T: PartialOrd>(list: &[T]) -> &T`. You can delete the two old functions.",
+    "把其中一個函式的本體複製到 `largest`，再看看編譯器的建議。",
+    "比較 `item > largest` 需要 `T` 可以比較大小：寫成 `fn largest<T: PartialOrd>(list: &[T]) -> &T`。接著可以刪除原本的兩個函式。",
     "```rust\nfn largest<T: PartialOrd>(list: &[T]) -> &T {\n    let mut largest = &list[0];\n    for item in list {\n        if item > largest {\n            largest = item;\n        }\n    }\n    largest\n}\n```",
 ]
 
@@ -190,8 +190,8 @@ fn main() {
 }
 '''
 hints = [
-    "`Point` only holds `i32`s. Give it a type parameter. `Pair` doesn't exist yet: it needs two.",
-    "Write `struct Point<T> { x: T, y: T }` and `struct Pair<T, U> { first: T, second: U }`.",
+    "`Point` 目前只能存放 `i32`。請替它加入型別參數。`Pair` 尚未定義，需要兩個型別參數。",
+    "寫出 `struct Point<T> { x: T, y: T }` 和 `struct Pair<T, U> { first: T, second: U }`。",
     "```rust\nstruct Point<T> {\n    x: T,\n    y: T,\n}\n\nstruct Pair<T, U> {\n    first: T,\n    second: U,\n}\n```",
 ]
 
@@ -336,8 +336,8 @@ mod tests {
 }
 '''
 hints = [
-    "Write two impl blocks: `impl<T> Point<T> { ... }` with x and y, and `impl Point<f64> { ... }` with distance_from_origin.",
-    "The getters return `&self.x` and `&self.y`. The distance is `(self.x.powi(2) + self.y.powi(2)).sqrt()`. mixup builds `Point2 { x: self.x, y: other.y }`.",
+    "寫兩個 `impl` 區塊：`impl<T> Point<T> { ... }` 放入 x 和 y 方法；`impl Point<f64> { ... }` 放入 `distance_from_origin`。",
+    "getter 回傳 `&self.x` 和 `&self.y`。距離公式是 `(self.x.powi(2) + self.y.powi(2)).sqrt()`。`mixup` 則建立 `Point2 { x: self.x, y: other.y }`。",
     "```rust\nimpl<T> Point<T> {\n    fn x(&self) -> &T {\n        &self.x\n    }\n\n    fn y(&self) -> &T {\n        &self.y\n    }\n}\n\nimpl Point<f64> {\n    fn distance_from_origin(&self) -> f64 {\n        (self.x.powi(2) + self.y.powi(2)).sqrt()\n    }\n}\n```",
 ]
 
@@ -522,8 +522,8 @@ mod tests {
 }
 '''
 hints = [
-    "Write `impl Summary for Tweet { ... }` with just `summarize_author`, and `impl Summary for NewsArticle { ... }` with both methods.",
-    "Tweet: `format!(\"@{}\", self.username)`. Article: `self.author.clone()`, and `summarize` returns `format!(\"{}, by {}\", self.headline, self.author)`.",
+    "寫出 `impl Summary for Tweet { ... }`，裡面只實作 `summarize_author`；再寫 `impl Summary for NewsArticle { ... }`，實作兩個方法。",
+    "Tweet：使用 `format!(\"@{}\", self.username)`。Article：回傳 `self.author.clone()`；`summarize` 則回傳 `format!(\"{}, by {}\", self.headline, self.author)`。",
     "```rust\nimpl Summary for Tweet {\n    fn summarize_author(&self) -> String {\n        format!(\"@{}\", self.username)\n    }\n}\n\nimpl Summary for NewsArticle {\n    fn summarize_author(&self) -> String {\n        self.author.clone()\n    }\n\n    fn summarize(&self) -> String {\n        format!(\"{}, by {}\", self.headline, self.author)\n    }\n}\n```",
 ]
 
@@ -660,8 +660,8 @@ fn main() {
 }
 '''
 hints = [
-    "For each function, ask what it does with its values: print with `{}`? print with `{:?}`? compare? call a trait method? Each needs a matching bound.",
-    "`announce` needs `T: Display`, `bigger` needs `T: PartialOrd`, `show_pair` needs `T: Display` and `U: Debug`, and `notify` takes `&impl Summary`.",
+    "逐一確認函式如何使用值：用 `{}` 印出、用 `{:?}` 印出、進行比較，還是呼叫 trait 方法？每種操作都需要對應的 trait bound。",
+    "`announce` 需要 `T: Display`；`bigger` 需要 `T: PartialOrd`；`show_pair` 需要 `T: Display` 和 `U: Debug`；`notify` 則接收 `&impl Summary`。",
     "```rust\nfn announce<T: Display>(item: T) { ... }\nfn bigger<T: PartialOrd>(a: T, b: T) -> T { ... }\nfn show_pair<T, U>(a: T, b: U) -> String\nwhere\n    T: Display,\n    U: Debug,\n{ ... }\nfn notify(item: &impl Summary) { ... }\n```",
 ]
 
@@ -826,8 +826,8 @@ mod tests {
 }
 '''
 hints = [
-    "One line above the struct does it all: `#[derive(...)]` with the traits listed in the comment.",
-    "List all nine: Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default.",
+    "只要在結構體上方加一行 `#[derive(...)]`，列出註解中指定的 traits 即可。",
+    "列出全部九種：Debug、Clone、Copy、PartialEq、Eq、PartialOrd、Ord、Hash、Default。",
     "```rust\n#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]\nstruct Card {\n```",
 ]
 
@@ -1038,7 +1038,7 @@ mod tests {
 }
 '''
 hints = [
-    "Start with the three `impl Shape for ...` blocks (area and name). Then override `describe` inside `impl Shape for Rect`. Last, write the two generic functions.",
-    "largest: loop over the slice, keeping `best: Option<&T>` and replacing it when a shape has a bigger area. compare: compare `a.area()` with `b.area()` and build the sentence with `format!`.",
+    "先完成三個 `impl Shape for ...` 區塊（包含 area 和 name）。接著在 `impl Shape for Rect` 中覆寫 `describe`。最後再寫兩個泛型函式。",
+    "`largest`：走訪切片並用 `best: Option<&T>` 記住目前最佳項目，遇到面積更大的形狀就更新。`compare`：比較 `a.area()` 和 `b.area()`，再用 `format!` 組出句子。",
     "```rust\nfn largest<T: Shape>(shapes: &[T]) -> Option<&T> {\n    let mut best: Option<&T> = None;\n    for shape in shapes {\n        match best {\n            Some(b) if b.area() >= shape.area() => {}\n            _ => best = Some(shape),\n        }\n    }\n    best\n}\n```",
 ]

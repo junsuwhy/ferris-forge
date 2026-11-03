@@ -1,26 +1,26 @@
 id = 8
-name = "Error Marsh"
-blurb = "When things go wrong, and what to do about it."
+name = "錯誤沼澤"
+blurb = "遇到問題時，學會如何處理。"
 
 [[level]]
 id = "8.1"
-title = "Abandon ship! panic!"
+title = "棄船！panic！"
 kind = "predict"
 book = ["9.1"]
 xp = 25
-goal = "What happens when this runs?"
+goal = "執行這段程式會發生什麼事？"
 lesson = '''
-Some errors can't be recovered from. Then a Rust program **panics**: it prints a message and stops, cleaning up memory on the way out (that's called *unwinding*).
+有些錯誤無法復原，此時 Rust 程式會發生 **panic**：印出訊息後停止，並在結束過程中清理記憶體（稱為*展開*）。
 
-You can panic on purpose with `panic!("message")`. Some operations panic for you, like reading past the end of a Vec.
+你可以使用 `panic!("message")` 主動觸發 panic。有些操作也可能觸發 panic，例如讀取超出 Vec 結尾的位置。
 
-Run with the environment variable `RUST_BACKTRACE=1` to see the chain of function calls that led to the panic.
+設定環境變數 `RUST_BACKTRACE=1` 執行程式，就能查看導致 panic 的函式呼叫鏈。
 '''
 c_compare = '''
-Reading past the end of an array in C is undefined behaviour: maybe garbage, maybe a crash, maybe nothing. A Rust panic is a clean, guaranteed stop with a message.
+在 C 中讀取超出陣列範圍屬於未定義行為：可能得到亂碼、崩潰，或看似什麼都沒發生。Rust 的 panic 則會明確停止並顯示訊息。
 '''
 py_compare = '''
-Like an uncaught `IndexError`, except a panic isn't meant to be caught. For errors you expect, Rust uses `Result` (next level).
+類似未捕捉的 `IndexError`，但 panic 並不是設計來捕捉的。對於預期可能發生的錯誤，Rust 使用 `Result`（下一關介紹）。
 '''
 starter = '''
 fn main() {
@@ -32,35 +32,35 @@ fn main() {
 }
 '''
 choices = [
-    "start / end",
-    "start, then it crashes with an index out of bounds panic",
-    "It doesn't compile: index 10 is too big",
-    "start / 0 / end",
+    "印出 start 和 end",
+    "印出 start，接著因索引超出範圍而 panic",
+    "無法編譯：索引 10 太大",
+    "印出 start、0 和 end",
 ]
 answer = 1
 expected_output = "start"
-explanation = "The program compiles (the index is only checked while running). It prints `start`, then `v[10]` panics: 'index out of bounds: the len is 3 but the index is 10'. `end` is never printed."
+explanation = "程式可以編譯（索引只會在執行時檢查）。它會印出 `start`，接著 `v[10]` 觸發 panic：「索引超出範圍：長度為 3，但索引是 10」。`end` 不會印出。"
 
 [[level]]
 id = "8.2"
-title = "Maybe it worked: Result"
+title = "也許成功了：Result"
 kind = "fix"
 book = ["9.2"]
 xp = 45
-goal = '''Handle both results with match, so it prints:
+goal = '''使用 match 處理兩種結果，讓程式印出：
 Level 8
 Error: 'seven' is not a number'''
 lesson = '''
-For errors you **expect** (bad input, a missing file), functions return a **`Result`**:
+對於**預期可能發生**的錯誤（輸入格式錯誤、檔案不存在），函式會回傳 **`Result`**：
 
 ```rust
 enum Result<T, E> {
-    Ok(T),    // it worked, here's the value
-    Err(E),   // it failed, here's why
+    Ok(T),    // 成功，這裡是結果值
+    Err(E),   // 失敗，這裡是錯誤原因
 }
 ```
 
-A `Result<u32, String>` isn't a number, so you must look inside first:
+`Result<u32, String>` 並不是數字，所以必須先檢查裡面的結果：
 
 ```rust
 match parse_level("7") {
@@ -70,10 +70,10 @@ match parse_level("7") {
 ```
 '''
 c_compare = '''
-Instead of returning `-1` and setting `errno`, a Rust function returns either the value or the error, never both, and you can't ignore it.
+Rust 函式不會像 C 一樣回傳 `-1` 並設定 `errno`，而是回傳值或錯誤其中之一，而且你不能忽略它。
 '''
 py_compare = '''
-Instead of raising an exception, the error is returned as a value. `match` replaces `try` / `except`.
+錯誤不會以例外拋出，而是作為值回傳。`match` 可取代 `try`／`except`。
 '''
 check = "output"
 expected_output = '''
@@ -117,32 +117,32 @@ fn main() {
 }
 '''
 hints = [
-    "`parse_level` returns a Result, not a number. What do you use to look inside an enum?",
-    "Replace each `let` + `println!` pair with a `match` that has an `Ok(n)` arm and an `Err(e)` arm.",
-    "```rust\nmatch parse_level(\"7\") {\n    Ok(n) => println!(\"Level {}\", n + 1),\n    Err(e) => println!(\"Error: {}\", e),\n}\n```\nand the same for `\"seven\"`.",
+    "`parse_level` 回傳的是 `Result`，不是數字。要用什麼方式檢查列舉中的值？",
+    "把每組 `let` 和 `println!` 改成 `match`，並加入 `Ok(n)` 與 `Err(e)` 分支。",
+    "```rust\nmatch parse_level(\"7\") {\n    Ok(n) => println!(\"Level {}\", n + 1),\n    Err(e) => println!(\"Error: {}\", e),\n}\n```\n`\"seven\"` 也要用相同方式處理。",
 ]
 
 [[level]]
 id = "8.3"
-title = "Living dangerously: unwrap"
+title = "危險操作：unwrap"
 kind = "predict"
 book = ["9.2"]
 xp = 25
-goal = "What happens when this runs?"
+goal = "執行這段程式會發生什麼事？"
 lesson = '''
-Shortcuts for `Result` (and `Option`):
+處理 `Result`（和 `Option`）的簡便方法：
 
-- `.unwrap()`: the value if `Ok`, otherwise **panic**
-- `.expect("message")`: the same, but panics with your message (better for debugging)
-- `.unwrap_or(default)`: the value, or a default. Never panics.
+- `.unwrap()`：若為 `Ok` 就取得值，否則觸發 **panic**
+- `.expect("message")`：作用相同，但 panic 時會顯示自訂訊息（更方便除錯）
+- `.unwrap_or(default)`：取得值，若失敗則使用預設值，不會 panic
 
-`unwrap` and `expect` are fine in quick experiments, tests, or when you *know* it can't fail. In real code, prefer handling the error.
+快速實驗、測試，或你*確定不會失敗*時，可以使用 `unwrap` 和 `expect`。正式程式碼則建議處理錯誤。
 '''
 c_compare = '''
-`expect` is like `assert(ptr != NULL && "ship needs fuel")`, but it's always checked.
+`expect` 類似 `assert(ptr != NULL && "ship needs fuel")`，但一定會執行檢查。
 '''
 py_compare = '''
-`unwrap()` on an `Err` is like letting an exception crash the program.
+對 `Err` 呼叫 `unwrap()`，就像任由例外讓程式崩潰。
 '''
 starter = '''
 fn main() {
@@ -156,50 +156,50 @@ fn main() {
 '''
 choices = [
     "3 / 0 / 0",
-    "3 / 0, then it crashes with the message: ship needs fuel: \"no fuel\"",
-    "It doesn't compile",
-    "3, then it crashes",
+    "印出 3 和 0，接著顯示 ship needs fuel: \"no fuel\" 並 panic",
+    "無法編譯",
+    "印出 3，接著崩潰",
 ]
 answer = 1
 expected_output = '''
 3
 0
 '''
-explanation = "`a.unwrap()` gives 3, `b.unwrap_or(0)` gives the default 0, and `c.expect(...)` panics with your message followed by the error: `ship needs fuel: \"no fuel\"`."
+explanation = "`a.unwrap()` 取得 3，`b.unwrap_or(0)` 使用預設值 0，而 `c.expect(...)` 會以自訂訊息加上錯誤內容觸發 panic：`ship needs fuel: \"no fuel\"`。"
 
 [[level]]
 id = "8.4"
-title = "Pass it up with ?"
+title = "用 ? 傳遞錯誤"
 kind = "fill"
 book = ["9.2"]
 xp = 50
-goal = "Write parse_pair (\"3,4\" → (3, 4)) and first_upper, using ? to pass errors up."
+goal = "使用 `?` 向上傳遞錯誤，撰寫 `parse_pair`（輸入 \"3,4\"、回傳 (3, 4)）和 `first_upper`。"
 lesson = '''
-Writing `match` for every possible error gets long. The **`?` operator** does it for you:
+每種錯誤都寫一個 `match` 會很冗長。**`?` 運算子**可以替你處理：
 
 ```rust
 fn read_number(text: &str) -> Result<i32, std::num::ParseIntError> {
-    let n = text.parse::<i32>()?;   // on Err, return that error right now
+    let n = text.parse::<i32>()?;   // 若為 Err，立刻回傳該錯誤
     Ok(n * 2)
 }
 ```
 
-`?` works on `Option` too: on `None`, the function returns `None` immediately.
+`?` 也能用於 `Option`：遇到 `None` 時，函式會立刻回傳 `None`。
 
-You can only use `?` in a function that returns a `Result` (or `Option`). Even `main` can: `fn main() -> Result<(), Box<dyn std::error::Error>>`.
+只有回傳 `Result`（或 `Option`）的函式才能使用 `?`。`main` 也可以這樣寫：`fn main() -> Result<(), Box<dyn std::error::Error>>`。
 '''
 c_compare = '''
-Like the C pattern `if (err) return err;` after every call, written as one character.
+類似每次呼叫後都寫 `if (err) return err;` 的 C 模式，只是濃縮成一個字元。
 '''
 py_compare = '''
-Exceptions bubble up on their own in Python. `?` is the explicit, visible version of that.
+Python 的例外會自動向上傳遞；`?` 則是明確可見的版本。
 '''
 check = "tests"
 starter = '''
 use std::num::ParseIntError;
 
 fn parse_pair(text: &str) -> Result<(i32, i32), ParseIntError> {
-    // "3,4" -> Ok((3, 4)). Use ? on each parse.
+    // "3,4" -> Ok((3, 4))。每次解析都使用 ?。
     let mut parts = text.split(',');
     let left = parts.next().unwrap_or("").trim();
     let right = parts.next().unwrap_or("").trim();
@@ -207,7 +207,7 @@ fn parse_pair(text: &str) -> Result<(i32, i32), ParseIntError> {
 }
 
 fn first_upper(s: &str) -> Option<char> {
-    // The first char in uppercase, or None for an empty string. Use ?.
+    // 回傳第一個大寫字元；字串為空時回傳 None。使用 ?。
     todo!()
 }
 
@@ -219,7 +219,7 @@ solution = '''
 use std::num::ParseIntError;
 
 fn parse_pair(text: &str) -> Result<(i32, i32), ParseIntError> {
-    // "3,4" -> Ok((3, 4)). Use ? on each parse.
+    // "3,4" -> Ok((3, 4))。每次解析都使用 ?。
     let mut parts = text.split(',');
     let left = parts.next().unwrap_or("").trim();
     let right = parts.next().unwrap_or("").trim();
@@ -229,7 +229,7 @@ fn parse_pair(text: &str) -> Result<(i32, i32), ParseIntError> {
 }
 
 fn first_upper(s: &str) -> Option<char> {
-    // The first char in uppercase, or None for an empty string. Use ?.
+    // 回傳第一個大寫字元；字串為空時回傳 None。使用 ?。
     let c = s.chars().next()?;
     Some(c.to_ascii_uppercase())
 }
@@ -263,25 +263,25 @@ mod tests {
 }
 '''
 hints = [
-    "Parse `left` and `right` with `.parse::<i32>()` and put `?` after each, then wrap both numbers in Ok.",
-    "parse_pair ends with `Ok((a, b))`. first_upper: `let c = s.chars().next()?;` then return `Some(...)`.",
-    "```rust\nlet a = left.parse::<i32>()?;\nlet b = right.parse::<i32>()?;\nOk((a, b))\n```\nand\n```rust\nlet c = s.chars().next()?;\nSome(c.to_ascii_uppercase())\n```",
+    "用 `.parse::<i32>()` 解析 `left` 和 `right`，各自在後面加上 `?`，再用 `Ok` 包住兩個數字。",
+    "`parse_pair` 最後回傳 `Ok((a, b))`。`first_upper` 則先寫 `let c = s.chars().next()?;`，再回傳 `Some(...)`。",
+    "```rust\nlet a = left.parse::<i32>()?;\nlet b = right.parse::<i32>()?;\nOk((a, b))\n```\n另外\n```rust\nlet c = s.chars().next()?;\nSome(c.to_ascii_uppercase())\n```",
 ]
 
 [[level]]
 id = "8.5"
-title = "Crash or cope?"
+title = "崩潰還是處理？"
 kind = "fill"
 book = ["9.3"]
 xp = 50
-goal = "Guess::new panics on numbers outside 1 to 100; Guess::try_new returns an Err instead."
+goal = "`Guess::new` 遇到 1 到 100 以外的數字時會 panic；`Guess::try_new` 則會回傳 `Err`。"
 lesson = '''
-When should code **panic**, and when should it return a **`Result`**?
+什麼時候應該觸發 **panic**，什麼時候應該回傳 **`Result`**？
 
-- **Return a `Result`** when failure is a normal possibility the caller can handle: bad user input, a missing file.
-- **Panic** when continuing would be a bug: a broken promise inside your own program.
+- 若失敗是呼叫端可以處理的常見情況（輸入錯誤、檔案不存在），就**回傳 `Result`**。
+- 若繼續執行代表程式本身有錯（違反程式內部的保證），就觸發 **panic**。
 
-A great trick is a **validated type**: a `Guess` that can only ever hold 1 to 100. Check once when it's created, and every function that receives a `Guess` can trust it.
+一個好方法是建立**已驗證型別**：`Guess` 只能存放 1 到 100。建立時檢查一次，之後所有接收 `Guess` 的函式都能信任其值。
 
 ```rust
 if value < 1 || value > 100 {
@@ -290,10 +290,10 @@ if value < 1 || value > 100 {
 ```
 '''
 c_compare = '''
-Like checking a value once in a constructor and using `assert` to catch your own bugs, but the checks can't be compiled out.
+類似在建構函式中檢查一次，並使用 `assert` 找出程式自身的錯誤；而且檢查不會被編譯器移除。
 '''
 py_compare = '''
-Like raising `ValueError` in `__init__`. Rust gives you both styles: panic (`new`) or a `Result` (`try_new`).
+類似在 `__init__` 中拋出 `ValueError`。Rust 提供兩種方式：panic（`new`）或 `Result`（`try_new`）。
 '''
 check = "tests"
 starter = '''
@@ -303,12 +303,12 @@ pub struct Guess {
 
 impl Guess {
     pub fn new(value: i32) -> Guess {
-        // TODO: panic!("Guess must be between 1 and 100, got {value}") when value is outside 1..=100
+        // TODO：value 不在 1..=100 範圍時，觸發 panic!("Guess must be between 1 and 100, got {value}")
         Guess { value }
     }
 
     pub fn try_new(value: i32) -> Result<Guess, String> {
-        // TODO: Err("out of range".to_string()) when value is outside 1..=100
+        // TODO：value 不在 1..=100 範圍時，回傳 Err("out of range".to_string())
         todo!()
     }
 
@@ -382,21 +382,21 @@ mod tests {
 }
 '''
 hints = [
-    "Both functions do the same range check. One panics, the other returns an Err.",
-    "Check `if value < 1 || value > 100`. In new, call `panic!(...)`; in try_new, `return Err(...)`, and finish with `Ok(Guess { value })`.",
+    "兩個函式都要檢查相同的範圍，一個會 panic，另一個則回傳 `Err`。",
+    "檢查 `if value < 1 || value > 100`。在 `new` 中呼叫 `panic!(...)`；在 `try_new` 中使用 `return Err(...)`，最後回傳 `Ok(Guess { value })`。",
     "```rust\nif value < 1 || value > 100 {\n    panic!(\"Guess must be between 1 and 100, got {value}\");\n}\n```",
 ]
 
 [[level]]
 id = "8.6"
-title = "BOSS: The config parser"
+title = "頭目戰：設定檔解析器"
 kind = "boss"
 book = ["9.2", "9.3"]
 xp = 120
-goal = '''Write parse_config: read "key = value" lines into a Config,
-and return a helpful ConfigError when something is wrong.'''
+goal = '''撰寫 `parse_config`：將「key = value」格式的每一行讀入 `Config`，
+遇到錯誤時回傳清楚的 `ConfigError`。'''
 lesson = '''
-**Boss fight!** A settings file looks like this:
+**頭目戰！**設定檔如下：
 
 ```text
 # my game
@@ -405,21 +405,21 @@ players = 4
 music = on
 ```
 
-Rules:
-- Blank lines and lines starting with `#` are skipped.
-- A line without `=` is `BadLine(line_number)` (counting from 1).
-- `players` must be a number, or it's `BadNumber(value)`.
-- `music` must be `on` or `off`, or it's `BadBool(value)`. If it's missing, it's `false`.
-- `name` and `players` are required: `MissingKey("name")` / `MissingKey("players")`.
-- Unknown keys are ignored.
+規則：
+- 忽略空白行和以 `#` 開頭的行。
+- 沒有 `=` 的行會產生 `BadLine(line_number)`（行號從 1 開始）。
+- `players` 必須是數字，否則回傳 `BadNumber(value)`。
+- `music` 必須是 `on` 或 `off`，否則回傳 `BadBool(value)`。若未設定，預設為 `false`。
+- 必須設定 `name` 和 `players`：`MissingKey("name")`／`MissingKey("players")`。
+- 忽略未知的鍵。
 
-Useful tools: `text.lines()`, `line.split_once('=')`, `.trim()`, `.parse::<u32>()`, and `opt.ok_or(error)?` to turn a missing `Option` into an error. To turn one error into another, use `.map_err(|_| ConfigError::BadNumber(value.to_string()))?`.
+可用的方法： `text.lines()`, `line.split_once('=')`, `.trim()`, `.parse::<u32>()`, and `opt.ok_or(error)?` 將不存在的 Option 轉成錯誤。要將一種錯誤轉成另一種，使用 `.map_err(|_| ConfigError::BadNumber(value.to_string()))?`.
 '''
 c_compare = '''
-Writing this in C means careful `strchr`, `strtol` and error codes for every case. Here each error is a typed enum variant the caller can match on.
+在 C 中撰寫這段程式，需要小心使用 `strchr`、`strtol`，並為每種情況設定錯誤碼。這裡的每種錯誤都是有型別的列舉變體，呼叫端可以用 match 處理。
 '''
 py_compare = '''
-Like `configparser`, but with your own error types instead of exceptions.
+類似 `configparser`，但使用自訂錯誤型別，而不是例外。
 '''
 check = "tests"
 starter = '''
@@ -537,7 +537,7 @@ mod tests {
 }
 '''
 hints = [
-    "Keep three `Option`s (name, players, music), fill them while looping over `text.lines().enumerate()`, then build the Config at the end.",
-    "For each line: skip blanks/comments, `split_once('=')` (BadLine if None), trim both halves, then `match key`. At the end use `name.ok_or(ConfigError::MissingKey(\"name\".to_string()))?`.",
+    "保留三個 `Option`（`name`、`players`、`music`），走訪 `text.lines().enumerate()` 時逐一填入，最後再建立 `Config`。",
+    "每一行先略過空行和註解，再用 `split_once('=')` 拆開（若是 `None` 就回傳 `BadLine`），修剪兩側空白後對 `key` 使用 `match`。最後用 `name.ok_or(ConfigError::MissingKey(\"name\".to_string()))?`。",
     "```rust\nlet Some((key, value)) = line.split_once('=') else {\n    return Err(ConfigError::BadLine(i + 1));\n};\nlet (key, value) = (key.trim(), value.trim());\nmatch key {\n    \"name\" => name = Some(value.to_string()),\n    \"players\" => players = Some(value.parse::<u32>().map_err(|_| ConfigError::BadNumber(value.to_string()))?),\n    \"music\" => music = Some(match value { \"on\" => true, \"off\" => false, _ => return Err(ConfigError::BadBool(value.to_string())) }),\n    _ => {}\n}\n```",
 ]

@@ -230,8 +230,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Replace the `// TODO` comments: the first one with `//!` lines, the other two with `///` lines right above each `pub fn`.",
-    "Inside a `///` block, sections are Markdown headings: `/// # Examples`, `/// # Panics`, `/// # Errors`. A code block starts with a line that is `///` plus three backticks, then the code (each line starting with `///`), and ends with another `///` plus three backticks.",
+    "取代 `// TODO` 註解：第一處改成 `//!` 文件註解，另外兩處則在各個 `pub fn` 正上方加上 `///` 文件註解。",
+    "在 `///` 文件註解中，章節標題使用 Markdown 格式，例如 `/// # Examples`、`/// # Panics`、`/// # Errors`。程式碼區塊以 `///` 加三個反引號開頭，每行程式碼前都加上 `///`，最後再用 `///` 加三個反引號結束。",
     "```rust\n//! # Treasure\n//!\n//! Tools for pirates who want to share their loot fairly.\n\n/// Splits the loot evenly.\n///\n/// # Examples\n///\n/// ```\n/// assert_eq!(treasure::share_loot(100, 3), 33);\n/// ```\n///\n/// # Panics\n///\n/// Panics if `crew` is 0.\npub fn share_loot(total: u32, crew: u32) -> u32 {\n```",
 ]
 
@@ -512,7 +512,7 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Three jobs: write the `match` in mix, add the docs (`//!` at the top, `///` above `pub fn mix`), and add three `pub use` lines at the top level.",
-    "mix: match on the pair `(c1, c2)`, e.g. `(Red, Yellow) | (Yellow, Red) => Some(SecondaryColor::Orange)`, and `_ => None` for the rest. Re-exports: `pub use self::kinds::PrimaryColor;` and the same for `SecondaryColor` and `self::utils::mix`.",
+    "有三件事要做：在 mix 中寫出 `match`、補上文件註解（檔案頂端用 `//!`，`pub fn mix` 上方用 `///`），並在最外層加上三行 `pub use`。",
+    "`mix`：對 `(c1, c2)` 這組配對使用 `match`，例如 `(Red, Yellow) | (Yellow, Red) => Some(SecondaryColor::Orange)`，其餘情況使用 `_ => None`。重新匯出則寫 `pub use self::kinds::PrimaryColor;`，並對 `SecondaryColor` 和 `self::utils::mix` 做同樣處理。",
     "```rust\npub use self::kinds::PrimaryColor;\npub use self::kinds::SecondaryColor;\npub use self::utils::mix;\n\n// in utils:\npub fn mix(c1: PrimaryColor, c2: PrimaryColor) -> Option<SecondaryColor> {\n    use PrimaryColor::*;\n    match (c1, c2) {\n        (Red, Yellow) | (Yellow, Red) => Some(SecondaryColor::Orange),\n        (Yellow, Blue) | (Blue, Yellow) => Some(SecondaryColor::Green),\n        (Red, Blue) | (Blue, Red) => Some(SecondaryColor::Purple),\n        _ => None,\n    }\n}\n```",
 ]

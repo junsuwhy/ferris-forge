@@ -1,28 +1,28 @@
 id = 2
-name = "Flow Forest"
-blurb = "Paths that branch and loop: if, functions, loop, while and for."
+name = "流程森林"
+blurb = "探索條件分支與迴圈：if、函式、loop、while 和 for。"
 
 [[level]]
 id = "2.1"
-title = "The fork in the path"
+title = "岔路口"
 kind = "fix"
 book = ["3.5"]
 xp = 30
-goal = "Make it print: Status: wounded"
+goal = "修正程式，讓它印出：Status: wounded"
 lesson = '''
-In Rust, **`if` is an expression**: it produces a value. So you can write:
+在 Rust 中，**`if` 是運算式**，會產生一個值。因此你可以這樣寫：
 
 ```rust
 let mood = if hungry { "grumpy" } else { "happy" };
 ```
 
-The catch: both branches must give the **same type**, because `mood` can only have one type.
+要注意的是，兩個分支必須產生**相同型別**，因為 `mood` 只能有一種型別。
 '''
 c_compare = '''
-This replaces C's ternary operator `cond ? a : b`. Rust has no `?:`, because `if` already does that job.
+這相當於 C 的三元運算子 `cond ? a : b`。Rust 沒有 `?:`，因為 `if` 本身就能做到同樣的事。
 '''
 py_compare = '''
-Like Python's `"grumpy" if hungry else "happy"`. But Python lets the two branches return different types, and Rust doesn't.
+類似 Python 的 `"grumpy" if hungry else "happy"`。不過 Python 允許兩個分支回傳不同型別，Rust 則不允許。
 '''
 check = "output"
 expected_output = "Status: wounded"
@@ -41,20 +41,20 @@ fn main() {
 }
 '''
 hints = [
-    "Look at the types of the two branches of the `if`. Are they the same?",
-    "One branch gives a string, the other a number. `status` can only have one type.",
-    "Change the `else` branch to `{ \"wounded\" }`.",
+    "看看 `if` 兩個分支的型別，它們相同嗎？",
+    "一個分支回傳字串，另一個回傳數字。`status` 只能有一種型別。",
+    "把 `else` 分支改成 `{ \"wounded\" }`。",
 ]
 
 [[level]]
 id = "2.2"
-title = "Your first function"
+title = "你的第一個函式"
 kind = "fill"
 book = ["3.3"]
 xp = 30
-goal = "Write `square` so that it returns n × n. Ferris' tests will check it."
+goal = "撰寫 `square`，讓它回傳 n × n。Ferris 會用測試確認結果。"
 lesson = '''
-Functions are declared with **`fn`**. Parameter types are required, and the return type comes after `->`:
+函式使用 **`fn`** 宣告。參數必須標示型別，回傳型別則寫在 `->` 後面：
 
 ```rust
 fn add(a: i32, b: i32) -> i32 {
@@ -62,15 +62,15 @@ fn add(a: i32, b: i32) -> i32 {
 }
 ```
 
-Notice there's **no `return` and no semicolon** on the last line. The last *expression* in a function is its return value. (`return a + b;` also works, but idiomatic Rust leaves it out.)
+注意最後一行**不需要 `return`，也不需要分號**。函式最後一個*運算式*就是回傳值。（寫成 `return a + b;` 也可以，但慣用的 Rust 寫法會省略它。）
 
-`todo!()` is a placeholder that crashes if it runs. Replace it!
+`todo!()` 是暫用的佔位巨集，執行到它時會讓程式 panic。請把它替換掉！
 '''
 c_compare = '''
-Like `int add(int a, int b) { return a + b; }`, with the types after the names. Unlike C, the order you define functions in doesn't matter, and you never need prototypes.
+類似 `int add(int a, int b) { return a + b; }`，只是 Rust 把型別寫在參數名稱後面。與 C 不同，函式的定義順序不重要，也不需要函式原型。
 '''
 py_compare = '''
-Like `def add(a, b): return a + b`, except the types are compulsory: `a: i32`. Think of Python type hints that the compiler actually enforces.
+類似 `def add(a, b): return a + b`，但 Rust 強制要求型別，例如 `a: i32`。可以把它想成由編譯器確實檢查的 Python 型別提示。
 '''
 check = "tests"
 starter = '''
@@ -113,31 +113,31 @@ mod tests {
 }
 '''
 hints = [
-    "Replace `todo!()` with an expression that uses `n`.",
-    "The last expression in a function (without a `;`) is what it returns.",
-    "The body should be just `n * n`.",
+    "把 `todo!()` 換成一個會用到 `n` 的運算式。",
+    "函式最後一個沒有加 `;` 的運算式，就是它的回傳值。",
+    "函式本體只要寫 `n * n`。",
 ]
 
 [[level]]
 id = "2.3"
-title = "The sneaky semicolon"
+title = "偷偷作怪的分號"
 kind = "fix"
 book = ["3.3"]
 xp = 30
-goal = "Make it print: 42"
+goal = "修正程式，讓它印出：42"
 lesson = '''
-Here's a Rust rule that surprises everyone once:
+這條 Rust 規則常讓初學者第一次遇到時感到意外：
 
-- `n * 2` is an **expression**. It has a value.
-- `n * 2;` is a **statement**. The semicolon throws the value away and leaves `()` (pronounced "unit", Rust's "nothing").
+- `n * 2` 是**運算式**，會產生一個值。
+- `n * 2;` 是**陳述式**。分號會丟掉運算式的值，留下 `()`（讀作「unit」，代表 Rust 中的「沒有值」）。
 
-So a semicolon on a function's last line means it returns `()` instead of your number.
+因此，函式最後一行若加上分號，回傳的就會是 `()`，而不是你要的數字。
 '''
 c_compare = '''
-In C, falling off the end of a non-void function is undefined behaviour (and maybe a warning). In Rust it's a hard type error: "expected `i32`, found `()`".
+在 C 中，非 `void` 函式直接跑到結尾屬於未定義行為（編譯器可能會警告）。Rust 則會明確回報型別錯誤：「預期 `i32`，卻得到 `()`」。
 '''
 py_compare = '''
-It's like forgetting `return` in Python and getting `None` back. Rust catches it at compile time instead.
+這就像在 Python 忘了寫 `return`，結果得到 `None`。不同的是，Rust 會在編譯時就抓到問題。
 '''
 check = "output"
 expected_output = "42"
@@ -160,20 +160,20 @@ fn main() {
 }
 '''
 hints = [
-    "The error says the function returns `()`. Where does a function's value come from?",
-    "A single character on line 2 is turning the expression into a statement.",
-    "Remove the `;` after `n * 2`.",
+    "錯誤指出函式回傳了 `()`。函式的回傳值是從哪裡來的？",
+    "第 2 行有一個字元，讓運算式變成了陳述式。",
+    "移除 `n * 2` 後面的 `;`。",
 ]
 
 [[level]]
 id = "2.4"
-title = "A loop that answers"
+title = "會帶回答案的迴圈"
 kind = "predict"
 book = ["3.5"]
 xp = 20
-goal = "What does this print?"
+goal = "這段程式會印出什麼？"
 lesson = '''
-**`loop`** repeats forever, until you `break`. And `break` can **carry a value** out of the loop:
+**`loop`** 會不斷重複，直到遇到 `break`。而且 `break` 可以**帶著值**離開迴圈：
 
 ```rust
 let found = loop {
@@ -194,33 +194,33 @@ fn main() {
     println!("{}", result);
 }
 '''
-choices = ["4", "40", "30", "It doesn't compile: a loop has no value"]
+choices = ["4", "40", "30", "無法編譯：迴圈不會產生值"]
 answer = 1
 expected_output = "40"
-explanation = "The loop runs until `counter` is 4, then `break counter * 10` makes the whole `loop` expression equal 40, which goes into `result`."
+explanation = "迴圈會執行到 `counter` 等於 4，接著 `break counter * 10` 會讓整個 `loop` 運算式的值成為 40，並存入 `result`。"
 
 [[level]]
 id = "2.5"
-title = "Counting the trees"
+title = "數數樹木"
 kind = "fill"
 book = ["3.5"]
 xp = 35
-goal = "Write `sum_to(n)` that adds up 1 + 2 + … + n using a for loop."
+goal = "使用 for 迴圈撰寫 `sum_to(n)`，計算 1 + 2 + … + n 的總和。"
 lesson = '''
-**`for`** loops over anything you can iterate. **Ranges** are the easiest:
+**`for`** 可以逐一走訪任何可迭代的項目。最簡單的方式是使用**範圍**：
 
 ```rust
-for i in 0..3 { }    // 0, 1, 2       (end is excluded)
-for i in 1..=3 { }   // 1, 2, 3       (=  includes the end)
+for i in 0..3 { }    // 0、1、2（不包含結尾）
+for i in 1..=3 { }   // 1、2、3（= 表示包含結尾）
 ```
 
-To add things up, you need a variable that changes, so remember `mut`.
+要累加數值，需要一個會改變的變數，所以別忘了加上 `mut`。
 '''
 c_compare = '''
-`for i in 1..=n` replaces `for (int i = 1; i <= n; i++)`. There's no index bookkeeping to get wrong.
+`for i in 1..=n` 可以取代 `for (int i = 1; i <= n; i++)`。不用自己維護索引，因此少了出錯的機會。
 '''
 py_compare = '''
-`for i in 1..=n` is like `for i in range(1, n + 1)`. `1..n` is like `range(1, n)`.
+`for i in 1..=n` 類似 `for i in range(1, n + 1)`；`1..n` 則類似 `range(1, n)`。
 '''
 check = "tests"
 starter = '''
@@ -267,20 +267,20 @@ mod tests {
 }
 '''
 hints = [
-    "You'll need a running total that starts at 0 and changes inside the loop.",
-    "Make `let mut total = 0;`, loop with `for i in 1..=n`, add `i` each time, then return `total` as the last expression.",
+    "你需要一個從 0 開始、並在迴圈中持續累加的總和變數。",
+    "先寫 `let mut total = 0;`，用 `for i in 1..=n` 迴圈，每次把 `i` 加進總和，最後以 `total` 作為函式的回傳值。",
     "```rust\nlet mut total = 0;\nfor i in 1..=n {\n    total += i;\n}\ntotal\n```",
 ]
 
 [[level]]
 id = "2.6"
-title = "Where the range ends"
+title = "範圍到哪裡結束"
 kind = "predict"
 book = ["3.5"]
 xp = 20
-goal = "What does this print?"
+goal = "這段程式會印出什麼？"
 lesson = '''
-`print!` is like `println!` but without the newline. Remember how ranges work: is the end included?
+`print!` 類似 `println!`，但不會在結尾換行。回想一下範圍的規則：結尾值會包含在內嗎？
 '''
 starter = '''
 fn main() {
@@ -290,32 +290,32 @@ fn main() {
     println!();
 }
 '''
-choices = ["1 2 3 4", "1 2 3", "0 1 2 3", "It doesn't compile: print! needs a newline"]
+choices = ["1 2 3 4", "1 2 3", "0 1 2 3", "無法編譯：print! 必須換行"]
 answer = 1
 expected_output = "1 2 3"
-explanation = "`1..4` stops *before* 4, so you get 1, 2, 3. Write `1..=4` to include the 4."
+explanation = "`1..4` 會在 4 *之前*停止，因此結果是 1、2、3。若要包含 4，請寫成 `1..=4`。"
 
 [[level]]
 id = "2.7"
-title = "The Collatz creek"
+title = "Collatz 溪流"
 kind = "fill"
 book = ["3.5"]
 xp = 40
-goal = "Write `collatz_steps(n)`: how many steps until n reaches 1?"
+goal = "撰寫 `collatz_steps(n)`，計算 n 到達 1 需要幾步。"
 lesson = '''
-**`while`** loops as long as a condition is true.
+只要條件成立，**`while`** 就會持續迴圈。
 
-The **Collatz** rule: if `n` is even, halve it; if it's odd, make it `3n + 1`. Count the steps until `n` is 1. (Nobody has ever proved this always ends!)
+**Collatz 猜想**的規則是：`n` 為偶數就除以 2；`n` 為奇數就變成 `3n + 1`。請計算 `n` 到達 1 前經過的步數。（目前還沒有人證明這個過程一定會結束！）
 
-Useful pieces:
-- `n % 2 == 0` checks if `n` is even
-- A parameter can be made mutable: `fn f(mut n: u64)`
+可用到的寫法：
+- `n % 2 == 0` 可用來檢查 `n` 是否為偶數
+- 參數也可以設為可變：`fn f(mut n: u64)`
 '''
 c_compare = '''
-`while (n != 1) { ... }` translates directly. Rust has no `do { } while`, but `loop` + `break` covers it.
+`while (n != 1) { ... }` 可以直接改寫成 Rust。Rust 沒有 `do { } while`，但可以用 `loop` 搭配 `break` 達到相同效果。
 '''
 py_compare = '''
-Same as Python's `while n != 1:`, just with braces and no colon.
+和 Python 的 `while n != 1:` 相同，只是 Rust 使用大括號，不用冒號。
 '''
 check = "tests"
 starter = '''
@@ -364,39 +364,39 @@ mod tests {
 }
 '''
 hints = [
-    "You need a step counter and a loop that keeps going while `n` isn't 1. Can `n` change if it's not `mut`?",
-    "Make the parameter `mut n: u64`, use `while n != 1`, and inside use `if n % 2 == 0` to pick the next value. Count each step.",
+    "你需要步數計數器，以及一個在 `n` 不等於 1 時持續執行的迴圈。`n` 沒有標成 `mut` 的話可以改變嗎？",
+    "把參數設為 `mut n: u64`，使用 `while n != 1`，並在迴圈內用 `if n % 2 == 0` 決定下一個值。每次都要累計步數。",
     "```rust\nfn collatz_steps(mut n: u64) -> u32 {\n    let mut steps = 0;\n    while n != 1 {\n        n = if n % 2 == 0 { n / 2 } else { 3 * n + 1 };\n        steps += 1;\n    }\n    steps\n}\n```",
 ]
 
 [[level]]
 id = "2.labels"
-title = "Escape the maze of loops"
+title = "逃出迴圈迷宮"
 kind = "fill"
 book = ["3.5"]
 xp = 35
-goal = '''Stop BOTH loops at the first match, so it prints:
+goal = '''找到第一組符合條件的配對時，停止**兩層**迴圈，讓程式印出：
 3 x 4 = 12'''
 lesson = '''
-A plain `break` only leaves the **innermost** loop. To leave an outer loop, give it a **label** (a name starting with `'`):
+一般的 `break` 只會離開**最內層**迴圈。若要離開外層迴圈，請替它加上**標籤**（以 `'` 開頭的名稱）：
 
 ```rust
 'outer: for a in 1..=5 {
     for b in 1..=5 {
         if a * b == 6 {
-            break 'outer; // leaves BOTH loops
+            break 'outer; // 一次離開兩層迴圈
         }
     }
 }
 ```
 
-`continue 'outer` works the same way.
+`continue 'outer` 也能以相同方式使用標籤。
 '''
 c_compare = '''
-In C you'd need a `goto` or a flag variable. Labels are the safe, structured version.
+在 C 中，你得使用 `goto` 或旗標變數。Rust 的標籤則提供安全且有結構的做法。
 '''
 py_compare = '''
-Python has no loop labels. You'd use a flag or a function with `return`.
+Python 沒有迴圈標籤，通常要改用旗標，或把迴圈放進函式並用 `return` 離開。
 '''
 check = "output"
 expected_output = "3 x 4 = 12"
@@ -407,7 +407,7 @@ fn main() {
         for b in 1..=5 {
             if a * b == 12 {
                 found = (a, b);
-                // TODO: stop BOTH loops here
+                // TODO：在這裡停止兩層迴圈
             }
         }
     }
@@ -429,38 +429,38 @@ fn main() {
 }
 '''
 hints = [
-    "Right now the loops keep going and find another pair later. How do you stop the outer loop from inside the inner one?",
-    "Put a label like `'outer:` before the first `for`, then use `break 'outer;`.",
-    "Write `'outer: for a in 1..=5 {` and replace the TODO with `break 'outer;`.",
+    "目前迴圈會繼續跑，之後還會找到其他配對。要怎麼在內層迴圈中停止外層迴圈？",
+    "在第一個 `for` 前加上像 `'outer:` 這樣的標籤，再使用 `break 'outer;`。",
+    "寫上 `'outer: for a in 1..=5 {`，再把 TODO 換成 `break 'outer;`。",
 ]
 
 [[level]]
 id = "2.8"
-title = "BOSS: FizzBuzz Arena"
+title = "頭目戰：FizzBuzz 擂台"
 kind = "boss"
 book = ["3.3", "3.5"]
 xp = 70
-goal = '''Write `fizzbuzz(n)` returning a String:
-"FizzBuzz" if n is divisible by 3 and 5, "Fizz" if by 3, "Buzz" if by 5, otherwise the number itself.'''
+goal = '''撰寫 `fizzbuzz(n)` 並回傳 `String`：
+n 同時能被 3 和 5 整除時回傳 "FizzBuzz"；能被 3 整除時回傳 "Fizz"；能被 5 整除時回傳 "Buzz"；其他情況則回傳數字本身。'''
 lesson = '''
-**Boss fight!** The classic interview question, Rust style.
+**頭目戰！**用 Rust 解決經典的面試題。
 
-For text you can *build and own*, Rust uses **`String`**:
+若要*建立並擁有*文字，Rust 使用 **`String`**：
 
 ```rust
-let s = String::from("Fizz");   // text → String
-let t = 42.to_string();         // number → String
+let s = String::from("Fizz");   // 文字 → String
+let t = 42.to_string();         // 數字 → String
 ```
 
-(Plain `"Fizz"` is a `&str`, a borrowed view of text. The difference will make sense in the Ownership Caves and on Borrow Bridge.)
+（一般的 `"Fizz"` 是 `&str`，也就是借用文字的檢視。你會在所有權洞窟和借用橋學到兩者的差異。）
 
-Tip: check the "divisible by both" case **first**. And remember that `if`/`else if`/`else` is an expression, so it can be the whole function body!
+提示：要先檢查「同時可被兩者整除」的情況。也別忘了 `if`／`else if`／`else` 是運算式，因此可以直接作為整個函式本體！
 '''
 c_compare = '''
-In C you'd write into a `char` buffer and hope it's big enough. A `String` grows itself and frees itself.
+在 C 中，你得寫入 `char` 緩衝區，並祈禱它夠大。`String` 會自行擴充，也會自行釋放記憶體。
 '''
 py_compare = '''
-`String::from("Fizz")` is like a normal Python `str`, and `n.to_string()` is like `str(n)`.
+`String::from("Fizz")` 類似一般的 Python `str`，而 `n.to_string()` 類似 `str(n)`。
 '''
 check = "tests"
 starter = '''
@@ -524,7 +524,7 @@ mod tests {
 }
 '''
 hints = [
-    "There are four cases. In which order should you check them so that 15 doesn't get caught as just \"Fizz\"?",
-    "Use `if n % 15 == 0 { ... } else if n % 3 == 0 { ... } else if ...`. Each branch must produce a `String`: use `String::from(\"Fizz\")` for words and `n.to_string()` for the number.",
+    "有四種情況。要按照什麼順序檢查，才不會讓 15 只被判定為「Fizz」？",
+    "使用 `if n % 15 == 0 { ... } else if n % 3 == 0 { ... } else if ...`。每個分支都必須回傳 `String`：文字用 `String::from(\"Fizz\")`，數字則用 `n.to_string()`。",
     "```rust\nif n % 15 == 0 {\n    String::from(\"FizzBuzz\")\n} else if n % 3 == 0 {\n    String::from(\"Fizz\")\n} else if n % 5 == 0 {\n    String::from(\"Buzz\")\n} else {\n    n.to_string()\n}\n```",
 ]

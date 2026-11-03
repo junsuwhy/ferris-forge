@@ -141,8 +141,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "First the type: `Cons(i32, Box<List>)`. Then sum and len are both a `match self` with a `Cons` arm and a `Nil` arm.",
-    "In the Cons arm, the Box can be used like the List inside it: `rest.sum()` works directly. sum is `value + rest.sum()`, and len is `1 + rest.len()`. Nil gives 0.",
+    "先定義型別：`Cons(i32, Box<List>)`。接著 `sum` 和 `len` 都用 `match self`，分別處理 `Cons` 和 `Nil`。",
+    "在 `Cons` 分支中，可以像使用裡面的 `List` 一樣直接使用 `Box`，例如呼叫 `rest.sum()`。`sum` 回傳 `value + rest.sum()`，`len` 回傳 `1 + rest.len()`。`Nil` 則回傳 0。",
     "```rust\nfn sum(&self) -> i32 {\n    match self {\n        Cons(value, rest) => value + rest.sum(),\n        Nil => 0,\n    }\n}\n\nfn len(&self) -> usize {\n    match self {\n        Cons(_, rest) => 1 + rest.len(),\n        Nil => 0,\n    }\n}\n```",
 ]
 
@@ -458,8 +458,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Every new owner is made with `Rc::clone(map)`. The count is `Rc::strong_count(map)`.",
-    "share: make `n` clones and collect them, for example `(0..n).map(|_| Rc::clone(map)).collect()`. prepend: `Cons(value, Rc::clone(tail))`.",
+    "每新增一個擁有者，就呼叫 `Rc::clone(map)`。擁有者數量可用 `Rc::strong_count(map)` 取得。",
+    "`share`：建立 `n` 份副本並收集起來，例如 `(0..n).map(|_| Rc::clone(map)).collect()`。`prepend`：使用 `Cons(value, Rc::clone(tail))`。",
     "```rust\nfn share(map: &Rc<String>, n: usize) -> Vec<Rc<String>> {\n    (0..n).map(|_| Rc::clone(map)).collect()\n}\n\nfn owners(map: &Rc<String>) -> usize {\n    Rc::strong_count(map)\n}\n\nfn prepend(value: i32, tail: &Rc<List>) -> List {\n    Cons(value, Rc::clone(tail))\n}\n```",
 ]
 
@@ -680,8 +680,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "`send` only gets `&self`, so `sent_messages` can't be pushed to. Wrap the Vec in a `RefCell`. The account has the same problem: an `Rc<i32>` is read-only.",
-    "Field type `RefCell<Vec<String>>`, made with `RefCell::new(vec![])`, and push with `self.sent_messages.borrow_mut().push(...)`. For the account, use `Rc<RefCell<i32>>` everywhere and add with `*account.borrow_mut() += amount`. (main then prints `mock.sent_messages.borrow()`.)",
+    "`send` 只取得 `&self`，所以無法對 `sent_messages` 呼叫 `push`。把 `Vec` 放進 `RefCell`。帳戶也有相同問題：`Rc<i32>` 是唯讀的。",
+    "欄位型別設為 `RefCell<Vec<String>>`，並用 `RefCell::new(vec![])` 建立；呼叫 `self.sent_messages.borrow_mut().push(...)` 加入訊息。帳戶則各處都使用 `Rc<RefCell<i32>>`，並以 `*account.borrow_mut() += amount` 加值。（之後在 `main` 中印出 `mock.sent_messages.borrow()`。）",
     "```rust\npub struct MockMessenger {\n    pub sent_messages: RefCell<Vec<String>>,\n}\n\nfn send(&self, message: &str) {\n    self.sent_messages.borrow_mut().push(String::from(message));\n}\n\npub fn joint_account(start: i32) -> (Rc<RefCell<i32>>, Rc<RefCell<i32>>) {\n    let account = Rc::new(RefCell::new(start));\n    let partner = Rc::clone(&account);\n    (account, partner)\n}\n\npub fn deposit(account: &Rc<RefCell<i32>>, amount: i32) {\n    *account.borrow_mut() += amount;\n}\n```",
 ]
 
@@ -954,7 +954,7 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "new: `Rc::new(Node { value, parent: RefCell::new(Weak::new()), children: RefCell::new(vec![]) })`. To read the parent, `node.parent.borrow().upgrade()` gives an `Option<Rc<Node>>`.",
-    "add_child: `*child.parent.borrow_mut() = Rc::downgrade(parent);` then push the child into `parent.children.borrow_mut()`. ancestors: loop with `while let Some(p) = current`, moving `current` up each time. total: `node.value` plus the totals of `node.children.borrow()`.",
+    "`new`：建立 `Rc::new(Node { value, parent: RefCell::new(Weak::new()), children: RefCell::new(vec![]) })`。讀取父節點時，`node.parent.borrow().upgrade()` 會回傳 `Option<Rc<Node>>`。",
+    "`add_child`：先寫 `*child.parent.borrow_mut() = Rc::downgrade(parent);`，再把子節點加入 `parent.children.borrow_mut()`。`ancestors`：使用 `while let Some(p) = current` 逐層往上走。`total`：將 `node.value` 加上 `node.children.borrow()` 中所有子節點的總和。",
     "```rust\nfn add_child(parent: &Rc<Node>, child: Rc<Node>) {\n    *child.parent.borrow_mut() = Rc::downgrade(parent);\n    parent.children.borrow_mut().push(child);\n}\n\nfn ancestors(node: &Node) -> Vec<i32> {\n    let mut values = Vec::new();\n    let mut current = node.parent.borrow().upgrade();\n    while let Some(p) = current {\n        values.push(p.value);\n        current = p.parent.borrow().upgrade();\n    }\n    values\n}\n\nfn total(node: &Node) -> i32 {\n    node.value + node.children.borrow().iter().map(|c| total(c)).sum::<i32>()\n}\n```",
 ]

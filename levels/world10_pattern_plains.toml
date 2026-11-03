@@ -1,33 +1,33 @@
 id = 10
-name = "Pattern Plains"
-blurb = "Every shape a pattern can take."
+name = "模式平原"
+blurb = "認識模式的各種形狀。"
 
 [[level]]
 id = "10.1"
-title = "Patterns everywhere"
+title = "模式無所不在"
 kind = "predict"
 book = ["19.1"]
 xp = 25
-goal = "What does this print?"
+goal = "這段程式會印出什麼？"
 lesson = '''
-You've used **patterns** since your first `match`, but they hide in many more places:
+從第一次使用 `match` 開始，你就已經用過**模式**；它們其實也出現在許多其他地方：
 
 ```rust
-let (a, b) = (1, 2);                  // let takes a pattern, not just a name
-for (i, ch) in "ab".chars().enumerate() { }   // so does for
-while let Some(top) = stack.pop() { }  // loop while the pattern matches
-fn show(&(x, y): &(i32, i32)) { }      // and so do function parameters
+let (a, b) = (1, 2);                  // let 接受模式，不只是名稱
+for (i, ch) in "ab".chars().enumerate() { }   // for 也一樣
+while let Some(top) = stack.pop() { }  // 模式符合時持續迴圈
+fn show(&(x, y): &(i32, i32)) { }      // 函式參數也一樣
 ```
 
-Even a plain `let x = 5;` is a pattern: `x` is a pattern that matches anything and gives it a name.
+即使一般的 `let x = 5;` 也是模式：`x` 是能符合任何值並替它命名的模式。
 
-A pattern describes the **shape** of a value. If the value has that shape, the pattern's names get bound to its parts.
+模式描述值的**形狀**。如果值符合該形狀，模式中的名稱就會綁定到值的各個部分。
 '''
 c_compare = '''
-C has nothing like it: you'd write `int a = t.first; int b = t.second;` by hand. Patterns pull a value apart in one step, and the compiler checks the shape.
+C 沒有相同功能：你得手動寫 `int a = t.first; int b = t.second;`。模式可以一步拆解值，並由編譯器檢查形狀。
 '''
 py_compare = '''
-Like Python's unpacking (`a, b = 1, 2` and `for i, ch in enumerate("ab")`), but it works for structs and enums too, and the compiler checks the shape before the program runs.
+類似 Python 的拆解指定（`a, b = 1, 2` 和 `for i, ch in enumerate("ab")`），但也適用於結構體和列舉，而且編譯器會在程式執行前檢查形狀。
 '''
 starter = '''
 fn print_point(&(x, y): &(i32, i32)) {
@@ -54,7 +54,7 @@ fn main() {
 choices = [
     "123 / 123 / 0:a / 1:b / (5, -1)",
     "123 / 321 / 0:a / 1:b / (5, -1)",
-    "It doesn't compile: function parameters can't be patterns",
+    "無法編譯：函式參數不能使用模式",
     "123 / 321 / a:0 / b:1 / (5, -1)",
 ]
 answer = 1
@@ -65,17 +65,17 @@ expected_output = '''
 1:b
 (5, -1)
 '''
-explanation = "`let (a, b, c)` unpacks the tuple. `pop` takes from the end, so `while let` sees 3, 2, 1 and stops at `None`. `enumerate` gives `(index, item)` pairs, and the parameter `&(x, y)` unpacks the borrowed tuple."
+explanation = "`let (a, b, c)` 會拆解元組。`pop` 從尾端取值，因此 `while let` 依序取得 3、2、1，遇到 `None` 時停止。`enumerate` 會提供 `(索引, 項目)` 配對，而參數 `&(x, y)` 會拆解借用的元組。"
 
 [[level]]
 id = "10.2"
-title = "If it fits: if let and let...else"
+title = "符合時就處理：if let 與 let...else"
 kind = "fill"
 book = ["19.1"]
 xp = 45
-goal = "Write background (an if let / else if chain) and parse_score (two let...else checks)."
+goal = "撰寫 `background`（使用 if let／else if 鏈）和 `parse_score`（使用兩個 let...else 檢查）。"
 lesson = '''
-When you care about just **one** shape, a full `match` is long. `if let` checks one pattern:
+只在意**一種**形狀時，完整的 `match` 會很冗長。`if let` 可以檢查單一模式：
 
 ```rust
 if let Some(color) = favorite {
@@ -89,28 +89,28 @@ if let Some(color) = favorite {
 }
 ```
 
-You can mix `if let`, `else if` and `else if let` freely.
+你可以自由混用 `if let`、`else if` 和 `else if let`。
 
-**`let...else`** is the opposite: it says "this must match, otherwise leave":
+**`let...else`** 則相反，表示「必須符合這個模式，否則就離開目前流程」：
 
 ```rust
 let Some((name, score)) = line.split_once(':') else {
-    return None;   // the else block must leave: return, break, continue or panic
+    return None;   // else 區塊必須離開目前流程：return、break、continue 或 panic
 };
-// name and score are usable from here on
+// 從這裡開始可以使用 name 和 score
 ```
 '''
 c_compare = '''
-`let...else` is the early-return guard you'd write in C (`if (!p) return NULL;`), except it also unpacks the value for the rest of the function.
+`let...else` 類似你在 C 中撰寫的提早回傳檢查（`if (!p) return NULL;`），但它也會拆解值，供函式後續使用。
 '''
 py_compare = '''
-`if let Some(x) = value:` is like `if (x := value) is not None:`. `let...else` is a guard clause that also unpacks.
+`if let Some(x) = value:` 類似 `if (x := value) is not None:`。`let...else` 則是同時拆解值的防護子句。
 '''
 check = "tests"
 starter = '''
 use std::num::ParseIntError;
 
-/// Pick a background color:
+/// 選擇背景顏色：
 /// - a favorite color, if there is one
 /// - otherwise "green" on Tuesdays
 /// - otherwise, if the age parsed: "purple" when over 30, else "orange"
@@ -120,7 +120,7 @@ fn background(favorite: Option<&str>, is_tuesday: bool, age: Result<u8, ParseInt
 }
 
 /// "Ferris:7" -> Some(("Ferris", 7)). No ':' or a bad number -> None.
-/// Use let...else for both checks.
+/// 兩次檢查都使用 let...else。
 fn parse_score(line: &str) -> Option<(&str, u32)> {
     todo!()
 }
@@ -133,7 +133,7 @@ fn main() {
 solution = '''
 use std::num::ParseIntError;
 
-/// Pick a background color:
+/// 選擇背景顏色：
 /// - a favorite color, if there is one
 /// - otherwise "green" on Tuesdays
 /// - otherwise, if the age parsed: "purple" when over 30, else "orange"
@@ -151,7 +151,7 @@ fn background(favorite: Option<&str>, is_tuesday: bool, age: Result<u8, ParseInt
 }
 
 /// "Ferris:7" -> Some(("Ferris", 7)). No ':' or a bad number -> None.
-/// Use let...else for both checks.
+/// 兩次檢查都使用 let...else。
 fn parse_score(line: &str) -> Option<(&str, u32)> {
     let Some((name, score)) = line.split_once(':') else {
         return None;
@@ -195,40 +195,40 @@ mod tests {
 }
 '''
 hints = [
-    "background is one `if let ... else if ... else if let ... else` chain. parse_score needs two `let ... else { return None; };` lines.",
-    "Start background with `if let Some(color) = favorite { color.to_string() }`. In parse_score, first `split_once(':')`, then `parse::<u32>()`, each with `let ... else`.",
+    "`background` 要用一串 `if let ... else if ... else if let ... else`。`parse_score` 則需要兩行 `let ... else { return None; };`。",
+    "`background` 從 `if let Some(color) = favorite { color.to_string() }` 開始。`parse_score` 先用 `split_once(':')`，再用 `parse::<u32>()`，兩者都搭配 `let ... else`。",
     "```rust\nlet Some((name, score)) = line.split_once(':') else {\n    return None;\n};\nlet Ok(score) = score.parse::<u32>() else {\n    return None;\n};\nSome((name, score))\n```",
 ]
 
 [[level]]
 id = "10.3"
-title = "Might not match"
+title = "模式可能不符合"
 kind = "fix"
 book = ["19.2"]
 xp = 40
-goal = '''Some lines have no words. Handle that case, so it prints:
+goal = '''有些行沒有單字。請處理這種情況，讓程式印出：
 first word: hello
 no words
 first word: crab'''
 lesson = '''
-Patterns come in two flavors:
+模式分成兩種：
 
-- **Irrefutable**: always matches. `x`, `(a, b)` for a pair, `Point { x, y }`.
-- **Refutable**: might not match. `Some(x)` fails on `None`, `Ok(v)` fails on `Err`.
+- **不可反駁模式**：一定符合。像 `x`、配對的 `(a, b)`、`Point { x, y }`。
+- **可反駁模式**：可能不符合。`Some(x)` 遇到 `None` 時不符合；`Ok(v)` 遇到 `Err` 時不符合。
 
-A plain `let` and a `for` loop need **irrefutable** patterns, because there's nothing sensible to do if the value doesn't fit:
+一般的 `let` 和 `for` 迴圈需要使用**不可反駁模式**，因為模式不符合時沒有合理的處理方式：
 
 ```rust
-let Some(word) = first_word(line);   // error[E0005]: refutable pattern in local binding
+let Some(word) = first_word(line);   // error[E0005]：區域綁定中使用了可反駁模式
 ```
 
-For a refutable pattern, say what happens when it fails, with `if let`, `let...else` or `match`. (The reverse, `if let x = 5`, compiles but warns: that `if` can never be false.)
+可反駁模式不符合時，請使用 `if let`、`let...else` 或 `match` 指定處理方式。（反過來說，`if let x = 5` 雖然能編譯，但會警告：這個 if 永遠不會是 false。）
 '''
 c_compare = '''
-In C, forgetting the `NULL` case compiles and crashes later. Rust refuses to compile a `let` that might not match.
+在 C 中，忘記處理 `NULL` 仍能編譯，之後才崩潰。Rust 則會拒絕編譯可能不符合的 `let`。
 '''
 py_compare = '''
-Like `a, b = [1]` raising `ValueError` at runtime, except Rust catches it at compile time.
+類似 `a, b = [1]` 在執行時引發 `ValueError`，但 Rust 會在編譯時就抓到。
 '''
 check = "output"
 expected_output = '''
@@ -266,47 +266,47 @@ fn main() {
 }
 '''
 hints = [
-    "`Some(word)` doesn't match `None`, so a plain `let` can't use it. What should happen when the line is empty?",
-    "Add an `else` block to that `let`: print `no words`, then `continue` to the next line. (`if let` / `else` works too.)",
+    "`Some(word)` 無法比對 `None`，所以一般的 `let` 不能處理這種情況。遇到空行時應該怎麼辦？",
+    "在 `let` 後面加上 `else` 區塊：印出 `no words`，然後用 `continue` 處理下一行。（也可以用 `if let` 搭配 `else`。）",
     "```rust\nlet Some(word) = first_word(line) else {\n    println!(\"no words\");\n    continue;\n};\n```",
 ]
 
 [[level]]
 id = "10.4"
-title = "The pattern toolkit"
+title = "模式工具箱"
 kind = "fill"
 book = ["19.3"]
 xp = 45
-goal = "Sort rocks by weight and characters by kind, using literals, | and ranges in match arms."
+goal = "使用 match 分支中的常值、`|` 和範圍，依重量分類岩石、依種類分類字元。"
 lesson = '''
-A `match` arm can match much more than one value:
+`match` 分支能比對的不只單一值：
 
 ```rust
 match n {
-    0 => "zero",            // a literal
-    1 | 2 => "a couple",    // | means "or"
-    3..=9 => "a few",       // an inclusive range
-    _ => "lots",            // anything else
+    0 => "zero",            // 常值
+    1 | 2 => "a couple",    // | 表示「或」
+    3..=9 => "a few",       // 包含結尾的範圍
+    _ => "lots",            // 其他所有情況
 }
 ```
 
-Ranges work on numbers and on `char`s:
+範圍可用於數字和 `char`：
 
 ```rust
 match c {
-    'a'..='j' => "early letter",
-    'k'..='z' => "late letter",
-    _ => "something else",
+    'a'..='j' => "較前面的字母",
+    'k'..='z' => "較後面的字母",
+    _ => "其他字元",
 }
 ```
 
-Arms are tried **from top to bottom**, and the first that matches wins. That lets an early, specific arm (like the vowels) take priority over a later, wider one (all letters).
+分支會**由上往下**依序檢查，第一個符合的分支就會執行。因此較前面的特定分支（例如母音）會優先於後面較廣泛的分支（例如所有字母）。
 '''
 c_compare = '''
-Like a `switch` with case ranges and fallthrough lists built in, but no `break` to forget, and the compiler checks that every value is covered.
+類似內建範圍與多值 case 的 `switch`，但不必記得寫 `break`，而且編譯器會確認所有值都已涵蓋。
 '''
 py_compare = '''
-Python's `match` has `|` (`case 1 | 2:`) but no ranges; you'd need a guard like `case n if 3 <= n <= 9:`.
+Python 的 `match` 支援 `|`（`case 1 | 2:`）但不支援範圍；你得加上 `case n if 3 <= n <= 9:` 這類條件。
 '''
 check = "tests"
 starter = '''
@@ -381,46 +381,46 @@ mod tests {
 }
 '''
 hints = [
-    "Both functions are a single `match`. Use `|` to list several values in one arm and `..=` for ranges.",
-    "Put the vowels arm (`'a' | 'e' | 'i' | 'o' | 'u'`) before the `'a'..='z'` arm, since the first matching arm wins.",
+    "兩個函式都只需要一個 `match`。用 `|` 在同一個分支列出多個值，並用 `..=` 表示範圍。",
+    "把母音分支（`'a' | 'e' | 'i' | 'o' | 'u'`）放在 `'a'..='z'` 前面，因為會採用第一個符合的分支。",
     "```rust\nmatch weight {\n    0 => \"dust\",\n    1 | 2 => \"pebble\",\n    3..=9 => \"rock\",\n    _ => \"boulder\",\n}\n```",
 ]
 
 [[level]]
 id = "10.5"
-title = "Taking things apart"
+title = "拆解資料"
 kind = "fill"
 book = ["19.3"]
 xp = 50
-goal = "Use struct, enum and nested patterns to describe points and messages."
+goal = "使用結構體、列舉和巢狀模式來描述點與訊息。"
 lesson = '''
-Patterns can take apart structs and enums, and you can mix in literals:
+模式可以拆解結構體和列舉，也能混用常值：
 
 ```rust
 match p {
     Point { x: 0, y: 0 } => "the origin".to_string(),
-    Point { x, y: 0 } => format!("on the x axis at {x}"),   // `x` is short for `x: x`
+    Point { x, y: 0 } => format!("on the x axis at {x}"),   // `x` 是 `x: x` 的簡寫
     Point { x, y } => format!("at ({x}, {y})"),
 }
 ```
 
-They **nest** as deep as your data goes:
+模式可以依資料結構**任意巢狀**：
 
 ```rust
 match msg {
     Message::Move { x, y } => ...,
-    Message::ChangeColor(Color::Rgb(r, g, b)) => ...,   // an enum inside an enum
+    Message::ChangeColor(Color::Rgb(r, g, b)) => ...,   // 列舉中還有另一個列舉
     ...
 }
 ```
 
-Matching on a reference (`&Point`) works with the same patterns; the names just become references to the parts.
+比對參照（`&Point`）時也能使用相同模式；只是綁定的名稱會成為各部分的參照。
 '''
 c_compare = '''
-Instead of checking a tag field and then reading the right union member by hand, one pattern checks the variant **and** pulls out its fields, safely.
+不必先檢查標記欄位，再手動讀取正確的 union 成員；一個模式就能安全地檢查變體**並**取出欄位。
 '''
 py_compare = '''
-Like Python's class patterns (`case Point(x=0, y=0):`), and they nest the same way.
+類似 Python 的類別模式（`case Point(x=0, y=0):`），也能以相同方式巢狀使用。
 '''
 check = "tests"
 starter = '''
@@ -524,38 +524,38 @@ mod tests {
 }
 '''
 hints = [
-    "locate needs four arms, from most specific (both 0) to most general. describe needs one arm per variant, and two for ChangeColor.",
-    "Mix literals and names in one pattern: `Point { x, y: 0 }` matches only when y is 0 and names x. Nest enums: `Message::ChangeColor(Color::Rgb(r, g, b))`.",
+    "`locate` 需要四個分支，從最明確（兩個值都是 0）排到最一般。`describe` 每種變體各需要一個分支，而 `ChangeColor` 需要兩個。",
+    "可以在同一個模式中混用常值和名稱：`Point { x, y: 0 }` 只會比對 `y` 為 0 的情況，並綁定 `x`。列舉也能巢狀比對：`Message::ChangeColor(Color::Rgb(r, g, b))`。",
     "```rust\nmatch p {\n    Point { x: 0, y: 0 } => \"the origin\".to_string(),\n    Point { x, y: 0 } => format!(\"on the x axis at {x}\"),\n    Point { x: 0, y } => format!(\"on the y axis at {y}\"),\n    Point { x, y } => format!(\"at ({x}, {y})\"),\n}\n```",
 ]
 
 [[level]]
 id = "10.6"
-title = "Ignore it, guard it, name it"
+title = "忽略、加條件、命名"
 kind = "fill"
 book = ["19.3"]
 xp = 50
-goal = "Use .., _, match guards and @ bindings to finish four small functions."
+goal = "使用 `..`、`_`、match guard 和 `@` 綁定，完成四個小函式。"
 lesson = '''
-Four more tools:
+再來介紹四種工具：
 
-**Ignore** parts you don't need: `_` skips one value, `..` skips all the rest.
+**忽略**不需要的部分：`_` 略過一個值，`..` 略過其餘所有值。
 
 ```rust
-let (first, .., last) = (1, 2, 3, 4, 5);   // first = 1, last = 5
+let (first, .., last) = (1, 2, 3, 4, 5);   // first = 1，last = 5
 ```
 
-**Guard** an arm with an extra condition:
+使用額外條件為分支加上**守衛**：
 
 ```rust
 match n {
     Some(x) if x < 0 => "negative",
-    Some(_) => "zero or more",
+    Some(_) => "零或正數",
     None => "nothing",
 }
 ```
 
-**Name** a value while testing it with `@`:
+使用 `@` 檢查值時，同時為它**命名**：
 
 ```rust
 match age {
@@ -564,17 +564,17 @@ match age {
 }
 ```
 
-Without `@` you could test the range *or* keep the value, but not both.
+若不使用 `@`，你只能檢查範圍*或*保留值，無法兩者兼得。
 '''
 c_compare = '''
-A guard is an `if` folded into a `case`. `@` saves you from repeating the value you just switched on.
+守衛是在 case 中加入 if 條件。`@` 可以避免重複寫出剛比對的值。
 '''
 py_compare = '''
-Python has guards (`case x if x < 0:`), and `@` is like `case int(n) as age:` with the `as` name.
+Python 支援守衛（`case x if x < 0:`）；`@` 則類似使用 `as` 命名的 `case int(n) as age:`。
 '''
 check = "tests"
 starter = '''
-/// The first plus the last of five numbers. Use (first, .., last).
+/// 計算五個數字中的第一個與最後一個之和。使用 (first, .., last)。
 fn ends(numbers: (i32, i32, i32, i32, i32)) -> i32 {
     todo!()
 }
@@ -584,13 +584,13 @@ fn ticket(age: u32) -> String {
     todo!()
 }
 
-/// None -> "nothing", negative -> "negative", even -> "even", odd -> "odd". Use guards.
+/// None -> "nothing"、負數 -> "negative"、偶數 -> "even"、奇數 -> "odd"。使用守衛。
 fn parity(n: Option<i32>) -> &'static str {
     todo!()
 }
 
-/// A setting that is already set can't be overwritten: keep it.
-/// Otherwise the new value wins (even if it is None). Use _ in the patterns.
+/// 已設定的選項不可覆寫：保留原值。
+/// 其他情況採用新值（即使它是 None）。在模式中使用 _。
 fn update(current: Option<i32>, new: Option<i32>) -> Option<i32> {
     todo!()
 }
@@ -601,7 +601,7 @@ fn main() {
 }
 '''
 solution = '''
-/// The first plus the last of five numbers. Use (first, .., last).
+/// 計算五個數字中的第一個與最後一個之和。使用 (first, .., last)。
 fn ends(numbers: (i32, i32, i32, i32, i32)) -> i32 {
     let (first, .., last) = numbers;
     first + last
@@ -616,7 +616,7 @@ fn ticket(age: u32) -> String {
     }
 }
 
-/// None -> "nothing", negative -> "negative", even -> "even", odd -> "odd". Use guards.
+/// None -> "nothing"、負數 -> "negative"、偶數 -> "even"、奇數 -> "odd"。使用守衛。
 fn parity(n: Option<i32>) -> &'static str {
     match n {
         None => "nothing",
@@ -626,8 +626,8 @@ fn parity(n: Option<i32>) -> &'static str {
     }
 }
 
-/// A setting that is already set can't be overwritten: keep it.
-/// Otherwise the new value wins (even if it is None). Use _ in the patterns.
+/// 已設定的選項不可覆寫：保留原值。
+/// 其他情況採用新值（即使它是 None）。在模式中使用 _。
 fn update(current: Option<i32>, new: Option<i32>) -> Option<i32> {
     match (current, new) {
         (Some(_), Some(_)) => current,
@@ -678,34 +678,34 @@ mod tests {
 }
 '''
 hints = [
-    "ends is a one-line `let` pattern. ticket and parity are matches. update matches on the pair `(current, new)`.",
-    "ticket: `kid @ 0..=12 => ...`. parity: `Some(x) if x < 0 => ...`. update: `(Some(_), Some(_)) => current` and `_ => new`.",
+    "`ends` 是單行的 `let` 模式。`ticket` 和 `parity` 使用 `match`。`update` 則比對 `(current, new)` 這組配對。",
+    "`ticket`：`kid @ 0..=12 => ...`。`parity`：`Some(x) if x < 0 => ...`。`update`：使用 `(Some(_), Some(_)) => current`，其他情況用 `_ => new`。",
     "```rust\nlet (first, .., last) = numbers;\nfirst + last\n```\n```rust\nmatch (current, new) {\n    (Some(_), Some(_)) => current,\n    _ => new,\n}\n```",
 ]
 
 [[level]]
 id = "10.7"
-title = "Who does the guard guard?"
+title = "守衛檢查哪些模式？"
 kind = "predict"
 book = ["19.3"]
 xp = 25
-goal = "What does this print?"
+goal = "這段程式會印出什麼？"
 lesson = '''
-When an arm has several patterns joined with `|`, a guard applies to **all** of them, not just the last:
+一個分支以 `|` 結合多個模式時，守衛會套用到**所有**模式，而不只最後一個：
 
 ```rust
 4 | 5 | 6 if y => ...
-// means  (4 | 5 | 6) if y
-// not    4 | 5 | (6 if y)
+// 表示 (4 | 5 | 6) if y
+// 不是 4 | 5 | (6 if y)
 ```
 
-And `n @ 5..=7` matches any value from 5 to 7 and names it `n`.
+而 `n @ 5..=7` 會比對 5 到 7 的任一值，並將它命名為 `n`。
 '''
 c_compare = '''
-Think of it as `case 4: case 5: case 6: if (y) { ... }`, where the `if` covers all three cases.
+可以想成 `case 4: case 5: case 6: if (y) { ... }`，其中 if 條件涵蓋全部三種情況。
 '''
 py_compare = '''
-The same rule as Python's `case 4 | 5 | 6 if y:`: the guard checks the whole pattern.
+規則和 Python 的 `case 4 | 5 | 6 if y:` 相同：守衛會檢查整個模式。
 '''
 starter = '''
 fn main() {
@@ -722,7 +722,7 @@ fn main() {
 choices = [
     "4: yes / 5: yes / 6: in range / 7: in range",
     "4: no / 5: in range / 6: in range / 7: in range",
-    "It doesn't compile: 5 and 6 are matched by two arms",
+    "無法編譯：5 和 6 同時符合兩個分支",
     "4: no / 5: no / 6: no / 7: in range",
 ]
 answer = 1
@@ -732,20 +732,19 @@ expected_output = '''
 6: in range
 7: in range
 '''
-explanation = "The guard `if y` covers all of `4 | 5 | 6`, and `y` is false, so the first arm never runs. 5, 6 and 7 fall into `n @ 5..=7`; 4 falls through to `_`. Overlapping arms are fine: the first one that matches wins."
+explanation = "守衛 `if y` 套用到 `4 | 5 | 6`，而 `y` 是 false，因此第一個分支不會執行。5、6、7 會符合 `n @ 5..=7`；4 則落入 `_`。分支範圍重疊沒有問題，第一個符合的分支會優先執行。"
 
 [[level]]
 id = "10.8"
-title = "BOSS: The command parser"
+title = "頭目戰：指令解析器"
 kind = "boss"
 book = ["19.1", "19.3"]
 xp = 120
-goal = '''Write parse: turn typed adventure commands like "go north" or "take 3 coins"
-into Command values, with a ParseError for anything that doesn't fit.'''
+goal = '''撰寫 `parse`：將「go north」或「take 3 coins」這類冒險指令轉成 `Command` 值，不符合格式時回傳 `ParseError`。'''
 lesson = '''
-**Boss fight!** A text adventure reads lines like these:
+**頭目戰！**文字冒險遊戲會讀取以下指令：
 
-| Typed | Result |
+| 輸入 | 結果 |
 |---|---|
 | `look` or `l` | `Command::Look` |
 | `go north` (or `n`, `south`/`s`, `east`/`e`, `west`/`w`) | `Command::Go(Dir::North)` |
@@ -754,27 +753,27 @@ lesson = '''
 | `drop lamp` | `Command::Drop("lamp")` |
 | `quit` or `q` | `Command::Quit` |
 
-Errors: an empty line is `Empty`; a bad direction is `BadDirection(word)`; a count that isn't a number of at least 1 is `BadCount(word)`; anything else is `UnknownVerb(first word)`. Upper and lower case both work.
+錯誤處理：空行是 `Empty`；方向無效是 `BadDirection(word)`；數量不是大於等於 1 的數字是 `BadCount(word)`；其他情況是 `UnknownVerb(第一個單字)`。大小寫都可以。
 
-The new trick: **slice patterns**. Split the line into a `Vec<&str>` and match its shape:
+新技巧：**切片模式**。先將一行拆成 `Vec<&str>`，再比對它的形狀：
 
 ```rust
 let words: Vec<&str> = line.split_whitespace().collect();
 match words.as_slice() {
-    [] => ...,                       // no words
-    ["look" | "l"] => ...,           // exactly one word
-    ["go", dir] => ...,              // "go" plus one more word, named dir
-    [verb, ..] => ...,               // anything else; verb is the first word
+    [] => ...,                       // 沒有單字
+    ["look" | "l"] => ...,           // 剛好一個單字
+    ["go", dir] => ...,              // 「go」後面再加一個命名為 dir 的單字
+    [verb, ..] => ...,               // 其他所有情況; verb 是第一個單字
 }
 ```
 
-To check a count, match the parse result: `Ok(n @ 1..)` matches any number from 1 up.
+要檢查數量，可以比對解析結果：`Ok(n @ 1..)` 會符合大於等於 1 的數字。
 '''
 c_compare = '''
-In C this is a pile of `strtok` and `strcmp` calls. Here the shape of the command *is* the code.
+在 C 中，這需要一連串 `strtok` 和 `strcmp` 呼叫。這裡指令的格式*本身就是程式邏輯*。
 '''
 py_compare = '''
-Python 3.10 can do this too: `match line.split(): case ["go", direction]: ...`. Rust also checks that you handled every shape.
+Python 3.10 也能做到：`match line.split(): case ["go", direction]: ...`。Rust 還會檢查是否處理了每種格式。
 '''
 check = "tests"
 starter = '''
@@ -925,7 +924,7 @@ mod tests {
 }
 '''
 hints = [
-    "Lowercase the line, split it into `words: Vec<&str>`, then `match words.as_slice()` with one arm per command shape. Finish with `[verb, ..]` for everything else.",
-    "`[\"go\", dir] => Ok(Command::Go(direction(dir)?))` uses `?` to pass a BadDirection up. For `[\"take\", count, item]`, match `count.parse::<u32>()` with an `Ok(n @ 1..)` arm and a `_` arm.",
+    "先將整行轉成小寫，再拆成 `words: Vec<&str>`，接著對 `words.as_slice()` 使用 `match`，每種指令格式各寫一個分支。最後用 `[verb, ..]` 處理其他輸入。",
+    "`[\"go\", dir] => Ok(Command::Go(direction(dir)?))` 會用 `?` 將 BadDirection 往上傳。對 `[\"take\", count, item]`，使用 `match count.parse::<u32>()`，並加入 `Ok(n @ 1..)` 和 `_` 分支。",
     "```rust\nlet line = line.to_lowercase();\nlet words: Vec<&str> = line.split_whitespace().collect();\nmatch words.as_slice() {\n    [] => Err(ParseError::Empty),\n    [\"look\" | \"l\"] => Ok(Command::Look),\n    [\"go\", dir] => Ok(Command::Go(direction(dir)?)),\n    [\"take\", item] => Ok(Command::Take { item: item.to_string(), count: 1 }),\n    [\"take\", count, item] => match count.parse::<u32>() {\n        Ok(n @ 1..) => Ok(Command::Take { item: item.to_string(), count: n }),\n        _ => Err(ParseError::BadCount(count.to_string())),\n    },\n    [\"drop\", item] => Ok(Command::Drop(item.to_string())),\n    [\"quit\" | \"q\"] => Ok(Command::Quit),\n    [verb, ..] => Err(ParseError::UnknownVerb(verb.to_string())),\n}\n```",
 ]

@@ -1,16 +1,16 @@
 id = 5
-name = "Struct Smithy"
-blurb = "Forge your own types."
+name = "結構體鍛造坊"
+blurb = "打造自己的型別。"
 
 [[level]]
 id = "5.1"
-title = "Forging your first struct"
+title = "打造第一個結構體"
 kind = "fill"
 book = ["5.1"]
 xp = 40
-goal = "Define the Crab struct so the program prints: Ferris has 8 legs"
+goal = "定義 `Crab` 結構體，讓程式印出：Ferris has 8 legs"
 lesson = '''
-A **struct** groups related values under one name:
+**結構體（struct）**會將相關的值組合在同一個名稱下：
 
 ```rust
 struct Player {
@@ -19,23 +19,23 @@ struct Player {
 }
 
 let p = Player { name: String::from("Ana"), score: 7 };
-println!("{}", p.name);   // fields are read with a dot
+println!("{}", p.name);   // 使用點號讀取欄位
 ```
 
-Each field has a name and a type. Struct names use `CamelCase`.
+每個欄位都有名稱和型別。結構體名稱使用 `CamelCase`。
 '''
 c_compare = '''
-Almost the same as a C `struct`, but no `typedef` dance, and the struct **owns** its `String` (it frees it when the struct is dropped).
+幾乎和 C 的 `struct` 相同，但不必另外使用 `typedef`。結構體會**擁有**其中的 `String`（結構體丟棄時會一併釋放）。
 '''
 py_compare = '''
-Like a Python `@dataclass`, but the field types are checked at compile time.
+類似 Python 的 `@dataclass`，但欄位型別會在編譯時檢查。
 '''
 check = "output"
 expected_output = "Ferris has 8 legs"
 starter = '''
-// TODO: define a struct called Crab with two fields:
-//   name: String
-//   legs: u32
+// TODO：定義名為 Crab 的結構體，包含兩個欄位：
+//   name：String
+//   legs：u32
 
 fn main() {
     let ferris = Crab { name: String::from("Ferris"), legs: 8 };
@@ -54,35 +54,35 @@ fn main() {
 }
 '''
 hints = [
-    "The compiler can't find a type called `Crab`. You need to define it above main.",
-    "Write `struct Crab { ... }` with each field as `name: Type,`.",
+    "編譯器找不到名為 `Crab` 的型別。你需要在 `main` 上方定義它。",
+    "寫出 `struct Crab { ... }`，每個欄位的格式都是 `name: Type,`。",
     "```rust\nstruct Crab {\n    name: String,\n    legs: u32,\n}\n```",
 ]
 
 [[level]]
 id = "5.2"
-title = "Copying the blueprint"
+title = "複製藍圖"
 kind = "predict"
 book = ["5.1"]
 xp = 25
-goal = "Does this compile? If so, what does it print?"
+goal = "這段程式能編譯嗎？如果可以，會印出什麼？"
 lesson = '''
-Two shortcuts for building structs:
+建立結構體時有兩種簡寫方式：
 
-- **Field init shorthand**: if a variable has the same name as a field, write it once: `Hero { name, level }`.
-- **Struct update syntax**: copy the remaining fields from another struct with `..other`.
+- **欄位初始化簡寫**：變數名稱和欄位相同時，只要寫一次：`Hero { name, level }`。
+- **結構體更新語法**：使用 `..other` 從另一個結構體帶入其餘欄位。
 
 ```rust
-let b = Hero { level: 2, ..a };   // everything else comes from a
+let b = Hero { level: 2, ..a };   // 其他欄位沿用 a 的值
 ```
 
-Careful: `..a` **moves** fields that aren't `Copy` (like a `String`) out of `a`.
+注意：`..a` 會將未實作 `Copy` 的欄位（例如 `String`）從 `a` **移動**出去。
 '''
 c_compare = '''
-C would copy the whole struct with `=`, including the pointer to the name, and then both structs would "own" it. Rust moves the `String` instead.
+在 C 中，使用 `=` 會複製整個結構體，包括指向名稱的指標，導致兩個結構體都「擁有」它。Rust 則會移動 `String`。
 '''
 py_compare = '''
-Similar to `dataclasses.replace(a, level=2)`, except here the name moves rather than being shared.
+類似 `dataclasses.replace(a, level=2)`，但這裡的名稱會被移動，而不是共用。
 '''
 starter = '''
 struct Hero {
@@ -99,7 +99,7 @@ fn main() {
 '''
 choices = [
     "Ferris 2 / 1",
-    "It doesn't compile: a was moved into b",
+    "無法編譯：a 已移動到 b",
     "Ferris 1 / 1",
     "Ferris 2 / 2",
 ]
@@ -108,17 +108,17 @@ expected_output = '''
 Ferris 2
 1
 '''
-explanation = "`..a` only moves the fields it uses: `name` moves into `b`, but `a.level` is a `u32` (Copy) and `b` set its own level anyway. `a.level` is still usable. Using `a.name` (or all of `a`) would fail."
+explanation = "`..a` 只會移動實際使用到的欄位：`name` 移入 `b`，但 `a.level` 是實作 `Copy` 的 `u32`，而且 `b` 已設定自己的 level，因此 `a.level` 仍可使用。若使用 `a.name`（或整個 `a`）就會失敗。"
 
 [[level]]
 id = "5.3"
-title = "Tiny tuple structs"
+title = "小巧的元組結構體"
 kind = "fill"
 book = ["5.1"]
 xp = 40
-goal = "Define Feet, then write to_feet (1 meter = 3.28084 feet)."
+goal = "定義 `Feet`，再撰寫 `to_feet`（1 公尺 = 3.28084 英尺）。"
 lesson = '''
-A **tuple struct** is a named tuple. Its fields have positions instead of names:
+**元組結構體**是有名稱的元組。欄位以位置區分，而不是使用名稱：
 
 ```rust
 struct Meters(f64);
@@ -126,20 +126,20 @@ let m = Meters(5.0);
 println!("{}", m.0);
 ```
 
-Why bother? `Meters` and `Feet` are **different types**, so you can't accidentally mix them up, even though both hold an `f64`.
+為什麼要這麼做？`Meters` 和 `Feet` 是**不同型別**，因此即使兩者都存放 `f64`，也不會不小心混用。
 
-There are also **unit structs** with no fields at all: `struct Marker;`.
+還有完全沒有欄位的**單元結構體**：`struct Marker;`。
 '''
 c_compare = '''
-Like `typedef struct { double v; } Meters;`, but zero-cost and impossible to mix up with `Feet`.
+類似 `typedef struct { double v; } Meters;`，但不會增加執行成本，也不可能和 `Feet` 混淆。
 '''
 py_compare = '''
-Python's `typing.NewType` is only a hint. In Rust, passing `Feet` where `Meters` is expected is a compile error.
+Python 的 `typing.NewType` 只是提示；在 Rust 中，需要 `Meters` 卻傳入 `Feet` 會造成編譯錯誤。
 '''
 check = "tests"
 starter = '''
 struct Meters(f64);
-// TODO: define a tuple struct Feet that holds an f64
+// TODO：定義存放 f64 的元組結構體 Feet
 
 fn to_feet(m: Meters) -> Feet {
     todo!()
@@ -180,32 +180,32 @@ mod tests {
 }
 '''
 hints = [
-    "First define `Feet` the same way `Meters` is defined.",
-    "Inside to_feet, read the number with `m.0`, multiply it, and wrap the result in `Feet(...)`.",
-    "`struct Feet(f64);` and the body `Feet(m.0 * 3.28084)`.",
+    "先比照 `Meters` 的寫法定義 `Feet`。",
+    "在 `to_feet` 裡用 `m.0` 取出數值、進行乘法，再用 `Feet(...)` 包住結果。",
+    "宣告 `struct Feet(f64);`，函式本體回傳 `Feet(m.0 * 3.28084)`。",
 ]
 
 [[level]]
 id = "5.4"
-title = "Who owns the pieces?"
+title = "誰擁有這些資料？"
 kind = "fix"
 book = ["5.1"]
 xp = 40
-goal = "Make it print: Corro is 3"
+goal = "修正程式，讓它印出：Corro is 3"
 lesson = '''
-Most structs **own** their data, so they use `String`, not `&str`:
+大多數結構體會**擁有**自己的資料，因此使用 `String` 而非 `&str`：
 
 ```rust
-struct Pet { name: String }   // the Pet owns its name
+struct Pet { name: String }   // Pet 擁有自己的名稱
 ```
 
-A struct *can* hold a borrowed `&str`, but then Rust needs to know how long that borrow lasts. That needs **lifetimes**, which you'll meet in the Lifetime Labyrinth. For now: **owned fields keep things simple**.
+結構體*也可以*存放借用的 `&str`，但 Rust 必須知道借用會持續多久。這需要使用**生命週期**，你會在生命週期迷宮學到。目前先記得：**擁有資料的欄位比較簡單**。
 '''
 c_compare = '''
-A `char *` field in C leaves you wondering "who frees this?". In Rust, `String` means "the struct frees it" and `&str` means "someone else owns it".
+C 的 `char *` 欄位會讓人疑惑「到底誰負責釋放？」在 Rust 中，`String` 表示「由結構體釋放」，而 `&str` 表示「由其他人擁有」。
 '''
 py_compare = '''
-In Python this question never comes up. In Rust it's part of the type.
+在 Python 中不必思考這個問題；在 Rust 中，所有權會反映在型別上。
 '''
 check = "output"
 expected_output = "Corro is 3"
@@ -232,39 +232,39 @@ fn main() {
 }
 '''
 hints = [
-    "The compiler wants a lifetime for the `&str` field. Is there a simpler type for a name the Pet owns?",
-    "Make the struct own its name.",
-    "Change the field to `name: String,`.",
+    "編譯器要求 `&str` 欄位標註生命週期。若名稱由 Pet 自己擁有，有沒有更簡單的型別？",
+    "讓這個結構體擁有自己的名稱。",
+    "把欄位改成 `name: String,`。",
 ]
 
 [[level]]
 id = "5.5"
-title = "Measuring rectangles"
+title = "測量矩形"
 kind = "fill"
 book = ["5.2"]
 xp = 40
-goal = '''Make it print:
+goal = '''修正程式，讓它印出：
 Rectangle { width: 30, height: 50 }
 Area: 1500'''
 lesson = '''
-To print a struct with `{:?}`, it needs the **Debug** ability. Ask the compiler to write it for you:
+若要用 `{:?}` 印出結構體，它必須具備 **Debug** 功能。可以請編譯器替你產生：
 
 ```rust
 #[derive(Debug)]
 struct Rectangle { width: u32, height: u32 }
 ```
 
-`#[derive(...)]` is an **attribute** that generates code. (`{:#?}` pretty-prints over several lines.)
+`#[derive(...)]` 是會產生程式碼的**屬性**。（`{:#?}` 會以多行格式漂亮地印出內容。）
 
-There's also **`dbg!(value)`**: it prints the value with the file and line number to stderr, then hands the value back. It's great for quick debugging.
+此外還有 **`dbg!(value)`**：它會將值、檔案名稱和行號印到標準錯誤，然後再把值傳回。這很適合快速除錯。
 
-Functions that only read a struct should **borrow** it: `fn area(rect: &Rectangle)`.
+只讀取結構體的函式應該**借用**它：`fn area(rect: &Rectangle)`。
 '''
 c_compare = '''
-C has no automatic printing of structs. `#[derive(Debug)]` writes the printing code for you.
+C 不會自動印出結構體；`#[derive(Debug)]` 會替你產生列印程式碼。
 '''
 py_compare = '''
-Like the automatic `__repr__` a `@dataclass` gives you.
+類似 `@dataclass` 自動提供的 `__repr__`。
 '''
 check = "output"
 expected_output = '''
@@ -305,42 +305,42 @@ fn main() {
 }
 '''
 hints = [
-    "Two things to do: let the struct be printed with {:?}, and fill in area.",
-    "Put `#[derive(Debug)]` on the line above `struct Rectangle`, and multiply the two fields in area.",
-    "`#[derive(Debug)]` above the struct, and `rect.width * rect.height` as area's body.",
+    "要完成兩件事：讓結構體能用 `{:?}` 印出，並補上 `area` 函式。",
+    "在 `struct Rectangle` 上方加上 `#[derive(Debug)]`，並在 `area` 裡將兩個欄位相乘。",
+    "在結構體上方加上 `#[derive(Debug)]`，並將 `rect.width * rect.height` 作為 `area` 函式本體。",
 ]
 
 [[level]]
 id = "5.6"
-title = "Teaching your struct tricks"
+title = "教結構體新把戲"
 kind = "fill"
 book = ["5.3"]
 xp = 45
-goal = "Write the three methods: area, can_hold and grow."
+goal = "撰寫三個方法：`area`、`can_hold` 和 `grow`。"
 lesson = '''
-**Methods** are functions attached to a type, written in an `impl` block:
+**方法**是附加在型別上的函式，寫在 `impl` 區塊中：
 
 ```rust
 impl Rectangle {
-    fn area(&self) -> u32 {          // borrows the rectangle
+    fn area(&self) -> u32 {          // 借用矩形
         self.width * self.height
     }
-    fn widen(&mut self, by: u32) {   // changes it
+    fn widen(&mut self, by: u32) {   // 修改矩形
         self.width += by;
     }
 }
 
-rect.area();      // Rust adds the & for you
-rect.widen(5);    // ...or the &mut
+rect.area();      // Rust 會自動幫你加上 &
+rect.widen(5);    // ⋯⋯或 &mut
 ```
 
-`&self` reads, `&mut self` changes, and plain `self` takes ownership (rare).
+`&self` 用於讀取，`&mut self` 用於修改，而單獨的 `self` 會取得所有權（較少見）。
 '''
 c_compare = '''
-In C you'd write `rect_area(&rect)`. Methods are the same idea, with nicer syntax and automatic `&`.
+在 C 中會寫成 `rect_area(&rect)`。方法的概念相同，但語法更簡潔，而且會自動加上 `&`。
 '''
 py_compare = '''
-Just like Python methods, except `self` is written as `&self` or `&mut self` to say how it's borrowed.
+和 Python 方法類似，但 Rust 會寫成 `&self` 或 `&mut self`，明確指出如何借用。
 '''
 check = "tests"
 starter = '''
@@ -354,12 +354,12 @@ impl Rectangle {
         todo!()
     }
 
-    // true if `other` fits completely inside self
+    // 若 other 完全位於 self 內則回傳 true
     fn can_hold(&self, other: &Rectangle) -> bool {
         todo!()
     }
 
-    // make both sides bigger by `by`
+    // 將寬和高都增加 by
     fn grow(&mut self, by: u32) {
         todo!()
     }
@@ -382,12 +382,12 @@ impl Rectangle {
         self.width * self.height
     }
 
-    // true if `other` fits completely inside self
+    // 若 other 完全位於 self 內則回傳 true
     fn can_hold(&self, other: &Rectangle) -> bool {
         self.width > other.width && self.height > other.height
     }
 
-    // make both sides bigger by `by`
+    // 將寬和高都增加 by
     fn grow(&mut self, by: u32) {
         self.width += by;
         self.height += by;
@@ -427,20 +427,20 @@ mod tests {
 }
 '''
 hints = [
-    "Inside a method, the rectangle is `self`, so its fields are `self.width` and `self.height`.",
-    "can_hold compares both sides of self with both sides of other. grow adds `by` to both fields.",
-    "area: `self.width * self.height`. can_hold: `self.width > other.width && self.height > other.height`. grow: `self.width += by; self.height += by;`",
+    "在方法中，這個矩形就是 `self`，所以欄位是 `self.width` 和 `self.height`。",
+    "`can_hold` 要比較 `self` 和 `other` 的寬與高。`grow` 則把 `by` 加到兩個欄位。",
+    "`area`：`self.width * self.height`。`can_hold`：`self.width > other.width && self.height > other.height`。`grow`：`self.width += by; self.height += by;`。",
 ]
 
 [[level]]
 id = "5.7"
-title = "The factory: ::new"
+title = "工廠函式：::new"
 kind = "fill"
 book = ["5.3"]
 xp = 40
-goal = "Write the associated functions Rectangle::new and Rectangle::square."
+goal = "撰寫關聯函式 `Rectangle::new` 和 `Rectangle::square`。"
 lesson = '''
-Functions in an `impl` block that **don't** take `self` are **associated functions**. You call them with `::`:
+`impl` 區塊中**不會**接收 `self` 的函式稱為**關聯函式**。使用 `::` 呼叫：
 
 ```rust
 impl Rectangle {
@@ -452,13 +452,13 @@ impl Rectangle {
 let r = Rectangle::new(3, 4);
 ```
 
-`Self` is a nickname for the type you're implementing. `new` is just a convention, not a keyword: Rust has no special constructors.
+`Self` 是目前實作型別的簡稱。`new` 只是慣例，不是關鍵字；Rust 沒有特殊的建構子。
 '''
 c_compare = '''
-Like a C function `Rectangle rect_new(int w, int h)` that returns a filled-in struct.
+類似 C 函式 `Rectangle rect_new(int w, int h)`，回傳已填入欄位的結構體。
 '''
 py_compare = '''
-Like a `@classmethod` or `__init__`, but it's an ordinary function that returns the value.
+類似 `@classmethod` 或 `__init__`，但它是一般的函式，會回傳建立好的值。
 '''
 check = "tests"
 starter = '''
@@ -520,36 +520,36 @@ mod tests {
 }
 '''
 hints = [
-    "Each function builds and returns a new Rectangle.",
-    "In new, use field init shorthand: `Self { width, height }`. square can call `Self::new`.",
-    "`Self { width, height }` in new, and `Self::new(size, size)` in square.",
+    "每個函式都會建立並回傳新的 `Rectangle`。",
+    "在 `new` 中使用欄位簡寫 `Self { width, height }`。`square` 可以呼叫 `Self::new`。",
+    "在 `new` 中使用 `Self { width, height }`，並在 `square` 中使用 `Self::new(size, size)`。",
 ]
 
 [[level]]
 id = "5.8"
-title = "BOSS: The character sheet"
+title = "頭目戰：角色能力表"
 kind = "boss"
 book = ["5.1", "5.2", "5.3"]
 xp = 100
-goal = '''Build a Hero with methods:
-new, take_damage, heal, level_up, is_alive and describe.'''
+goal = '''使用以下方法建立 `Hero`：
+`new`、`take_damage`、`heal`、`level_up`、`is_alive` 和 `describe`。'''
 lesson = '''
-**Boss fight!** Forge a hero:
+**頭目戰！**打造一位英雄：
 
-- `Hero::new(name)` starts at level 1 with 10 out of 10 HP.
-- `take_damage(n)` lowers HP, but never below 0. Use `self.hp.saturating_sub(n)`.
-- `heal(n)` raises HP, but never above `max_hp`. Use `.min(...)`.
-- `level_up()`: level + 1, max_hp + 5, and HP refills to full.
-- `is_alive()`: HP above 0.
-- `describe()` returns text like `Ferris (lvl 2) 15/15 HP` (use `format!`).
+- `Hero::new(name)` 建立等級 1、生命值為 10／10 的英雄。
+- `take_damage(n)` 扣除生命值，但不能低於 0。使用 `self.hp.saturating_sub(n)`。
+- `heal(n)` 恢復生命值，但不能超過 `max_hp`。使用 `.min(...)`。
+- `level_up()`：等級加 1、`max_hp` 加 5，生命值補滿。
+- `is_alive()`：生命值大於 0 時回傳存活。
+- `describe()` 回傳類似 `Ferris (lvl 2) 15/15 HP` 的文字（使用 `format!`）。
 
-Pick `&self` or `&mut self` for each method.
+請為每個方法選擇 `&self` 或 `&mut self`。
 '''
 c_compare = '''
-`saturating_sub` stops at 0 instead of wrapping around to 4 billion like C's unsigned subtraction.
+`saturating_sub` 會在 0 停住，不會像 C 的無號整數減法那樣繞回約 40 億。
 '''
 py_compare = '''
-A Python class with methods, but each method's `self` says whether it changes the hero.
+類似含有方法的 Python 類別，但 Rust 方法的 `self` 會明確指出是否會修改英雄。
 '''
 check = "tests"
 starter = '''
@@ -664,7 +664,7 @@ mod tests {
 }
 '''
 hints = [
-    "Do `new` and `describe` first, then the methods that change the hero (`&mut self`).",
-    "new: `Self { name: name.to_string(), level: 1, hp: 10, max_hp: 10 }`. take_damage: `saturating_sub`. heal: add, then `.min(self.max_hp)`.",
+    "先完成 `new` 和 `describe`，再處理會修改英雄狀態的方法（使用 `&mut self`）。",
+    "`new`：回傳 `Self { name: name.to_string(), level: 1, hp: 10, max_hp: 10 }`。`take_damage`：使用 `saturating_sub`。`heal`：先相加，再用 `.min(self.max_hp)` 限制上限。",
     "```rust\nfn take_damage(&mut self, amount: u32) { self.hp = self.hp.saturating_sub(amount); }\nfn heal(&mut self, amount: u32) { self.hp = (self.hp + amount).min(self.max_hp); }\nfn level_up(&mut self) { self.level += 1; self.max_hp += 5; self.hp = self.max_hp; }\nfn is_alive(&self) -> bool { self.hp > 0 }\nfn describe(&self) -> String { format!(\"{} (lvl {}) {}/{} HP\", self.name, self.level, self.hp, self.max_hp) }\n```",
 ]

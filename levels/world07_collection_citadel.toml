@@ -1,43 +1,43 @@
 id = 7
-name = "Collection Citadel"
-blurb = "Keep lots of things: lists, text and dictionaries."
+name = "集合堡壘"
+blurb = "收納各種資料：清單、文字與字典。"
 
 [[level]]
 id = "7.1"
-title = "A growing backpack: Vec"
+title = "越裝越大的背包：Vec"
 kind = "fill"
 book = ["8.1"]
 xp = 40
-goal = "Write backpack (make a Vec of three items) and safe_get (read an item without crashing)."
+goal = "撰寫 `backpack`（建立含三個項目的 Vec）和 `safe_get`（讀取項目且不會崩潰）。"
 lesson = '''
-A **`Vec<T>`** is a list that can grow:
+**`Vec<T>`** 是可以擴充的清單：
 
 ```rust
 let mut v: Vec<i32> = Vec::new();
 v.push(5);
 v.push(6);
-let w = vec![1, 2, 3];    // the vec! macro builds one with items
+let w = vec![1, 2, 3];    // vec! 巨集可直接建立含有項目的 Vec
 ```
 
-Two ways to read item `i`:
-- `v[i]` gives the item, but **crashes** if `i` is out of range
-- `v.get(i)` gives an **`Option<&T>`**: `Some(&item)` or `None`
+讀取第 `i` 個項目的兩種方式：
+- `v[i]` 會取得項目，但索引超出範圍時會**崩潰**
+- `v.get(i)` 會回傳 **`Option<&T>`**：`Some(&item)` 或 `None`
 '''
 c_compare = '''
-A `Vec` is a growable array: pointer, length and capacity, like the dynamic array you'd write with `realloc`. It frees itself.
+`Vec` 是可擴充的陣列，包含指標、長度和容量，類似使用 `realloc` 撰寫的動態陣列。它會自行釋放記憶體。
 '''
 py_compare = '''
-Like a Python `list`, but every item has the same type, and `.get(i)` lets you avoid `IndexError`.
+類似 Python 的 `list`，但所有項目型別都相同；使用 `.get(i)` 可以避免 `IndexError`。
 '''
 check = "tests"
 starter = '''
 fn backpack() -> Vec<String> {
-    // TODO: make an empty Vec, push "rope", "lamp" and "map" (in that order), return it
+    // TODO：建立空 Vec，依序推入 "rope"、"lamp" 和 "map"，再回傳 Vec
     todo!()
 }
 
 fn safe_get(items: &Vec<String>, i: usize) -> String {
-    // TODO: use items.get(i): return a copy of the item, or "nothing" if i is out of range
+    // TODO：使用 items.get(i)：回傳項目副本；索引超出範圍時回傳 "nothing"
     todo!()
 }
 
@@ -87,30 +87,30 @@ mod tests {
 }
 '''
 hints = [
-    "backpack: start with `let mut bag = Vec::new();`. safe_get: `items.get(i)` is an Option, so match on it.",
-    "Push each item with `bag.push(String::from(\"rope\"))`. In safe_get, `Some(item) => item.clone()` and `None => String::from(\"nothing\")`.",
+    "`backpack`：先寫 `let mut bag = Vec::new();`。`safe_get`：`items.get(i)` 會回傳 `Option`，因此要用 `match` 處理。",
+    "用 `bag.push(String::from(\"rope\"))` 加入每個物品。`safe_get` 中，`Some(item)` 回傳 `item.clone()`，`None` 回傳 `String::from(\"nothing\")`。",
     "```rust\nfn safe_get(items: &Vec<String>, i: usize) -> String {\n    match items.get(i) {\n        Some(item) => item.clone(),\n        None => String::from(\"nothing\"),\n    }\n}\n```",
 ]
 
 [[level]]
 id = "7.2"
-title = "Don't hold it while it moves"
+title = "它移動時別抓著它"
 kind = "fix"
 book = ["8.1"]
 xp = 40
-goal = "Make it print: first: 1, len: 4"
+goal = "修正程式，讓它印出：first: 1, len: 4"
 lesson = '''
-Why can't you keep a reference into a Vec while pushing?
+為什麼推入項目時不能同時持有指向 Vec 內部的參照？
 
-When a Vec runs out of room, `push` moves **all** the items to a bigger block of memory. Any reference into the old block would point at freed memory. So while `&v[0]` is in use, `v` can't be changed.
+Vec 空間不足時，`push` 會將**所有**項目移到更大的記憶體區塊。指向舊區塊的參照就會指向已釋放的記憶體。因此只要還在使用 `&v[0]`，就不能修改 `v`。
 
-The fix is usually to **copy** the value out (numbers are `Copy`), clone it, or finish using the reference before pushing.
+通常可以先將值**複製**出來（數字實作了 `Copy`）、呼叫 `clone`，或先用完參照再推入新項目。
 '''
 c_compare = '''
-This is exactly the C bug where you keep `int *p = &arr[0]`, call `realloc`, and then `p` dangles. Rust stops it at compile time.
+這正是 C 中保留 `int *p = &arr[0]`、呼叫 `realloc` 後讓 `p` 懸空的錯誤。Rust 會在編譯時阻止它。
 '''
 py_compare = '''
-Python lists also reallocate, but Python references point to objects, not into the list's memory, so it can't break there.
+Python 清單也會重新配置記憶體，但 Python 參照指向物件，而不是清單中的記憶體位置，因此不會發生這種問題。
 '''
 check = "output"
 expected_output = "first: 1, len: 4"
@@ -131,38 +131,38 @@ fn main() {
 }
 '''
 hints = [
-    "`first` borrows from `v`, and it's still in use after the push.",
-    "A number is cheap to copy. Do you need a reference at all?",
-    "`let first = v[0];` copies the 1 out, so `v` is free to change.",
+    "`first` 借用了 `v` 的內容，而且在 `push` 之後還會繼續使用。",
+    "複製一個數字很方便。這裡真的需要參照嗎？",
+    "`let first = v[0];` 會複製出 1，因此 `v` 就能繼續修改。",
 ]
 
 [[level]]
 id = "7.3"
-title = "Walking the shelves"
+title = "沿著架子逐項走訪"
 kind = "fill"
 book = ["8.1"]
 xp = 45
-goal = "Write double_all (change every item) and total (add them up)."
+goal = "撰寫 `double_all`（修改每個項目）和 `total`（計算總和）。"
 lesson = '''
-Looping over a Vec:
+走訪 Vec：
 
 ```rust
-for x in &v {        // read each item (x is &i32)
+for x in &v {        // 讀取每個項目（x 是 &i32）
     println!("{x}");
 }
 
-for x in &mut v {    // change each item (x is &mut i32)
-    *x += 1;         // * follows the reference to the item
+for x in &mut v {    // 修改每個項目（x 是 &mut i32）
+    *x += 1;         // * 會透過參照取得項目
 }
 ```
 
-A Vec can only hold one type, but that type can be an **enum**, so one list can hold several kinds of things.
+Vec 中的項目型別必須相同，但該型別可以是**列舉**，因此一個清單仍能存放不同種類的資料。
 '''
 c_compare = '''
-`for x in &mut v` is like walking a pointer over an array and writing through it, but without any chance of going out of bounds.
+`for x in &mut v` 類似用指標走訪陣列並逐項寫入，但不可能超出範圍。
 '''
 py_compare = '''
-Python's `for x in items: x *= 2` doesn't change the list. In Rust, `for x in &mut v { *x *= 2 }` does.
+Python 的 `for x in items: x *= 2` 不會修改清單。在 Rust 中，`for x in &mut v { *x *= 2 }` 就會修改。
 '''
 check = "tests"
 starter = '''
@@ -221,35 +221,35 @@ mod tests {
 }
 '''
 hints = [
-    "double_all needs to change each item through a mutable reference. total just reads.",
-    "In double_all: `for x in v.iter_mut() { *x *= 2; }`. In total, keep a running sum.",
+    "`double_all` 需要透過可變參照修改每個元素；`total` 則只需要讀取。",
+    "在 `double_all` 中使用 `for x in v.iter_mut() { *x *= 2; }`。在 `total` 中逐步累加總和。",
     "```rust\nfn double_all(v: &mut Vec<i32>) { for x in v.iter_mut() { *x *= 2; } }\nfn total(v: &Vec<i32>) -> i32 { let mut sum = 0; for x in v { sum += x; } sum }\n```",
 ]
 
 [[level]]
 id = "7.4"
-title = "Stringing words together"
+title = "把文字串在一起"
 kind = "fill"
 book = ["8.2"]
 xp = 40
-goal = "Write make_tag (build a name tag) and exclaim (add \"!!\" in place)."
+goal = "撰寫 `make_tag`（製作姓名牌）和 `exclaim`（直接在文字後加上「!!」）。"
 lesson = '''
-Ways to build a `String`:
+建立 `String` 的方法：
 
 ```rust
 let mut s = String::from("Hello");
-s.push_str(", world");   // add a &str
-s.push('!');             // add one char
-let both = format!("{} and {}", "salt", "pepper");  // like println!, but returns a String
+s.push_str(", world");   // 加入 &str
+s.push('!');             // 加入一個字元
+let both = format!("{} and {}", "salt", "pepper");  // 類似 println!，但會回傳 String
 ```
 
-`format!` is usually the clearest way to glue several pieces together.
+`format!` 通常是串接多段文字最清楚的方式。
 '''
 c_compare = '''
-No `strcat`, no buffer sizes: `String` grows as needed. `format!` is a safe `snprintf` that always allocates enough.
+不必使用 `strcat`，也不用計算緩衝區大小：`String` 會視需要擴充。`format!` 類似安全的 `snprintf`，會配置足夠空間。
 '''
 py_compare = '''
-`format!("{} {}", a, b)` is like an f-string `f"{a} {b}"`.
+`format!("{} {}", a, b)` 類似 f-string：`f"{a} {b}"`。
 '''
 check = "tests"
 starter = '''
@@ -303,31 +303,31 @@ mod tests {
 }
 '''
 hints = [
-    "make_tag can be a single `format!`. exclaim adds text to the String it borrows.",
-    "`format!(\"{} {} (lvl {})\", first, last, level)` and `s.push_str(\"!!\")`.",
-    "make_tag: `format!(\"{} {} (lvl {})\", first, last, level)`. exclaim: `s.push_str(\"!!\");`",
+    "`make_tag` 可以只用一個 `format!`。`exclaim` 則在借用到的 `String` 後面加上文字。",
+    "使用 `format!(\"{} {} (lvl {})\", first, last, level)`，並呼叫 `s.push_str(\"!!\")`。",
+    "`make_tag`：`format!(\"{} {} (lvl {})\", first, last, level)`。`exclaim`：`s.push_str(\"!!\");`。",
 ]
 
 [[level]]
 id = "7.5"
-title = "Why can't I write s[0]?"
+title = "為什麼不能寫 s[0]？"
 kind = "predict"
 book = ["8.2"]
 xp = 25
-goal = "What does this print?"
+goal = "這段程式會印出什麼？"
 lesson = '''
-Rust strings are **UTF-8**. Plain English letters take 1 byte each, but letters like `é`, `ñ` or `你` take 2 to 4 bytes.
+Rust 字串使用 **UTF-8** 編碼。一般英文字母各占 1 個位元組，但 `é`、`ñ` 或 `你` 等字元會占 2 到 4 個位元組。
 
-- `s.len()` counts **bytes**
-- `s.chars().count()` counts **characters**
+- `s.len()` 計算**位元組數**
+- `s.chars().count()` 計算**字元數**
 
-That's why Rust doesn't let you write `s[0]`: "the first byte" might be half a letter! Use `s.chars()` to walk letters, or slices on byte positions you know are safe.
+這就是 Rust 不允許寫 `s[0]` 的原因：「第一個位元組」可能只是半個字！請用 `s.chars()` 逐字走訪，或只在確定安全的位元組位置使用切片。
 '''
 c_compare = '''
-`strlen` also counts bytes, not characters, but C will happily let you index into the middle of a multi-byte letter.
+`strlen` 也會計算位元組，而不是字元；但 C 仍允許你索引到多位元組字元的中間。
 '''
 py_compare = '''
-Python's `len("héllo")` is 5 because Python counts characters. Rust's `.len()` counts bytes.
+Python 的 `len("héllo")` 是 5，因為 Python 計算字元數；Rust 的 `.len()` 則計算位元組數。
 '''
 starter = '''
 fn main() {
@@ -335,20 +335,20 @@ fn main() {
     println!("{} {}", s.len(), s.chars().count());
 }
 '''
-choices = ["5 5", "6 5", "5 6", "It doesn't compile: é isn't allowed"]
+choices = ["5 5", "6 5", "5 6", "無法編譯：不允許使用 é"]
 answer = 1
 expected_output = "6 5"
-explanation = "`é` takes 2 bytes in UTF-8, so the string is 6 bytes long but has only 5 characters."
+explanation = "在 UTF-8 中，`é` 占 2 個位元組，因此這個字串長 6 個位元組，但只有 5 個字元。"
 
 [[level]]
 id = "7.6"
-title = "The dictionary: HashMap"
+title = "字典：HashMap"
 kind = "fill"
 book = ["8.3"]
 xp = 45
-goal = "Write prices (a price list) and price_of (look one up, 0 if it's missing)."
+goal = "撰寫 `prices`（建立價格表）和 `price_of`（查詢價格；項目不存在時回傳 0）。"
 lesson = '''
-A **`HashMap<K, V>`** stores values by key:
+**`HashMap<K, V>`** 會根據鍵儲存值：
 
 ```rust
 use std::collections::HashMap;
@@ -358,29 +358,29 @@ ages.insert(String::from("Ferris"), 9);
 let a = ages.get("Ferris");   // Option<&i32>
 ```
 
-`.get` returns an `Option<&V>`. Two handy helpers:
-- `.copied()` turns `Option<&u32>` into `Option<u32>`
-- `.unwrap_or(0)` gives 0 when it's `None`
+`.get` 會回傳 `Option<&V>`。還有兩個好用的方法：
+- `.copied()` 將 `Option<&u32>` 轉成 `Option<u32>`
+- 遇到 `None` 時，`.unwrap_or(0)` 會回傳 0
 
-Inserting a `String` key **moves** it into the map.
+插入 `String` 鍵時，會將它**移動**到 map 中。
 '''
 c_compare = '''
-C has no built-in hash table. Here it's part of the standard library.
+C 沒有內建雜湊表；Rust 的雜湊表則包含在標準函式庫中。
 '''
 py_compare = '''
-It's a Python `dict`. `map.get(k).copied().unwrap_or(0)` is like `d.get(k, 0)`.
+它類似 Python 的 `dict`。`map.get(k).copied().unwrap_or(0)` 類似 `d.get(k, 0)`。
 '''
 check = "tests"
 starter = '''
 use std::collections::HashMap;
 
 fn prices() -> HashMap<String, u32> {
-    // TODO: apple costs 3, bread costs 5
+    // TODO：apple 價格為 3，bread 價格為 5
     todo!()
 }
 
 fn price_of(map: &HashMap<String, u32>, item: &str) -> u32 {
-    // TODO: the price, or 0 if the item isn't in the map
+    // TODO：回傳價格；項目不在 map 中時回傳 0
     todo!()
 }
 
@@ -428,33 +428,33 @@ mod tests {
 }
 '''
 hints = [
-    "prices: make a `HashMap::new()` and insert two entries. price_of: `.get(item)` gives an Option.",
-    "`map.insert(String::from(\"apple\"), 3);` and `map.get(item).copied().unwrap_or(0)`.",
+    "`prices`：建立 `HashMap::new()` 並插入兩筆資料。`price_of`：`.get(item)` 會回傳 `Option`。",
+    "使用 `map.insert(String::from(\"apple\"), 3);` 和 `map.get(item).copied().unwrap_or(0)`。",
     "```rust\nfn price_of(map: &HashMap<String, u32>, item: &str) -> u32 {\n    map.get(item).copied().unwrap_or(0)\n}\n```",
 ]
 
 [[level]]
 id = "7.7"
-title = "Counting words"
+title = "計算單字次數"
 kind = "fill"
 book = ["8.3"]
 xp = 50
-goal = "Write count_words: how many times does each word appear?"
+goal = "撰寫 `count_words`：計算每個單字出現幾次。"
 lesson = '''
-Updating a map value based on the old one is so common that HashMap has the **entry API**:
+依據舊值更新 map 的值很常見，因此 HashMap 提供了 **entry API**：
 
 ```rust
-let count = map.entry(word).or_insert(0);  // get the value, inserting 0 if missing
-*count += 1;                               // count is a &mut, so change it through *
+let count = map.entry(word).or_insert(0);  // 取得值；若不存在就插入 0
+*count += 1;                               // count 是 &mut，因此要透過 * 修改
 ```
 
-`entry(...).or_insert(...)` returns a mutable reference to the value in the map.
+`entry(...).or_insert(...)` 會回傳 map 中該值的可變參照。
 '''
 c_compare = '''
-In C this would be a lookup, then an insert if missing, then an update: three separate steps and three chances for a bug.
+在 C 中必須先查詢、不存在時再插入，最後更新：三個獨立步驟，也有三次出錯機會。
 '''
 py_compare = '''
-Like `counts[w] = counts.get(w, 0) + 1`, or a `collections.Counter`.
+類似 `counts[w] = counts.get(w, 0) + 1`，或 `collections.Counter`。
 '''
 check = "tests"
 starter = '''
@@ -506,28 +506,28 @@ mod tests {
 }
 '''
 hints = [
-    "Loop over `text.split_whitespace()`, and for each word, add one to its count.",
+    "迴圈走訪 `text.split_whitespace()`，每遇到一個單字，就將它的計數加一。",
     "`let count = counts.entry(word.to_string()).or_insert(0); *count += 1;`",
     "```rust\nlet mut counts = HashMap::new();\nfor word in text.split_whitespace() {\n    let count = counts.entry(word.to_string()).or_insert(0);\n    *count += 1;\n}\ncounts\n```",
 ]
 
 [[level]]
 id = "7.8"
-title = "Ownership Inventory #2"
+title = "所有權小測 #2"
 kind = "predict"
 book = ["8.4"]
 xp = 30
-goal = "Does this compile? If so, what does it print?"
+goal = "這段程式能編譯嗎？如果可以，會印出什麼？"
 lesson = '''
-**Ownership Inventory #2**: ownership puzzles with collections, from the Brown edition of the Rust Book.
+**所有權小測 #2**：取自 Brown 版 Rust 書籍、結合集合的所有權題目。
 
-Remember: `.clone()` makes a brand-new, independent value. Changing (or clearing) the original doesn't touch the clone.
+請記住：`.clone()` 會建立全新且獨立的值。修改或清空原值都不會影響副本。
 '''
 c_compare = '''
-Think `strdup`: a separate copy with its own memory.
+可以想成 `strdup`：建立一份使用獨立記憶體的副本。
 '''
 py_compare = '''
-In Python, `first = names[0]` would share the same string object. A Rust clone is a real copy.
+在 Python 中，`first = names[0]` 會共用同一個字串物件；Rust 的 clone 則是真正的複製。
 '''
 starter = '''
 fn main() {
@@ -539,38 +539,38 @@ fn main() {
 '''
 choices = [
     "Ferris 0",
-    "It doesn't compile: names is still borrowed by first",
-    " 0 (first is empty after clear)",
-    "It doesn't compile: cannot move out of names[0]",
+    "無法編譯：first 仍在借用 names",
+    "0（清空後 first 是空字串）",
+    "無法編譯：不能將值從 names[0] 移出",
 ]
 answer = 0
 expected_output = "Ferris 0"
-explanation = "`first` is a separate String (a clone), not a borrow, so clearing `names` is allowed and doesn't affect it. `.clone()` also avoids the 'move out of index' error."
+explanation = "`first` 是獨立的 String（副本），不是借用，因此可以清空 `names`，而且不會影響它。`.clone()` 也能避免「從索引位置移出值」的錯誤。"
 
 [[level]]
 id = "7.9"
-title = "BOSS: The gradebook"
+title = "頭目戰：成績簿"
 kind = "boss"
 book = ["8.1", "8.2", "8.3"]
 xp = 100
-goal = '''Build a Gradebook: add scores, get each student's average,
-find the best student, and list the names in alphabetical order.'''
+goal = '''建立 `Gradebook`：新增分數、計算每位學生的平均分、
+找出成績最佳的學生，並按字母順序列出姓名。'''
 lesson = '''
-**Boss fight!** Keep a `HashMap<String, Vec<u32>>`: each student's name maps to a list of their scores.
+**頭目戰！**使用 `HashMap<String, Vec<u32>>`：每位學生的姓名對應一份分數清單。
 
-Methods to write:
-- `add(name, score)`: push the score onto that student's list (create it if needed: `entry(...).or_insert_with(Vec::new)` or `or_default()`)
-- `average(name) -> Option<f64>`: `None` if the student is unknown
-- `best_student() -> Option<String>`: highest average (if two tie, the name that comes first alphabetically)
-- `names() -> Vec<String>`: all names, sorted (`v.sort()`)
+需要撰寫的方法：
+- `add(name, score)`：將分數推入該學生的清單（若清單不存在就建立：`entry(...).or_insert_with(Vec::new)` 或 `or_default()`）
+- `average(name) -> Option<f64>`：學生不存在時回傳 `None`
+- `best_student() -> Option<String>`：回傳平均分最高者（若並列，回傳姓名字母順序較前者）
+- `names() -> Vec<String>`：回傳排序後的所有姓名（`v.sort()`）
 
-Maps don't keep any order, so sort when you need one.
+Map 不會保留順序，需要排序時請自行處理。
 '''
 c_compare = '''
-A map of growable arrays in C would be hundreds of lines. Here it's one type: `HashMap<String, Vec<u32>>`.
+在 C 中，管理可擴充陣列的 map 可能要寫上百行；這裡只要一個型別：`HashMap<String, Vec<u32>>`。
 '''
 py_compare = '''
-Like a `defaultdict(list)` of scores.
+類似存放分數的 `defaultdict(list)`。
 '''
 check = "tests"
 starter = '''
@@ -711,7 +711,7 @@ mod tests {
 }
 '''
 hints = [
-    "Do add and names first, then average, then best_student (which can use the other two).",
-    "add: `self.scores.entry(name.to_string()).or_default().push(score)`. average: get the list (return None if missing), sum it, divide by the length as f64. best_student: walk the sorted names and keep the best average so far, only replacing it when a later one is strictly greater.",
-    "```rust\nfn names(&self) -> Vec<String> {\n    let mut names: Vec<String> = Vec::new();\n    for name in self.scores.keys() { names.push(name.clone()); }\n    names.sort();\n    names\n}\n```\nIn average, `let list = self.scores.get(name)?;` returns None early when the name is missing.",
+    "先完成 `add` 和 `names`，接著完成 `average`，最後再寫可使用前兩者的 `best_student`。",
+    "`add`：使用 `self.scores.entry(name.to_string()).or_default().push(score)`。`average`：取得分數清單（不存在時回傳 `None`）、加總後除以轉成 `f64` 的筆數。`best_student`：依序檢查排序後的名字並記住目前最高平均，只有遇到更高的平均才更新。",
+    "```rust\nfn names(&self) -> Vec<String> {\n    let mut names: Vec<String> = Vec::new();\n    for name in self.scores.keys() { names.push(name.clone()); }\n    names.sort();\n    names\n}\n```\n在 `average` 中，`let list = self.scores.get(name)?;` 會在找不到姓名時提早回傳 `None`。",
 ]

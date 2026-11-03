@@ -495,8 +495,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "In dinner, don't await the two cooks one after the other. Build both futures and give them to `join(...)`, then await that. For double_later, return `async move { ... }`.",
-    "`join(cook(\"pasta\", 3, 30, log), cook(\"soup\", 2, 75, log)).await;`. The async block: sleep with `sleep(Duration::from_millis(10)).await;`, then end with `x * 2`.",
+    "在 `dinner` 中，不要依序等待兩位廚師。建立兩個 future 並交給 `join(...)`，再等待結果。`double_later` 則回傳 `async move { ... }`。",
+    "使用 `join(cook(\"pasta\", 3, 30, log), cook(\"soup\", 2, 75, log)).await;`。async 區塊中先呼叫 `sleep(Duration::from_millis(10)).await;`，最後以 `x * 2` 作為結果。",
     "```rust\nasync fn dinner(log: &RefCell<Vec<String>>) {\n    join(cook(\"pasta\", 3, 30, log), cook(\"soup\", 2, 75, log)).await;\n}\n\nfn double_later(x: u32) -> impl Future<Output = u32> {\n    async move {\n        sleep(Duration::from_millis(10)).await;\n        x * 2\n    }\n}\n```",
 ]
 
@@ -918,8 +918,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "fetch_all: make one future per page with `.iter().map(...)` and give them all to `join_all(...).await`. fastest and timeout both `match` on `race(...).await`.",
-    "In fetch_all the closure gets `&(&str, u64)`, so write `|(name, ms)| fetch(name, *ms)`. In fastest, both arms return the page: `Either::Left(page) | Either::Right(page) => page`. timeout races the future against `sleep(max)`.",
+    "`fetch_all`：用 `.iter().map(...)` 為每個頁面建立 future，並全部交給 `join_all(...).await`。`fastest` 和 `timeout` 都要對 `race(...).await` 使用 `match`。",
+    "在 `fetch_all` 中，閉包收到的是 `&(&str, u64)`，所以寫成 `|(name, ms)| fetch(name, *ms)`。`fastest` 的兩個分支都回傳頁面：`Either::Left(page) | Either::Right(page) => page`。`timeout` 則讓該 future 和 `sleep(max)` 競速。",
     "```rust\nasync fn fetch_all(pages: &[(&str, u64)]) -> Vec<String> {\n    join_all(pages.iter().map(|(name, ms)| fetch(name, *ms))).await\n}\n\nasync fn timeout<F: Future>(future: F, max: Duration) -> Result<F::Output, Duration> {\n    match race(future, sleep(max)).await {\n        Either::Left(output) => Ok(output),\n        Either::Right(()) => Err(max),\n    }\n}\n```",
 ]
 
@@ -1340,8 +1340,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "evens_doubled: `let mut stream = stream_from_iter(numbers);` then a `while let Some(n) = stream.next().await` loop that pushes `n * 2` for even numbers.",
-    "ticks: `let (tx, mut rx) = channel();`. The producer is an `async move { ... }` block with a for loop that sends and sleeps. The consumer is an `async { ... }` block that collects with `while let Some(msg) = rx.next().await`. Then `join(producer, consumer).await` and return the consumer's part.",
+    "`evens_doubled`：先寫 `let mut stream = stream_from_iter(numbers);`，再用 `while let Some(n) = stream.next().await` 迴圈，將偶數乘以 2 後加入結果。",
+    "`ticks`：寫 `let (tx, mut rx) = channel();`。producer 使用 `async move { ... }`，在 for 迴圈中傳送訊息並休眠。consumer 使用 `async { ... }`，以 `while let Some(msg) = rx.next().await` 收集訊息。最後呼叫 `join(producer, consumer).await`，並回傳 consumer 的結果。",
     "```rust\nlet (tx, mut rx) = channel();\nlet producer = async move {\n    for i in 1..=n {\n        tx.send(format!(\"tick {i}\")).unwrap();\n        sleep(gap).await;\n    }\n};\nlet consumer = async {\n    let mut got = Vec::new();\n    while let Some(msg) = rx.next().await {\n        got.push(msg);\n    }\n    got\n};\nlet ((), got) = join(producer, consumer).await;\ngot\n```",
 ]
 
@@ -2244,8 +2244,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "download_with_limit is your `timeout` from 20.3: `race(download(url), sleep(limit))`. fetch_all is `join_all` over `urls.iter().map(...)`.",
-    "fetch_with_progress: make a channel. Build an `async move` block that owns `tx`; inside it, map each url to an `async move` block that awaits the download, sends the url through its own `tx.clone()`, and returns the result; `join_all` them. A second async block collects from `rx.next().await`. `join` the two.",
+    "`download_with_limit` 和第 20.3 關的 `timeout` 相同：使用 `race(download(url), sleep(limit))`。`fetch_all` 則對 `urls.iter().map(...)` 使用 `join_all`。",
+    "`fetch_with_progress`：先建立 channel。建立一個擁有 `tx` 的 `async move` 區塊；其中將每個網址映射成 `async move` 區塊，等待下載、用自己的 `tx.clone()` 傳送網址，再回傳結果，並以 `join_all` 等待全部完成。另一個 async 區塊則用 `rx.next().await` 收集資料。最後將兩者交給 `join`。",
     "```rust\nlet (tx, mut rx) = channel();\nlet downloads = async move {\n    let downloads = urls.iter().map(|url| {\n        let tx = tx.clone();\n        async move {\n            let result = download_with_limit(url, limit).await;\n            tx.send(url.to_string()).unwrap();\n            result\n        }\n    });\n    join_all(downloads).await\n};\nlet listener = async {\n    let mut finished = Vec::new();\n    while let Some(url) = rx.next().await {\n        finished.push(url);\n    }\n    finished\n};\njoin(downloads, listener).await\n```",
 ]
 

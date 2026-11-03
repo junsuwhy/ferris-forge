@@ -121,8 +121,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Inside `mod tests`, write a function with `#[test]` on the line above it, and use `assert_eq!` or `assert!` inside.",
-    "Write one test per function: `add_two(2)` should be 4, `is_even(7)` should be false (`assert!(!is_even(7))`), `shout(\"hi\")` should be \"HI!\".",
+    "在 `mod tests` 中寫一個函式，並在函式上方加上 `#[test]`；函式內使用 `assert_eq!` 或 `assert!`。",
+    "每個函式各寫一個測試：`add_two(2)` 應回傳 4，`is_even(7)` 應為 false（`assert!(!is_even(7))`），`shout(\"hi\")` 應回傳 \"HI!\"。",
     "```rust\n#[test]\nfn adds_two() {\n    assert_eq!(add_two(2), 4);\n}\n\n#[test]\nfn evens() {\n    assert!(is_even(4));\n    assert!(!is_even(7));\n}\n\n#[test]\nfn shouting() {\n    assert_eq!(shout(\"hi\"), \"HI!\");\n}\n```",
 ]
 
@@ -325,8 +325,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "`too_big_pot` panics, which is correct, so it needs an attribute saying so. `reads_liters` uses `?`, so it must return a Result. And read the real panic message in `Pot::new`.",
-    "Add `#[should_panic(expected = \"at most 10 liters\")]` above `too_big_pot`, change `reads_liters` to return `Result<(), String>` and end it with `Ok(())`, and fix the expected text in `way_too_big`.",
+    "`too_big_pot` 發生 panic 是正確的，因此要加上對應屬性。`reads_liters` 使用 `?`，所以必須回傳 `Result`。另外，請查看 `Pot::new` 實際的 panic 訊息。",
+    "在 `too_big_pot` 上方加上 `#[should_panic(expected = \"at most 10 liters\")]`；讓 `reads_liters` 回傳 `Result<(), String>` 並以 `Ok(())` 結尾；也要修正 `way_too_big` 中預期的文字。",
     "```rust\n#[test]\n#[should_panic(expected = \"at most 10 liters\")]\nfn too_big_pot() {\n    Pot::new(11);\n}\n\n#[test]\nfn reads_liters() -> Result<(), String> {\n    let n = parse_liters(\" 7 \")?;\n    assert_eq!(Pot::new(n).liters(), 7);\n    Ok(())\n}\n```",
 ]
 
@@ -583,7 +583,7 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Write one test per function using the examples in the lesson, including the edges: `grade(90)`, `average(&[])`, and a list with fewer than three scores.",
-    "The bugs: `average` divides integers (and crashes on an empty list), `top_three` keeps the *lowest* scores, and `grade` uses `>` where it needs `>=`.",
+    "依照課程中的範例，每個函式各寫一個測試，也要涵蓋邊界情況：`grade(90)`、`average(&[])`，以及少於三筆分數的清單。",
+    "這些錯誤是：`average` 使用整數除法（空清單時還會當掉）；`top_three` 保留了*最低*分；`grade` 應該用 `>=`，卻用了 `>`。",
     "```rust\n// average\nif scores.is_empty() {\n    return 0.0;\n}\n// ... sum as before ...\nsum as f64 / scores.len() as f64\n\n// top_three: after sort()\nsorted.reverse();\n\n// grade\nif score >= 90 {\n```",
 ]

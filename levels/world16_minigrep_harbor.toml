@@ -80,8 +80,8 @@ fn main() {
 }
 '''
 hints = [
-    "The Vec is empty, so `args[1]` panics: index out of bounds. Fill it from `env::args()`.",
-    "`env::args()` is an iterator. Turn it into a Vec with `.collect()`.",
+    "`Vec` 是空的，因此存取 `args[1]` 會因索引越界而 panic。請從 `env::args()` 填入參數。",
+    "`env::args()` 是 iterator。用 `.collect()` 把它收集成 `Vec`。",
     "`let args: Vec<String> = env::args().collect();`",
 ]
 
@@ -167,8 +167,8 @@ fn main() {
 }
 '''
 hints = [
-    "`contents` is an empty String. It should hold the text of the file at `file_path`.",
-    "Use `fs::read_to_string(file_path)`. It returns a Result, so finish with `.expect(\"...\")`.",
+    "`contents` 目前是空的 `String`，應該存放 `file_path` 指向的檔案內容。",
+    "使用 `fs::read_to_string(file_path)`。它會回傳 `Result`，所以最後加上 `.expect(\"...\")`。",
     "```rust\nlet contents = fs::read_to_string(file_path)\n    .expect(\"Should have been able to read the file\");\n```",
 ]
 
@@ -358,8 +358,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Change the two return types first: `Result<Config, &'static str>` and `Result<(), Box<dyn Error>>`. Then the compiler will show you every line that has to follow.",
-    "In build: `return Err(\"not enough arguments\")` instead of panicking, and wrap the result in `Ok(...)`. In run: replace `.expect(...)` with `?` and end with `Ok(())`. main then needs `unwrap_or_else` and `if let Err(e) = run(config)`.",
+    "先修改兩個回傳型別：`Result<Config, &'static str>` 和 `Result<(), Box<dyn Error>>`。接著編譯器就會指出其餘需要調整的地方。",
+    "在 `build` 中改用 `return Err(\"not enough arguments\")`，不要 panic，並以 `Ok(...)` 包住結果。在 `run` 中把 `.expect(...)` 換成 `?`，最後回傳 `Ok(())`。`main` 則需要 `unwrap_or_else` 和 `if let Err(e) = run(config)`。",
     "```rust\npub fn build(args: &[String]) -> Result<Config, &'static str> {\n    if args.len() < 3 {\n        return Err(\"not enough arguments\");\n    }\n    Ok(Config { query: args[1].clone(), file_path: args[2].clone() })\n}\n\npub fn run(config: Config) -> Result<(), Box<dyn Error>> {\n    let contents = fs::read_to_string(config.file_path)?;\n    println!(\"With text:\\n{contents}\");\n    Ok(())\n}\n```",
 ]
 
@@ -498,8 +498,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Two jobs: add a second `#[test]` function inside `mod tests`, and write the body of `search`.",
-    "In search: make an empty Vec, loop over `contents.lines()`, and push every line that `contains(query)`. Return the Vec at the end.",
+    "有兩件事要做：在 `mod tests` 中再加一個 `#[test]` 函式，並補上 `search` 的函式本體。",
+    "在 `search` 中建立空的 `Vec`，走訪 `contents.lines()`，把每個 `contains(query)` 的行加入其中，最後回傳 `Vec`。",
     "```rust\npub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {\n    let mut results = Vec::new();\n    for line in contents.lines() {\n        if line.contains(query) {\n            results.push(line);\n        }\n    }\n    results\n}\n```",
 ]
 
@@ -686,8 +686,8 @@ fn main() {
 }
 '''
 hints = [
-    "Two TODOs: read the environment variable in `Config::build`, and write `search_case_insensitive`.",
-    "`env::var(\"IGNORE_CASE\").is_ok()` tells you if it's set. For the search, copy `search` and compare `line.to_lowercase()` with a lowercased query.",
+    "有兩個 TODO：在 `Config::build` 中讀取環境變數，並實作 `search_case_insensitive`。",
+    "`env::var(\"IGNORE_CASE\").is_ok()` 可以檢查環境變數是否已設定。搜尋函式可複製 `search`，再將 `line.to_lowercase()` 與轉成小寫的查詢字串比較。",
     "```rust\nlet ignore_case = env::var(\"IGNORE_CASE\").is_ok();\n\npub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {\n    let query = query.to_lowercase();\n    let mut results = Vec::new();\n    for line in contents.lines() {\n        if line.to_lowercase().contains(&query) {\n            results.push(line);\n        }\n    }\n    results\n}\n```",
 ]
 
@@ -795,9 +795,9 @@ fn main() {
 }
 '''
 hints = [
-    "Everything prints fine, but one of the lines goes to the wrong stream.",
-    "The \"Skipping\" message is an error. Which macro writes to standard error?",
-    "Change `Err(e) => println!(...)` to `Err(e) => eprintln!(...)`.",
+    "輸出內容看起來都正確，但有一行被寫到了錯誤的輸出串流。",
+    "「Skipping」訊息屬於錯誤。哪個巨集會寫入標準錯誤？",
+    "把 `Err(e) => println!(...)` 改成 `Err(e) => eprintln!(...)`。",
 ]
 
 [level.files]
@@ -965,8 +965,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Change build's parameter to `mut args: impl Iterator<Item = String>`. Skip the first item with `args.next();`, then take the query and the file path with `args.next()` too.",
-    "Each `args.next()` returns an Option: `match` it, returning `Err(\"Didn't get a query string\")` (or `\"Didn't get a file path\"`) on None. In main, pass `env::args()` straight in. search becomes `contents.lines().filter(...).collect()`.",
+    "把 `build` 的參數改成 `mut args: impl Iterator<Item = String>`。先用 `args.next();` 略過第一個項目，再用 `args.next()` 依序取得查詢字串和檔案路徑。",
+    "每次呼叫 `args.next()` 都會回傳 `Option`：用 `match` 處理，遇到 `None` 就回傳 `Err(\"Didn't get a query string\")`（或 `Err(\"Didn't get a file path\")`）。在 `main` 中直接傳入 `env::args()`。`search` 則可改成 `contents.lines().filter(...).collect()`。",
     "```rust\npub fn build(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {\n    args.next();\n    let query = match args.next() {\n        Some(arg) => arg,\n        None => return Err(\"Didn't get a query string\"),\n    };\n    let file_path = match args.next() {\n        Some(arg) => arg,\n        None => return Err(\"Didn't get a file path\"),\n    };\n    Ok(Config { query, file_path })\n}\n\npub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {\n    contents.lines().filter(|line| line.contains(query)).collect()\n}\n```",
 ]
 
@@ -1088,8 +1088,8 @@ fn main() {
 }
 '''
 hints = [
-    "Start from the pieces you already wrote: `Config::build` reading `env::args()` and `IGNORE_CASE`, `run` reading the file, and a search function.",
-    "For line numbers, search with `contents.lines().enumerate().filter(...).map(|(i, line)| (i + 1, line)).collect()`, returning `Vec<(usize, &str)>`. In run, print each pair and then `results.len()`.",
+    "從你已經寫好的部分開始：`Config::build` 讀取 `env::args()` 和 `IGNORE_CASE`、`run` 讀取檔案，以及搜尋函式。",
+    "若要附上行號，可用 `contents.lines().enumerate().filter(...).map(|(i, line)| (i + 1, line)).collect()`，並回傳 `Vec<(usize, &str)>`。在 `run` 中印出每組結果，再印出 `results.len()`。",
     "```rust\npub fn search<'a>(query: &str, contents: &'a str, ignore_case: bool) -> Vec<(usize, &'a str)> {\n    let query = if ignore_case { query.to_lowercase() } else { query.to_string() };\n    contents\n        .lines()\n        .enumerate()\n        .filter(|(_, line)| {\n            if ignore_case {\n                line.to_lowercase().contains(&query)\n            } else {\n                line.contains(&query)\n            }\n        })\n        .map(|(i, line)| (i + 1, line))\n        .collect()\n}\n```",
 ]
 

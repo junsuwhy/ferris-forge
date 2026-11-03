@@ -400,8 +400,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Five small pieces: `impl Add for Point`, `impl Add<Meters> for Millimeters`, `impl fmt::Display for Wrapper`, `impl fmt::Display for Point` plus an empty `impl OutlinePrint for Point {}`, and a different call in pilot_announcement.",
-    "Each `Add` impl needs `type Output = ...;` and `fn add(self, other: ...) -> ...`. A meter is 1000 millimeters. The Display impls use `write!(f, ...)`. pilot_announcement must call the Pilot version: `Pilot::fly(person)`.",
+    "要完成五個部分：`impl Add for Point`、`impl Add<Meters> for Millimeters`、`impl fmt::Display for Wrapper`、`impl fmt::Display for Point` 加上空的 `impl OutlinePrint for Point {}`，以及修改 `pilot_announcement` 中的呼叫。",
+    "每個 `Add` 實作都需要 `type Output = ...;` 和 `fn add(self, other: ...) -> ...`。1 公尺等於 1000 毫米。Display 實作使用 `write!(f, ...)`。`pilot_announcement` 必須呼叫 Pilot 版本：`Pilot::fly(person)`。",
     "```rust\nimpl Add<Meters> for Millimeters {\n    type Output = Millimeters;\n\n    fn add(self, other: Meters) -> Millimeters {\n        Millimeters(self.0 + other.0 * 1000)\n    }\n}\n\nimpl fmt::Display for Wrapper {\n    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {\n        write!(f, \"[{}]\", self.0.join(\", \"))\n    }\n}\n\nimpl OutlinePrint for Point {}\n\nfn pilot_announcement(person: &Human) -> String {\n    Pilot::fly(person)\n}\n```",
 ]
 
@@ -674,8 +674,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "do_twice is `f(arg) + f(arg)`. to_strings and statuses use a function name in `map`: `.map(ToString::to_string)` and `.map(Status::Value)`. make_adder needs `move` and `+ n`.",
-    "make_pipeline: make a `Vec<Box<dyn Fn(i32) -> i32>>`, `match *step` and push `Box::new(|x| x * 2)` and friends. run_pipeline: `pipeline.iter().fold(start, |value, step| step(value))`.",
+    "`do_twice` 是 `f(arg) + f(arg)`。`to_strings` 和 `statuses` 在 `map` 中使用函式名稱：`.map(ToString::to_string)` 和 `.map(Status::Value)`。`make_adder` 需要 `move` 和 `+ n`。",
+    "`make_pipeline`：建立 `Vec<Box<dyn Fn(i32) -> i32>>`，對 `*step` 使用 `match`，並加入 `Box::new(|x| x * 2)` 等閉包。`run_pipeline`：使用 `pipeline.iter().fold(start, |value, step| step(value))`。",
     "```rust\nfn statuses(n: u32) -> Vec<Status> {\n    let mut list: Vec<Status> = (0..n).map(Status::Value).collect();\n    list.push(Status::Stop);\n    list\n}\n\nfn make_adder(n: i32) -> impl Fn(i32) -> i32 {\n    move |x| x + n\n}\n\nfn make_pipeline(steps: &[&str]) -> Vec<Box<dyn Fn(i32) -> i32>> {\n    let mut pipeline: Vec<Box<dyn Fn(i32) -> i32>> = Vec::new();\n    for step in steps {\n        match *step {\n            \"double\" => pipeline.push(Box::new(|x| x * 2)),\n            \"inc\" => pipeline.push(Box::new(|x| x + 1)),\n            \"square\" => pipeline.push(Box::new(|x| x * x)),\n            _ => {}\n        }\n    }\n    pipeline\n}\n```",
 ]
 
@@ -805,8 +805,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Each macro is `macro_rules! name { (pattern) => { output }; }`, written above main. square needs one arm with `$x:expr`.",
-    "maximum needs two arms: one value `($x:expr) => { $x }`, and `($first:expr, $($rest:expr),+)` which compares `$first` with `maximum!($($rest),+)`. hashmap matches `$($key:expr => $value:expr),*` and repeats `map.insert($key, $value);`. Use double braces `{{ ... }}` so the output is a block.",
+    "每個巨集都採用 `macro_rules! name { (pattern) => { output }; }` 格式，並寫在 main 上方。square 只需要一個使用 `$x:expr` 的分支。",
+    "maximum 需要兩個分支：單一值 `($x:expr) => { $x }`，以及會比較 `$first` 和 `maximum!($($rest),+)` 的 `($first:expr, $($rest:expr),+)`。hashmap 比對 `$($key:expr => $value:expr),*`，並重複執行 `map.insert($key, $value);`。輸出是區塊時要用雙大括號 `{{ ... }}`。",
     "```rust\nmacro_rules! maximum {\n    ($x:expr) => {\n        $x\n    };\n    ($first:expr, $($rest:expr),+) => {{\n        let rest = maximum!($($rest),+);\n        if $first > rest { $first } else { rest }\n    }};\n}\n\nmacro_rules! hashmap {\n    ($($key:expr => $value:expr),* $(,)?) => {{\n        let mut map = HashMap::new();\n        $( map.insert($key, $value); )*\n        map\n    }};\n}\n```",
 ]
 
@@ -940,7 +940,7 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "count! has two arms: nothing gives `0usize`, and `$head:tt $($tail:tt)*` gives `1usize + count!($($tail)*)`. my_vec! has three arms: `()`, `($value:expr; $n:expr)` and `($($x:expr),+ $(,)?)`, in that order.",
-    "The list arm makes `Vec::with_capacity(count!($($x)*))` and repeats `v.push($x);` with `$( ... )+`. The `;` arm makes an empty Vec and calls `v.resize($n, $value)`. Wrap each output in `{{ ... }}`.",
+    "`count!` 有兩個分支：空輸入回傳 `0usize`，`$head:tt $($tail:tt)*` 則回傳 `1usize + count!($($tail)*)`。`my_vec!` 有三個分支，依序是 `()`、`($value:expr; $n:expr)` 和 `($($x:expr),+ $(,)?)`。",
+    "清單分支建立 `Vec::with_capacity(count!($($x)*))`，並用 `$( ... )+` 重複執行 `v.push($x);`。`;` 分支則建立空的 Vec 並呼叫 `v.resize($n, $value)`。每種輸出都要用 `{{ ... }}` 包起來。",
     "```rust\nmacro_rules! count {\n    () => { 0usize };\n    ($head:tt $($tail:tt)*) => { 1usize + count!($($tail)*) };\n}\n\nmacro_rules! my_vec {\n    () => {\n        Vec::new()\n    };\n    ($value:expr; $n:expr) => {{\n        let mut v = Vec::new();\n        v.resize($n, $value);\n        v\n    }};\n    ($($x:expr),+ $(,)?) => {{\n        let mut v = Vec::with_capacity(count!($($x)*));\n        $( v.push($x); )+\n        v\n    }};\n}\n```",
 ]

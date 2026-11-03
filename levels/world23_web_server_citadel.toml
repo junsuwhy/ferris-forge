@@ -165,8 +165,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "accept_one: `let (stream, _) = listener.accept().unwrap();` and pass `&stream` to read_request. read_request wraps the stream in `BufReader::new(stream)` and goes through its `.lines()`.",
-    "Each line is a `Result`, so `.map(|result| result.unwrap())`. Then `.take_while(|line| !line.is_empty())` stops at the empty line, and `.collect()` builds the Vec.",
+    "`accept_one`：使用 `let (stream, _) = listener.accept().unwrap();`，並將 `&stream` 傳給 `read_request`。`read_request` 用 `BufReader::new(stream)` 包住 stream，並走訪其 `.lines()`。",
+    "每一行都是 `Result`，所以使用 `.map(|result| result.unwrap())`。接著 `.take_while(|line| !line.is_empty())` 會在空行處停止，最後用 `.collect()` 建立 Vec。",
     "```rust\nfn read_request(stream: &TcpStream) -> Vec<String> {\n    BufReader::new(stream)\n        .lines()\n        .map(|result| result.unwrap())\n        .take_while(|line| !line.is_empty())\n        .collect()\n}\n\nfn accept_one(listener: &TcpListener) -> Vec<String> {\n    let (stream, _address) = listener.accept().unwrap();\n    read_request(&stream)\n}\n```",
 ]
 
@@ -345,8 +345,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "response is one `format!` with `\\r\\n` line endings, using `contents.len()` for the length. route is an `if request_line == \"GET / HTTP/1.1\"` returning a pair of string literals.",
-    "In handle_connection: `let (status_line, filename) = route(&request_line);`, then `fs::read_to_string(filename).unwrap()`, then `stream.write_all(response(status_line, &contents).as_bytes()).unwrap();`.",
+    "`response` 使用一個 `format!`，並以 `\\r\\n` 換行；長度使用 `contents.len()`。`route` 則用 `if request_line == \"GET / HTTP/1.1\"` 判斷，並回傳一組字串常值。",
+    "在 `handle_connection` 中，先寫 `let (status_line, filename) = route(&request_line);`，再呼叫 `fs::read_to_string(filename).unwrap()`，最後執行 `stream.write_all(response(status_line, &contents).as_bytes()).unwrap();`。",
     "```rust\nfn response(status_line: &str, contents: &str) -> String {\n    let length = contents.len();\n    format!(\"{status_line}\\r\\nContent-Length: {length}\\r\\n\\r\\n{contents}\")\n}\n\nfn route(request_line: &str) -> (&'static str, &'static str) {\n    if request_line == \"GET / HTTP/1.1\" {\n        (\"HTTP/1.1 200 OK\", \"hello.html\")\n    } else {\n        (\"HTTP/1.1 404 NOT FOUND\", \"404.html\")\n    }\n}\n```",
 ]
 
@@ -660,8 +660,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "new: `assert!(size > 0)`, make a channel, wrap the receiver in `Arc::new(Mutex::new(receiver))`, and create `size` workers, each with an `Arc::clone` of it. execute: `self.sender.send(Box::new(f)).unwrap()`.",
-    "Worker::new spawns a thread with `thread::spawn(move || loop { ... })`. Inside: `let job = receiver.lock().unwrap().recv().unwrap();` then `job();`. Return `Worker { id, thread }`.",
+    "`new`：呼叫 `assert!(size > 0)`、建立 channel，將接收端包在 `Arc::new(Mutex::new(receiver))` 中，再建立 `size` 個 worker，各自取得它的 `Arc::clone`。`execute`：呼叫 `self.sender.send(Box::new(f)).unwrap()`。",
+    "`Worker::new` 使用 `thread::spawn(move || loop { ... })` 建立執行緒。裡面先寫 `let job = receiver.lock().unwrap().recv().unwrap();`，再呼叫 `job();`。最後回傳 `Worker { id, thread }`。",
     "```rust\npub fn new(size: usize) -> ThreadPool {\n    assert!(size > 0);\n    let (sender, receiver) = mpsc::channel();\n    let receiver = Arc::new(Mutex::new(receiver));\n    let mut workers = Vec::with_capacity(size);\n    for id in 0..size {\n        workers.push(Worker::new(id, Arc::clone(&receiver)));\n    }\n    ThreadPool { workers, sender }\n}\n\nfn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {\n    let thread = thread::spawn(move || loop {\n        let job = receiver.lock().unwrap().recv().unwrap();\n        job();\n    });\n    Worker { id, thread }\n}\n```",
 ]
 
@@ -892,8 +892,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Two problems. Drop can't move `worker.thread` out of a borrowed Vec (use `self.workers.drain(..)`), and the workers never stop, so joining them waits forever.",
-    "Make the field `sender: Option<mpsc::Sender<Job>>` (with `Some(sender)` in new and `self.sender.as_ref().unwrap()` in execute). In drop, first `drop(self.sender.take());`. In the worker, `match` on `recv()` and `break` on `Err`.",
+    "有兩個問題：Drop 無法從借用中的 Vec 移出 `worker.thread`（改用 `self.workers.drain(..)`）；而 worker 不會停止，因此 join 會永遠等待。",
+    "將欄位改成 `sender: Option<mpsc::Sender<Job>>`（在 new 中使用 `Some(sender)`，execute 中使用 `self.sender.as_ref().unwrap()`）。在 drop 中先呼叫 `drop(self.sender.take());`。worker 則對 `recv()` 使用 `match`，遇到 `Err` 時 `break`。",
     "```rust\nimpl Drop for ThreadPool {\n    fn drop(&mut self) {\n        drop(self.sender.take());\n        for worker in self.workers.drain(..) {\n            println!(\"Shutting down worker {}\", worker.id);\n            worker.thread.join().unwrap();\n        }\n    }\n}\n\n// in Worker::new:\nlet thread = thread::spawn(move || loop {\n    let message = receiver.lock().unwrap().recv();\n    match message {\n        Ok(job) => job(),\n        Err(_) => break,\n    }\n});\n```",
 ]
 
@@ -1193,8 +1193,8 @@ mod ferris_tests {
 }
 '''
 hints = [
-    "Start with the ThreadPool from the last two levels: `new` with `assert!`, a shared `Arc<Mutex<Receiver>>`, workers that `break` when `recv` fails, and a Drop that takes the sender and drains the workers. Then route (a `match` on the request line) and handle_connection (from 23.2).",
-    "serve: `let pool = ThreadPool::new(workers);` then `for stream in listener.incoming().take(max_requests) { let stream = stream.unwrap(); pool.execute(|| handle_connection(stream)); }`. The pool is dropped when serve ends, which waits for every request.",
+    "先沿用前兩關的 ThreadPool：`new` 中加入 `assert!` 和共享的 `Arc<Mutex<Receiver>>`；worker 在 `recv` 失敗時 `break`；Drop 則取出 sender 並清空 workers。接著完成 `route`（對 request line 使用 `match`）和第 23.2 關的 `handle_connection`。",
+    "`serve`：先寫 `let pool = ThreadPool::new(workers);`，接著使用 `for stream in listener.incoming().take(max_requests) { let stream = stream.unwrap(); pool.execute(|| handle_connection(stream)); }`。`serve` 結束時會 drop pool，並等待所有請求完成。",
     "```rust\nfn route(request_line: &str) -> (&'static str, &'static str) {\n    match request_line {\n        \"GET / HTTP/1.1\" => (\"HTTP/1.1 200 OK\", \"hello.html\"),\n        \"GET /sleep HTTP/1.1\" => {\n            thread::sleep(Duration::from_millis(300));\n            (\"HTTP/1.1 200 OK\", \"hello.html\")\n        }\n        _ => (\"HTTP/1.1 404 NOT FOUND\", \"404.html\"),\n    }\n}\n\npub fn serve(listener: TcpListener, workers: usize, max_requests: usize) {\n    let pool = ThreadPool::new(workers);\n    for stream in listener.incoming().take(max_requests) {\n        let stream = stream.unwrap();\n        pool.execute(|| handle_connection(stream));\n    }\n}\n```",
 ]
 

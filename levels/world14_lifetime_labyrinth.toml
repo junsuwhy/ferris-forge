@@ -112,8 +112,8 @@ fn main() {
 }
 '''
 hints = [
-    "Error E0106: missing lifetime specifier. The compiler even suggests the fix.",
-    "Declare a lifetime after the name, `longest<'a>`, and put `'a` on both inputs and the output.",
+    "錯誤 E0106：缺少生命週期標註。編譯器甚至直接提供了修正建議。",
+    "在函式名稱後宣告生命週期 `longest<'a>`，並在兩個輸入和回傳值上都標註 `'a`。",
     "```rust\nfn longest<'a>(x: &'a str, y: &'a str) -> &'a str {\n```",
 ]
 
@@ -180,8 +180,8 @@ fn main() {
 }
 '''
 hints = [
-    "`result` is used after `string2` is dropped, and `result` might point into `string2`.",
-    "Move the `println!` inside the inner block, so it runs while `string2` is still alive. (Or move `string2` out of the block.)",
+    "`string2` 被釋放後，程式還會使用 `result`；而 `result` 可能指向 `string2` 裡的內容。",
+    "把 `println!` 移進內層區塊，讓它在 `string2` 還有效時執行。（也可以把 `string2` 移出區塊。）",
     "```rust\n{\n    let string2 = String::from(\"xyz\");\n    let result = longest(string1.as_str(), string2.as_str());\n    println!(\"The longest string is {result}\");\n}\n```",
 ]
 
@@ -304,8 +304,8 @@ mod tests {
 }
 '''
 hints = [
-    "Write `struct Highlight<'a> { part: &'a str }` and an `impl<'a> Highlight<'a> { ... }` block with the two methods.",
-    "`part` returns `self.part`; `words` counts `self.part.split_whitespace()`. In first_sentence, `text.find('.')` gives the index of the dot: slice `&text[..=i]`.",
+    "寫出 `struct Highlight<'a> { part: &'a str }`，並加入包含兩個方法的 `impl<'a> Highlight<'a> { ... }` 區塊。",
+    "`part` 回傳 `self.part`；`words` 計算 `self.part.split_whitespace()` 的數量。在 `first_sentence` 中，`text.find('.')` 會回傳句點索引，取切片 `&text[..=i]`。",
     "```rust\nfn first_sentence(text: &str) -> Highlight<'_> {\n    match text.find('.') {\n        Some(i) => Highlight { part: &text[..=i] },\n        None => Highlight { part: text },\n    }\n}\n```\n(`'_` means \"the lifetime of the input\".)",
 ]
 
@@ -608,7 +608,7 @@ mod tests {
 }
 '''
 hints = [
-    "`new` stores `Some(text)`. In `next_piece`, start with `let rest = self.rest?;` so a finished splitter returns None, then use `rest.split_once(self.delim)`.",
-    "If split_once finds the delimiter, keep `after` as the new rest and return the piece. If not, this is the last piece: set `self.rest = None` and return all of `rest`. key_value is `split_once('=')?` plus two `trim()`s.",
+    "`new` 儲存 `Some(text)`。在 `next_piece` 中，先寫 `let rest = self.rest?;`，讓已經處理完的切分器回傳 `None`，接著使用 `rest.split_once(self.delim)`。",
+    "若 `split_once` 找到分隔符，就把 `after` 留作剩餘內容並回傳目前片段。若找不到，這就是最後一段：設定 `self.rest = None`，並回傳整個 `rest`。`key_value` 則使用 `split_once('=')?`，再對兩部分呼叫 `trim()`。",
     "```rust\nfn next_piece(&mut self) -> Option<&'a str> {\n    let rest = self.rest?;\n    match rest.split_once(self.delim) {\n        Some((piece, after)) => {\n            self.rest = Some(after);\n            Some(piece)\n        }\n        None => {\n            self.rest = None;\n            Some(rest)\n        }\n    }\n}\n```",
 ]

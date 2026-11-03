@@ -159,8 +159,8 @@ mod tests {
 }
 '''
 hints = [
-    "Each function is one line. giveaway calls `preference.unwrap_or_else(...)`, sort_by_length calls `words.sort_by_key(...)`, and apply_twice calls `f` twice.",
-    "A closure with no parameters is written `|| ...`. sort_by_key wants a closure from a word to its length: `|w| w.len()`.",
+    "每個函式都只需一行。`giveaway` 呼叫 `preference.unwrap_or_else(...)`，`sort_by_length` 呼叫 `words.sort_by_key(...)`，`apply_twice` 則呼叫 `f` 兩次。",
+    "沒有參數的閉包寫成 `|| ...`。`sort_by_key` 需要一個將單字轉成長度的閉包：`|w| w.len()`。",
     "```rust\npreference.unwrap_or_else(|| self.most_stocked())\n\nwords.sort_by_key(|w| w.len());\n\nf(f(x))\n```",
 ]
 
@@ -343,8 +343,8 @@ mod tests {
 }
 '''
 hints = [
-    "Write `impl Iterator for Countdown { type Item = u32; fn next(&mut self) -> Option<u32> { ... } }`.",
-    "In next: if `current` is 0, return None. Otherwise lower `current` by one and return the old value. total and as_vec are one line each: `Countdown::new(n).sum()` / `.collect()`.",
+    "寫出 `impl Iterator for Countdown { type Item = u32; fn next(&mut self) -> Option<u32> { ... } }`。",
+    "在 `next` 中，若 `current` 為 0 就回傳 `None`；否則先將 `current` 減一，再回傳原本的值。`total` 和 `as_vec` 各只要一行：`Countdown::new(n).sum()`／`.collect()`。",
     "```rust\nimpl Iterator for Countdown {\n    type Item = u32;\n\n    fn next(&mut self) -> Option<u32> {\n        if self.current == 0 {\n            None\n        } else {\n            self.current -= 1;\n            Some(self.current + 1)\n        }\n    }\n}\n```",
 ]
 
@@ -464,8 +464,8 @@ mod tests {
 }
 '''
 hints = [
-    "Each function is one chain: start with `.iter()` (or `.into_iter()` for the shoes), add `.filter(...)` and/or `.map(...)`, and end with `.collect()`.",
-    "squares_of_evens: `.filter(|n| *n % 2 == 0).map(|n| n * n)`. shoes_in_size: `shoes.into_iter().filter(|s| s.size == size)`. shout_all: `.map(|n| n.to_uppercase())`.",
+    "每個函式都由一串 iterator 方法組成：先用 `.iter()`（鞋子要用 `.into_iter()`），再加上 `.filter(...)` 和／或 `.map(...)`，最後用 `.collect()`。",
+    "`squares_of_evens`：`.filter(|n| *n % 2 == 0).map(|n| n * n)`。`shoes_in_size`：`shoes.into_iter().filter(|s| s.size == size)`。`shout_all`：`.map(|n| n.to_uppercase())`。",
     "```rust\nnumbers.iter().filter(|n| *n % 2 == 0).map(|n| n * n).collect()\n\nshoes.into_iter().filter(|s| s.size == size).collect()\n\nnames.iter().map(|n| n.to_uppercase()).collect()\n```",
 ]
 
@@ -696,7 +696,7 @@ mod tests {
 }
 '''
 hints = [
-    "Write two helpers first: `level(line)` (the 2nd word) and `duration(line)` (the 5th word without `ms`, parsed). Then each function is one chain over `log.lines()`.",
-    "count_level: `.filter(...).count()`. error_messages: filter ERROR lines, then `.map(|line| line.split_whitespace().skip(5).collect::<Vec<_>>().join(\" \"))`. slowest: `.max_by_key(|line| duration(line))`, then take the 4th word.",
+    "先寫兩個輔助函式：`level(line)` 取得第 2 個單字，`duration(line)` 取得第 5 個單字、移除 `ms` 後解析。接著每個函式都對 `log.lines()` 串接 iterator 方法。",
+    "`count_level`：使用 `.filter(...).count()`。`error_messages`：篩選 ERROR 行，再使用 `.map(|line| line.split_whitespace().skip(5).collect::<Vec<_>>().join(\" \"))`。`slowest`：使用 `.max_by_key(|line| duration(line))`，再取第 4 個單字。",
     "```rust\nfn duration(line: &str) -> u32 {\n    line.split_whitespace()\n        .nth(4)\n        .and_then(|d| d.trim_end_matches(\"ms\").parse().ok())\n        .unwrap_or(0)\n}\n\nfn slowest(log: &str) -> Option<&str> {\n    log.lines()\n        .max_by_key(|line| duration(line))\n        .and_then(|line| line.split_whitespace().nth(3))\n}\n```",
 ]
