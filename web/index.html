@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-Hant-TW">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ferris' Forge</title>
+  <title>Ferris 的 Rust 鍛造坊</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;700&family=VT323&family=JetBrains+Mono:wght@400;600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -18,15 +18,15 @@
     <button class="icon-btn title-gear" id="btn-title-settings" title="Settings" aria-label="Settings" data-icon="gear"></button>
     <div class="title-content">
       <div class="logo-hang">
-        <h1 class="sr-only">Ferris' Forge: learn Rust, one crab-step at a time</h1>
+        <h1 class="sr-only">Ferris 的 Rust 鍛造坊：一步一步學 Rust</h1>
         <canvas id="logo-canvas" class="pixel-bg" aria-hidden="true"></canvas>
-        <div class="logo-sub" id="logo-sub" aria-hidden="true">learn Rust, one crab-step at a time</div>
+        <div class="logo-sub" id="logo-sub" aria-hidden="true">一步一步學 Rust</div>
       </div>
       <canvas id="title-ferris" class="sprite"></canvas>
       <div class="title-buttons">
-        <button id="btn-start" class="wood-btn big">Start</button>
+        <button id="btn-start" class="wood-btn big">開始</button>
       </div>
-      <div class="title-foot">Real compiler. Real Rust. A crab who believes in you.</div>
+      <div class="title-foot">真正的編譯器、真正的 Rust，還有相信你的螃蟹老師。</div>
     </div>
   </section>
 
@@ -48,7 +48,7 @@
         <div class="lesson-strip frame-parchment">
           <div class="goal" id="lv-goal"></div>
           <div class="lesson-buttons">
-            <button class="wood-btn small" id="btn-lesson" title="Read the lesson (L)">📜 Lesson</button>
+          <button class="wood-btn small" id="btn-lesson" title="閱讀課程（L）">📜 課程</button>
           </div>
         </div>
 
@@ -57,10 +57,10 @@
             <span>main.rs</span>
             <span class="editor-tools">
               <span id="editor-status"></span>
-              <button class="mini-toggle run-mini" id="btn-run-mini" title="Run (Ctrl+Enter)"><span class="sym" data-glyph="▶"></span>RUN</button>
-              <button class="mini-toggle zen-only" id="btn-zen-compiler" data-console="compiler" title="Compiler messages">COMPILER</button>
-              <button class="mini-toggle zen-only" id="btn-zen-output" data-console="output" title="Program output">OUTPUT</button>
-              <button class="mini-toggle" id="btn-vim" aria-label="Vim mode" title="Vim mode: edit with your own Neovim">VIM</button>
+              <button class="mini-toggle run-mini" id="btn-run-mini" title="執行（Ctrl+Enter）"><span class="sym" data-glyph="▶"></span>執行</button>
+              <button class="mini-toggle zen-only" id="btn-zen-compiler" data-console="compiler" title="編譯器訊息">編譯器</button>
+              <button class="mini-toggle zen-only" id="btn-zen-output" data-console="output" title="程式輸出">輸出</button>
+              <button class="mini-toggle" id="btn-vim" aria-label="Vim 模式" title="Vim 模式：使用你自己的 Neovim 編輯">VIM</button>
               <button class="mini-icon" id="btn-expand" aria-label="Expand the editor" title="Expand the editor (hides the chat)" data-icon="expand"></button>
             </span>
           </div>
@@ -84,10 +84,10 @@
           <div class="quick-menu hidden" id="quick-menu" role="menu"></div>
           <form class="ask" id="ask-form">
             <button type="button" class="quick-btn" id="btn-wide-chat" aria-label="Make the chat wider" title="Make Ferris' chat panel wider" data-icon="arrowLeft"></button>
-            <button type="button" class="quick-btn" id="btn-quick" aria-label="Quick questions for Ferris" title="Quick questions for Ferris (Q)" aria-haspopup="menu">💬</button>
-            <input id="ask-input" autocomplete="off" placeholder="Ask Ferris…" maxlength="1000" aria-label="Message to Ferris">
-            <button class="wood-btn small" type="submit" id="btn-ask">Ask</button>
-            <button class="wood-btn small stop hidden" type="button" id="btn-stop" title="Stop Ferris' answer">Stop</button>
+            <button type="button" class="quick-btn" id="btn-quick" aria-label="向 Ferris 快問快答" title="向 Ferris 快問快答（Q）" aria-haspopup="menu">💬</button>
+            <input id="ask-input" autocomplete="off" placeholder="問問 Ferris⋯⋯" maxlength="1000" aria-label="傳訊息給 Ferris">
+            <button class="wood-btn small" type="submit" id="btn-ask">送出</button>
+            <button class="wood-btn small stop hidden" type="button" id="btn-stop" title="停止 Ferris 回答">停止</button>
           </form>
         </div>
       </aside>

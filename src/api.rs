@@ -798,24 +798,24 @@ fn offline_reply(mode: Mode, ctx: &teacher::Context) -> String {
             match level.hints.get(i) {
                 Some(h) => h.clone(),
                 None if !level.solution.is_empty() => {
-                    format!("Here's one way to solve it:\n```rust\n{}\n```", level.solution.trim())
+                    format!("這裡提供一種解法：\n```rust\n{}\n```", level.solution.trim())
                 }
-                None => level.hints.last().cloned().unwrap_or_else(|| "Read the goal once more, slowly. 🦀".into()),
+                None => level.hints.last().cloned().unwrap_or_else(|| "再慢慢讀一次關卡目標吧。🦀".into()),
             }
         }
         Mode::Explain => explain_offline(ctx.output),
         Mode::Review => {
             if level.solution.is_empty() {
-                "Nicely done! 🎉 (I'm in offline mode, so no detailed review this time.)".into()
+                "做得好！🎉（目前是離線模式，所以這次沒辦法提供詳細檢視。）".into()
             } else {
                 format!(
-                    "Nicely done! 🎉 I'm in offline mode, so compare your code with my version:\n```rust\n{}\n```",
+                    "做得好！🎉 目前是離線模式，先把你的程式和我的版本比較看看：\n```rust\n{}\n```",
                     level.solution.trim()
                 )
             }
         }
-        Mode::Chat => "I'm in **offline mode** right now, so I can't chat. Try a hint (💡) — or switch my brain back on in Settings ⚙.".into(),
-        Mode::Quiz => "Not quite! Read the code once more, line by line, and ask: *who owns each value, and when does each line run?* Then try again.".into(),
+        Mode::Chat => "我目前處於**離線模式**，沒辦法聊天。試試看提示（💡），或到設定 ⚙ 開啟我的大腦。".into(),
+        Mode::Quiz => "還差一點！再逐行讀一次程式碼，想想看：*每個值由誰擁有？每一行又在什麼時候執行？* 然後再試一次。".into(),
     }
 }
 
@@ -823,46 +823,46 @@ fn explain_offline(output: &str) -> String {
     const NOTES: &[(&str, &str)] = &[
         (
             "E0382",
-            "**Use after move.** A value was moved to a new owner, and then the old name was used again. In C this would be a use-after-free waiting to happen; Rust stops it at compile time. Try `.clone()` or (later) borrowing with `&`.",
+            "**移動後仍使用值。** 值的所有權已移交給新擁有者，程式卻又使用舊名稱。在 C 中這可能造成釋放後使用；Rust 會在編譯時阻止。試試 `.clone()`，或之後學到的 `&` 借用。",
         ),
         (
             "E0384",
-            "**Assigning twice to an immutable variable.** Rust variables can't change unless you say so: `let mut x`.",
+            "**對不可變變數再次賦值。** Rust 變數預設不能修改；若要修改，請寫成 `let mut x`。",
         ),
         (
             "E0308",
-            "**Mismatched types.** Rust expected one type and got another. Check what each side should be — and watch for a stray `;` at the end of a function, which turns the value into `()`.",
+            "**型別不相符。** Rust 預期一種型別，實際卻得到另一種。檢查運算兩側的型別；也要留意函式結尾多出的 `;`，它會讓回傳值變成 `()`。",
         ),
         (
             "E0425",
-            "**Unknown name.** You used a variable or function that doesn't exist here. Check spelling and scope — a name declared inside `{ }` disappears at the `}`.",
+            "**找不到名稱。** 你使用了此處不存在的變數或函式。檢查拼字和作用域：在 `{ }` 內宣告的名稱會在對應的 `}` 結束時失效。",
         ),
         (
             "E0423",
-            "**Expected a function, found a macro.** Macros like `println!` need a `!` after their name.",
+            "**預期是函式，卻遇到巨集。** `println!` 這類巨集名稱後面需要加上 `!`。",
         ),
         (
             "E0277",
-            "**A trait is missing.** Often this means mixing types, e.g. `i32 * f64`. Rust never converts numbers silently — use `as f64`.",
+            "**缺少 trait 實作。** 常見原因是混用了不同型別，例如 `i32 * f64`。Rust 不會自動轉換數字型別，請使用 `as f64`。",
         ),
         (
             "E0502",
-            "**Borrow conflict.** You can't borrow something mutably while it's also borrowed immutably.",
+            "**借用衝突。** 同一個值不能同時存在可變借用和不可變借用。",
         ),
         (
             "E0499",
-            "**Two mutable borrows at once.** Only one `&mut` can exist at a time.",
+            "**同時有兩個可變借用。** 同一時間只能有一個 `&mut`。",
         ),
         (
             "E0596",
-            "**Borrowing as mutable something that isn't `mut`.** Add `mut` where the variable is declared.",
+            "**要可變借用的值沒有標成 `mut`。** 請在宣告變數時加上 `mut`。",
         ),
         (
             "E0599",
-            "**No such method.** That type doesn't have a method with this name. Check the spelling and the type.",
+            "**沒有這個方法。** 這個型別沒有此名稱的方法。請檢查拼字和型別。",
         ),
     ];
-    let mut out = String::from("I'm in offline mode, but here's what I can tell you:\n\n");
+    let mut out = String::from("目前是離線模式，不過我可以告訴你：\n\n");
     let mut found = false;
     for (code, note) in NOTES {
         if output.contains(&format!("[{code}]")) {
@@ -874,8 +874,8 @@ fn explain_offline(output: &str) -> String {
         let first = output
             .lines()
             .find(|l| l.starts_with("error") || l.contains("panicked") || l.contains("FAILED"))
-            .unwrap_or("Compare your output with the expected output, line by line.");
-        out.push_str(&format!("Start with the **first** problem:\n```\n{first}\n```\nThe `-->` line tells you the line number."));
+            .unwrap_or("請逐行比對你的輸出和預期結果。");
+        out.push_str(&format!("先從**第一個**問題開始：\n```\n{first}\n```\n`-->` 那一行會告訴你行號。"));
     }
     out
 }

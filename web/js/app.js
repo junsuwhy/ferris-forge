@@ -8,6 +8,7 @@ import { LogoSign } from "./logo.js";
 import { WorldMap } from "./map.js";
 import { sound } from "./sound.js";
 import { applyIcons, pixelIcon, pixelGlyph } from "./icons.js";
+import { LEGACY_HINTS } from "./legacy-hints.js";
 
 const $ = sel => document.querySelector(sel);
 /** A symbol like ✔ or ▶ with proper spacing after it (the pixel font's space is tiny). */
@@ -32,11 +33,11 @@ function levelNum(id) {
 const answers = kind => kind === "predict" || kind === "quiz";
 
 const KIND_INFO = {
-  fix: { icon: "🔧", label: "Fix it" },
-  fill: { icon: "✍️", label: "Fill it" },
-  predict: { icon: "🔮", label: "Predict it" },
-  boss: { icon: "👹", label: "Boss fight" },
-  quiz: { icon: "📖", label: "Quiz" },
+  fix: { icon: "🔧", label: "修正程式" },
+  fill: { icon: "✍️", label: "填入程式碼" },
+  predict: { icon: "🔮", label: "猜猜看" },
+  boss: { icon: "👹", label: "頭目戰" },
+  quiz: { icon: "📖", label: "小測驗" },
 };
 const HINT_COST = ["", "−10% XP", "−30% XP", "−60% XP"];
 
@@ -150,8 +151,8 @@ function openModal({ title, body, wide = false, onClose } = {}) {
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   };
   const x = el("button", "modal-close");
-  x.title = "Close";
-  x.setAttribute("aria-label", "Close");
+  x.title = "關閉";
+  x.setAttribute("aria-label", "關閉");
   x.onclick = close;
   modal.append(x);
   if (title) modal.append(el("div", "modal-title", title));
@@ -171,12 +172,12 @@ function openModal({ title, body, wide = false, onClose } = {}) {
   return { modal, body: b, close };
 }
 
-function confirmModal(title, text, ok = "Yes") {
+function confirmModal(title, text, ok = "是") {
   return new Promise(resolve => {
     let answered = false;
     const body = el("div", "", `<p style="font-family:var(--font-talk);font-size:22px;margin:0">${text}</p>`);
     const foot = el("div", "modal-foot");
-    const no = el("button", "wood-btn small", "Cancel");
+    const no = el("button", "wood-btn small", "取消");
     const yes = el("button", "wood-btn small green", ok);
     foot.append(no, yes);
     body.append(foot);
@@ -202,14 +203,14 @@ function updateHUD() {
   setSaveStatus(g.player.save_error || null);
   if (g.notice) { toast("⚠", escapeHtml(g.notice)); g.notice = null; }
   const p = g.player;
-  $("#hud-name").textContent = p.name || "Adventurer";
+  $("#hud-name").textContent = p.name || "冒險者";
   const next = p.next_rank;
   $("#hud-rank").textContent = next ? `${p.rank} · next: ${next.name} at ${next.xp} XP` : `${p.rank} · max rank!`;
   const floor = [...(p.ranks || [])].reverse().find(r => p.xp >= r.xp)?.xp ?? 0;
   const pct = next ? ((p.xp - floor) / (next.xp - floor)) * 100 : 100;
   $("#xp-fill").style.width = `${Math.max(2, Math.min(100, pct))}%`;
   $("#mini-xp-fill").style.width = `${Math.max(2, Math.min(100, pct))}%`;
-  $(".hud-clock").title = `${p.name || "Adventurer"} · ${p.rank}` + (next ? ` · ${next.xp - p.xp} XP to ${next.name}` : " · max rank!");
+  $(".hud-clock").title = `${p.name || "冒險者"} · ${p.rank}` + (next ? ` · ${next.xp - p.xp} XP to ${next.name}` : " · max rank!");
   $("#hud-xp").textContent = p.xp.toLocaleString();
   updateClock();
   updateEnergy(g.usage);
@@ -242,11 +243,11 @@ function openRanks() {
     }
     list.append(row);
   });
-  body.append(el("p", "rank-total", `${escapeHtml(p.name || "Adventurer")} has <b>${p.xp.toLocaleString()} XP</b>.`), list);
+  body.append(el("p", "rank-total", `${escapeHtml(p.name || "冒險者")} 目前有 <b>${p.xp.toLocaleString()} XP</b>.`), list);
   // How far the islands built so far can take you.
   const left = S.game.worlds.flatMap(w => w.levels).filter(l => l.status !== "done").reduce((sum, l) => sum + l.xp, 0);
   if (left) body.append(el("p", "muted", `${left.toLocaleString()} XP is still waiting in the levels built so far (before hint costs), plus +15 for each idiomatic code review.`));
-  openModal({ title: "🏅 Ranks", body });
+  openModal({ title: "🏅 排名", body });
 }
 
 function updateClock() {
@@ -265,21 +266,21 @@ function updateEnergy(usage) {
   if (S.game?.settings.teacher === "offline") {
     fill.style.height = "100%";
     fill.classList.add("unknown");
-    box.title = "Ferris is in offline mode, so he isn't using your Claude subscription.";
+    box.title = "Ferris 目前使用離線模式，不會使用你的 Claude 訂閱額度。";
     return;
   }
   if (!usage || usage.five_hour == null) {
     fill.style.height = "100%";
     fill.classList.add("unknown");
-    box.title = "Claude energy: unknown until Ferris answers something.\nThis shows how much of your Claude plan's limit is left.";
+    box.title = "Ferris 回答問題後會顯示 Claude 額度。\n這裡會顯示 Claude 訂閱方案的剩餘額度。";
     return;
   }
   const left = Math.max(0, 1 - usage.five_hour);
   fill.style.height = `${Math.round(left * 100)}%`;
   if (left < 0.15) fill.classList.add("low"); else if (left < 0.4) fill.classList.add("mid");
   const when = ts => ts ? new Date(ts * 1000).toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" }) : "?";
-  let tip = `Claude energy (your subscription)\n5-hour window: ${Math.round(left * 100)}% left · refills ${when(usage.five_hour_resets)}`;
-  if (usage.seven_day != null) tip += `\nWeekly: ${Math.round((1 - usage.seven_day) * 100)}% left · refills ${when(usage.seven_day_resets)}`;
+  let tip = `Claude 訂閱額度\n5 小時額度：剩餘 ${Math.round(left * 100)}% · ${when(usage.five_hour_resets)} 重置`;
+  if (usage.seven_day != null) tip += `\n每週額度：剩餘 ${Math.round((1 - usage.seven_day) * 100)}% · ${when(usage.seven_day_resets)} 重置`;
   box.title = tip;
 }
 
@@ -288,13 +289,13 @@ function updateModelChip() {
   const s = S.game?.settings;
   if (!s) return;
   if (s.teacher === "offline") {
-    chip.textContent = "💤 offline";
+    chip.textContent = "💤 離線";
     chip.classList.add("offline");
   } else {
     chip.textContent = `🧠 ${modelLabel(s.model)}`;
     chip.classList.remove("offline");
   }
-  chip.title = `Ferris' brain: ${s.teacher === "offline" ? "offline (built-in hints)" : `${modelLabel(s.model)} · effort ${s.effort}`}\nClick to switch models.`;
+  chip.title = `Ferris 的助教：${s.teacher === "offline" ? "離線（內建提示）" : `${modelLabel(s.model)} · 推理強度 ${s.effort}`}\n點擊切換模型。`;
 }
 
 /** The code font setting. Changing it moves the text, so the Vim cursor is redrawn too. */
@@ -394,7 +395,7 @@ function openWorldBoard(world) {
     b.onclick = l.status === "locked" ? read : () => { m.close(); openLevel(l.id); };
     if (l.status === "locked") b.title = "Locked: click to read the lesson";
     const lesson = el("button", "bi-lesson", "📜");
-    lesson.title = "Read the lesson";
+    lesson.title = "閱讀課程";
     lesson.setAttribute("aria-label", `Read the lesson for ${l.num} ${l.title}`);
     lesson.onclick = read;
     row.append(b, lesson);
@@ -428,19 +429,19 @@ async function openLevel(id) {
   S.quizSolved = lv.done;
   show("level");
 
-  $("#lv-world").textContent = `World ${lv.world.id}: ${lv.world.name} · Level ${lv.index}/${lv.count}`;
+  $("#lv-world").textContent = `世界 ${lv.world.id}：${lv.world.name} · 第 ${lv.index}/${lv.count} 關`;
   $("#lv-title").textContent = `${lv.num} ${lv.title}`;
   const kind = $("#lv-kind");
   kind.className = `badge ${lv.kind}`;
   kind.innerHTML = `${pixelIcon(lv.kind, 1)}<span>${KIND_INFO[lv.kind].label}</span>`;
   const xp = $("#lv-xp");
   xp.className = `badge xp${lv.done ? " done" : ""}`;
-  xp.innerHTML = lv.done ? `${sym("✔")}Cleared` : `${lv.xp} XP`;
+  xp.innerHTML = lv.done ? `${sym("✔")}已完成` : `${lv.xp} XP`;
 
   const goalBox = $("#lv-goal");
   goalBox.textContent = lv.goal;
   goalBox.classList.remove("open");
-  goalBox.title = "Click to show or hide the whole goal";
+  goalBox.title = "點一下即可展開或收合完整目標";
   // Only offer "more" when there's at least one whole extra line hidden.
   requestAnimationFrame(() => {
     const line = parseFloat(getComputedStyle(goalBox).lineHeight) || 22;
@@ -458,7 +459,7 @@ async function openLevel(id) {
   fitPredictCode();
   editor.setReadOnly(predict);
   applyVimSetting();
-  $("#editor-status").textContent = predict ? "read-only: just read it!" : lv.check === "tests" ? "checked by Ferris' tests" : "checked by its output";
+  $("#editor-status").textContent = predict ? "唯讀：閱讀程式即可！" : lv.check === "tests" ? "由 Ferris 的測試檢查" : "依程式輸出檢查";
 
   // Results live in the console popup (hotbar: Compiler / Output / Expected or Tests).
   resetConsole();
@@ -485,7 +486,7 @@ function markLessonSeen(id) {
 /** The lesson as a parchment letter, with tabs for the C and Python comparisons. */
 /** Tabs (Lesson / In C / In Python), the goal, the text and the book links for a level. */
 function lessonContent(lv, tab, { goal = true } = {}) {
-  const tabs = [["lesson", "Rust", lv.lesson], ["c", "In C", lv.c_compare], ["py", "In Python", lv.py_compare]].filter(t => t[2]);
+  const tabs = [["lesson", "Rust 課程", lv.lesson], ["c", "用 C 比較", lv.c_compare], ["py", "用 Python 比較", lv.py_compare]].filter(t => t[2]);
   const body = el("div", "lesson-content");
   const tabBar = el("div", "tabs");
   const text = el("div", "lesson-body md");
@@ -509,7 +510,7 @@ function lessonContent(lv, tab, { goal = true } = {}) {
   body.append(text);
   if (lv.book?.length) {
     const links = el("div", "book-links");
-    links.append(el("span", "", "📖 In the Rust Book:"));
+    links.append(el("span", "", "📖 Rust 程式設計語言："));
     for (const b of lv.book) {
       const a = el("a", "", `${escapeHtml(b.id)} ${escapeHtml(b.title)} ↗`);
       a.href = b.url;
@@ -530,8 +531,8 @@ function unlockHint(id) {
   const firstLocked = all.findIndex((l, j) => j <= i && l.status === "locked");
   const blocker = firstLocked > 0 ? all[firstLocked - 1] : null;
   return blocker
-    ? `Clear <b>${escapeHtml(blocker.num)} ${escapeHtml(blocker.title)}</b> to unlock it.`
-    : "Clear the levels before it to unlock it.";
+    ? `完成 <b>${escapeHtml(blocker.num)} ${escapeHtml(blocker.title)}</b> 即可解鎖。`
+    : "先完成前面的關卡即可解鎖。";
 }
 
 /** A level's lesson from the world board, even when the level is still locked.
@@ -547,13 +548,13 @@ async function previewLesson(level, world) {
   const body = el("div", "lesson-popup");
   if (locked) {
     const note = el("div", "lock-note");
-    note.innerHTML = `<span class="lock-icon">🔒</span><span>This level is still locked. ${unlockHint(level.id)}${lv ? " Until then, here's what it teaches." : ""}</span>`;
+    note.innerHTML = `<span class="lock-icon">🔒</span><span>這一關尚未解鎖。${unlockHint(level.id)}${lv ? " 等待解鎖時，可以先看看這關會學到什麼。" : ""}</span>`;
     body.append(note);
   }
   if (lv) body.append(lessonContent(lv, "lesson"));
   else body.append(el("p", "muted", `The lesson couldn't be loaded. ${escapeHtml(problem || "")}`));
   const foot = el("div", "modal-foot");
-  const back = el("button", "wood-btn small", world ? "⬅ Back to the island" : "OK");
+  const back = el("button", "wood-btn small", world ? "⬅ 返回島嶼" : "知道了");
   foot.append(back);
   body.append(foot);
   if (!locked && !lv) sound.fail();
@@ -572,7 +573,7 @@ function openLesson(tab = "lesson") {
   const body = el("div", "lesson-popup");
   body.append(lessonContent(lv, tab));
   const foot = el("div", "modal-foot");
-  const go = el("button", "wood-btn small green", answers(lv.kind) ? "Got it, let me read the code ➜" : "Got it, let's code! ➜");
+  const go = el("button", "wood-btn small green", answers(lv.kind) ? "知道了，帶我看程式碼 ➜" : "知道了，開始寫程式！➜");
   foot.append(go);
   body.append(foot);
   const m = openModal({ title: `${lv.num} ${lv.title}`, body, wide: true, onClose: () => { if (!answers(lv.kind)) editor.focus(); } });
@@ -618,9 +619,9 @@ function outputDiff(expected, actual) {
 /** Which console tabs this level has. */
 function consoleTabs() {
   const lv = S.level;
-  const tabs = [["compiler", "Compiler"], ["output", lv.check === "tests" && !answers(lv.kind) ? "Test results" : "Output"]];
-  if (!answers(lv.kind) && lv.check === "tests") tabs.push(["tests", "Tests"]);
-  else if (!answers(lv.kind) && lv.expected_output) tabs.push(["expected", "Expected"]);
+  const tabs = [["compiler", "編譯器"], ["output", lv.check === "tests" && !answers(lv.kind) ? "測試結果" : "輸出"]];
+  if (!answers(lv.kind) && lv.check === "tests") tabs.push(["tests", "測試"]);
+  else if (!answers(lv.kind) && lv.expected_output) tabs.push(["expected", "預期結果"]);
   return tabs;
 }
 
@@ -628,8 +629,8 @@ function consoleTabs() {
 function consoleSummary() {
   const r = S.lastRun;
   if (!r) {
-    const how = `Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> or ${sym("▶")}Run to compile.`;
-    return { cls: "", html: answers(S.level?.kind) ? "Answer first, then run the code to see what it really does." : how };
+    const how = `按下 <kbd>Ctrl</kbd>+<kbd>Enter</kbd> 或 ${sym("▶")}「執行」來編譯。`;
+    return { cls: "", html: answers(S.level?.kind) ? "先作答，再執行程式看看實際結果。" : how };
   }
   // The side-by-side comparison in the Output tab replaces the "Expected: ..." text.
   const text = S.level?.expected_output ? r.summary.split("\nExpected:")[0] : r.summary;
@@ -693,12 +694,12 @@ function openConsole(tab = "compiler") {
   outer.append(wrap);
   if (S.lastRun && !S.lastRun.passed && !answers(lv.kind)) {
     const foot = el("div", "modal-foot");
-    const ask = el("button", "wood-btn small purple", "🔍 Explain this to me");
+    const ask = el("button", "wood-btn small purple", "🔍 說明一下這個錯誤");
     ask.onclick = () => { m.close(); askFerris("explain"); };
     foot.append(ask);
     outer.append(foot);
   }
-  const m = openModal({ title: "Console", body: outer, wide: true });
+  const m = openModal({ title: "主控台", body: outer, wide: true });
   show(tab);
 }
 
@@ -804,11 +805,11 @@ async function onPass(res, lv) {
   if (res.first_clear) {
     lv.done = true;
     $("#lv-xp").className = "badge xp done";
-    $("#lv-xp").innerHTML = `${sym("✔")}Cleared`;
+    $("#lv-xp").innerHTML = `${sym("✔")}已完成`;
     confetti();
     floatXP(res.xp_gained, $("#lv-xp"));
     sound.coin();
-    toast("⭐", `Level cleared! +${res.xp_gained} XP`);
+    toast("⭐", `關卡完成！獲得 ${res.xp_gained} XP`);
   }
   if (res.world_cleared) {
     setTimeout(() => worldClearedBanner(lv, res.next_id), 700);
@@ -816,14 +817,14 @@ async function onPass(res, lv) {
   lv.next_id = res.next_id;
   buildHotbar();
   const lines = [
-    "**You did it!** 🎉 The compiler is happy and so am I.",
-    "**Perfect!** 🦀 That's real Rust you just wrote.",
-    "**Level cleared!** ✨ Clean as a freshly polished shell.",
+    "**你做到了！**🎉 編譯器很滿意，我也是。",
+    "**太棒了！**🦀 你剛剛寫的就是貨真價實的 Rust。",
+    "**關卡完成！**✨ 就像剛擦亮的貝殼一樣俐落。",
   ];
   const actions = [];
-  if (res.next_id) actions.push({ label: "Next level ➜", cls: "green", fn: goNext });
-  if (S.game.settings.teacher !== "offline") actions.push({ label: "⭐ Review my code (+15 XP if idiomatic)", cls: "purple", fn: () => askFerris("review") });
-  else actions.push({ label: "⭐ Compare with Ferris' solution", cls: "purple", fn: () => askFerris("review") });
+  if (res.next_id) actions.push({ label: "下一關 ➜", cls: "green", fn: goNext });
+  if (S.game.settings.teacher !== "offline") actions.push({ label: "⭐ 請 Ferris 幫我檢視程式碼（符合慣用寫法可得 +15 XP）", cls: "purple", fn: () => askFerris("review") });
+  else actions.push({ label: "⭐ 和 Ferris 的解答比較", cls: "purple", fn: () => askFerris("review") });
   addStaticFerris(lines[Math.floor(Math.random() * lines.length)], actions);
 }
 
@@ -832,16 +833,16 @@ function onFail(r) {
   ferris.setMood("worried", 2500);
   ferris.setMood("idle");
   const msg = !r.compiled
-    ? `Hmm, the compiler found ${r.error_codes.length > 1 ? "some problems" : "a problem"}${r.error_codes.length ? ` (${r.error_codes.map(c => "`" + c + "`").join(", ")})` : ""}. Open the **Compiler** (press 2) and read the **first** error. It usually points right at the line!`
-    : r.timed_out ? "Whoa, your program ran too long and I had to stop it. Is there a loop that never ends? 🌀"
-    : "It compiles, nice! 👍 But the result isn't quite right yet. Open **Output** (press 3) to compare it with what's expected.";
+    ? `嗯，編譯器發現${r.error_codes.length > 1 ? "幾個問題" : "一個問題"}${r.error_codes.length ? `（${r.error_codes.map(c => "`" + c + "`").join("、")}）` : ""}。打開**編譯器**（按 2），先看第一個錯誤。它通常會直接指出問題所在行！`
+    : r.timed_out ? "哇，你的程式跑太久了，我只好先停下來。是不是有個迴圈停不下來？🌀"
+    : "有成功編譯，太好了！👍 不過結果還不太對。打開**輸出**（按 3），和預期結果比對看看。";
   if (S.game.settings.auto_explain && S.game.settings.teacher !== "offline") {
     addStaticFerris(msg);
     askFerris("explain");
   } else {
     addStaticFerris(msg, [
-      { label: "🔍 Explain this to me", fn: () => askFerris("explain") },
-      { label: `💡 Hint`, fn: () => askFerris("hint") },
+      { label: "🔍 說明一下這個錯誤", fn: () => askFerris("explain") },
+      { label: "💡 給我提示", fn: () => askFerris("hint") },
     ]);
   }
 }
@@ -855,7 +856,7 @@ function renderChoices() {
   // On predict levels the goal is the question, so it lives here (the goal strip is hidden).
   const q = el("div", "choice-q");
   q.append(el("span", "", `🔮 ${escapeHtml(lv.goal)}`));
-  const lessonBtn = el("button", "wood-btn small", "📜 Lesson");
+  const lessonBtn = el("button", "wood-btn small", "📜 課程");
   lessonBtn.onclick = () => toggleLesson("lesson");
   if (lv.lesson) q.append(lessonBtn);
   box.append(q);
@@ -866,7 +867,7 @@ function renderChoices() {
     b.onclick = () => answerQuiz(i, b);
     box.append(b);
   });
-  if (S.quizSolved) box.append(el("div", "muted", lv.kind === "quiz" ? `${sym("✔")}Solved.` : `${sym("✔")}Solved. Press ${sym("▶")}Run it to see the real output.`));
+  if (S.quizSolved) box.append(el("div", "muted", lv.kind === "quiz" ? `${sym("✔")}已答對。` : `${sym("✔")}已答對。按${sym("▶")}「執行」查看實際輸出。`));
 }
 
 async function answerQuiz(i, btn) {
@@ -888,23 +889,23 @@ async function answerQuiz(i, btn) {
     if (res.first_clear) {
       confetti();
       floatXP(res.xp_gained, btn);
-      toast("🔮", `Correct! +${res.xp_gained} XP`);
+      toast("🔮", `答對了！+${res.xp_gained} XP`);
       $("#lv-xp").className = "badge xp done";
-      $("#lv-xp").innerHTML = `${sym("✔")}Cleared`;
+      $("#lv-xp").innerHTML = `${sym("✔")}已完成`;
     }
     if (res.world_cleared) setTimeout(() => worldClearedBanner(lv, res.next_id), 700);
     lv.next_id = res.next_id;
     buildHotbar();
-    const actions = lv.kind === "quiz" ? [] : [{ label: `${sym("▶")}Run it to see`, fn: runPredict }];
-    if (res.next_id) actions.unshift({ label: "Next level ➜", cls: "green", fn: goNext });
-    addStaticFerris(`**Correct!** ${lv.kind === "quiz" ? "📖" : "🔮"} ${res.explanation}`, actions);
+    const actions = lv.kind === "quiz" ? [] : [{ label: `${sym("▶")}執行看看`, fn: runPredict }];
+    if (res.next_id) actions.unshift({ label: "下一關 ➜", cls: "green", fn: goNext });
+    addStaticFerris(`**答對了！** ${lv.kind === "quiz" ? "📖" : "🔮"} ${res.explanation}`, actions);
   } else {
     btn.classList.add("wrong");
     btn.disabled = true;
     sound.fail();
     ferris.setMood("worried", 2000);
     ferris.setMood("idle");
-    askFerris("quiz", { choice: i, label: `I guessed ${String.fromCharCode(65 + i)}…` });
+    askFerris("quiz", { choice: i, label: `我猜的是 ${String.fromCharCode(65 + i)}⋯⋯` });
   }
 }
 
@@ -917,7 +918,7 @@ async function goNext() {
 async function skipLevel() {
   const lv = S.level;
   if (lv.kind === "boss") { toast("👹", "Bosses can't be skipped. You've got this!"); return; }
-  if (!(await confirmModal("Skip level?", "Skip this level for now? You won't get XP, but you can come back any time."))) return;
+  if (!(await confirmModal("略過關卡？", "要先略過這一關嗎？略過不會獲得 XP，但隨時都能回來。"))) return;
   const res = await api.skip(lv.id);
   if (res.next_id) openLevel(res.next_id); else showMap();
 }
@@ -933,7 +934,7 @@ function resetCode() {
     body.append(b);
   };
   if (!answers(lv.kind)) {
-    option("reset", "Reset code", "Throw away your changes and start again from the original code. Your progress on this level is kept.", "", () => {
+    option("reset", "重設程式碼", "Throw away your changes and start again from the original code. Your progress on this level is kept.", "", () => {
       if (S.level !== lv) return;
       cancelDraft();
       editor.value = lv.starter;
@@ -943,8 +944,8 @@ function resetCode() {
     });
   }
   const earned = lv.done ? "The XP you earned here is taken back, so you can earn it again." : "Any hints you used here stop counting against you.";
-  option("replay", "Replay level from scratch", `Start this level over as if it were new: fresh code, no hints used, no attempts. ${earned} Nothing after it gets locked again.`, "replay", () => replayLevel(lv));
-  const m = openModal({ title: "Reset", body });
+  option("replay", "從頭重玩這關", `Start this level over as if it were new: fresh code, no hints used, no attempts. ${earned} Nothing after it gets locked again.`, "replay", () => replayLevel(lv));
+  const m = openModal({ title: "重設", body });
 }
 
 async function replayLevel(lv) {
@@ -1028,7 +1029,7 @@ function saveDraft(id, code) {
       }
       if (!unsavedDrafts.size) setSaveStatus(null);
     })
-    .catch(e => setSaveStatus(e.message || "Couldn't autosave your code."));
+    .catch(e => setSaveStatus(e.message || "程式碼自動儲存失敗。"));
   return draftChain;
 }
 
@@ -1081,18 +1082,18 @@ async function flushDraft() {
 
 // The hotbar. `key` is the keyboard shortcut (used when you're not typing).
 const SLOTS = [
-  { id: "run", key: "1", icon: "run", label: "Run", primary: true, fn: () => runCode() },
-  { id: "compiler", key: "2", icon: "compiler", label: "Compiler", console: "compiler", fn: () => openConsole("compiler") },
+  { id: "run", key: "1", icon: "run", label: "執行", primary: true, fn: () => runCode() },
+  { id: "compiler", key: "2", icon: "compiler", label: "編譯器", console: "compiler", fn: () => openConsole("compiler") },
   // Output (or test results) together with what's expected (or the tests themselves), as
   // tabs in one console. Before the first run there's no output yet, so it opens on what's expected.
-  { id: "output", key: "3", icon: "output", label: "Output", console: "output", fn: () => openConsole(S.lastRun ? "output" : expectedTab()) },
-  { id: "hint", key: "4", icon: "hint", label: "Hint", fn: () => askFerris("hint") },
-  { id: "explain", key: "5", icon: "explain", label: "Explain", fn: () => askFerris("explain") },
-  { id: "review", key: "6", icon: "review", label: "Review", fn: () => askFerris("review") },
-  { id: "reset", key: "7", icon: "reset", label: "Reset", fn: () => resetCode() },
-  { id: "skip", key: "8", icon: "skip", label: "Skip", fn: () => skipLevel() },
-  { id: "map", key: "9", icon: "map", label: "Map", fn: () => showMap() },
-  { id: "next", key: "N", icon: "next", label: "Next", fn: () => goNext() },
+  { id: "output", key: "3", icon: "output", label: "輸出", console: "output", fn: () => openConsole(S.lastRun ? "output" : expectedTab()) },
+  { id: "hint", key: "4", icon: "hint", label: "提示", fn: () => askFerris("hint") },
+  { id: "explain", key: "5", icon: "explain", label: "說明", fn: () => askFerris("explain") },
+  { id: "review", key: "6", icon: "review", label: "檢視", fn: () => askFerris("review") },
+  { id: "reset", key: "7", icon: "reset", label: "重設", fn: () => resetCode() },
+  { id: "skip", key: "8", icon: "skip", label: "略過", fn: () => skipLevel() },
+  { id: "map", key: "9", icon: "map", label: "地圖", fn: () => showMap() },
+  { id: "next", key: "N", icon: "next", label: "下一關", fn: () => goNext() },
 ];
 
 /** The console tab with what the level expects: Ferris' tests, or the expected output. */
@@ -1111,8 +1112,8 @@ function buildHotbar() {
     b.dataset.slot = s.id;
     if (s.console) b.dataset.console = s.console;
     let label = s.label;
-    if (s.id === "hint") label = `Hint ${lv.hint_tier}/3`;
-    if (s.id === "run" && answers(lv.kind)) label = "Run it";
+    if (s.id === "hint") label = `提示 ${lv.hint_tier}/3`;
+    if (s.id === "run" && answers(lv.kind)) label = "執行看看";
     if (s.id === "output" && lv.check === "tests" && !answers(lv.kind)) label = "Results";
     b.innerHTML = `<span class="slot-key">${s.key}</span><span class="slot-icon">${pixelIcon(s.icon, 2)}</span><span class="slot-label">${label}</span>`;
     b.title = slotTitle(s.id);
@@ -1169,19 +1170,31 @@ function historyFor(id) {
   return S.history[id];
 }
 
+function localizeHistory(id, role, text) {
+  if (role === "assistant") return LEGACY_HINTS[id]?.[text] || text;
+  return ({
+    "Can you explain what went wrong?": "可以說明哪裡出錯了嗎？",
+    "Can I have a hint?": "可以給我一點提示嗎？",
+    "Can you review my code?": "可以幫我檢視程式碼嗎？",
+    "What exactly do I need to do in this level? Explain the goal simply.": "請用簡單的方式告訴我這一關要完成什麼。",
+    "How would this code look in Python, and what's different in Rust?": "請用簡短例子比較這段程式在 Python 和 Rust 的寫法與差異。",
+    "How does this level's idea compare to how C does it?": "請簡單比較這一關的概念在 Rust 和 C 中有什麼不同。",
+  })[text] || text;
+}
+
 function stripVerdict(text) {
   return text.replace(/^.*VERDICT:.*$/gm, "").replace(/\n\s*(?:---|\*\*\*|___)\s*$/, "").trim();
 }
 
 function greeting(lv) {
   const title = lv.title.replace(/[!.?]+$/, "");
-  if (lv.done) return `Welcome back to **${title}**! You've already cleared it. Feel free to experiment, or ask me anything.`;
+  if (lv.done) return `歡迎回到 **${title}**！你已經完成這一關了，盡情試試不同寫法，或隨時問我問題吧。`;
   switch (lv.kind) {
-    case "quiz": return `📖 **Quiz time!** No code to write here. Read the question, think it through, and pick an answer.`;
-    case "predict": return `🔮 **Predict time!** Read the code carefully. Don't run it in your head too fast. Then pick an answer below.`;
-    case "boss": return `👹 **Boss fight: ${lv.title.replace(/^BOSS:\s*/, "")}!** This one uses everything from ${lv.world.name}. Read the scroll, take it step by step, and remember: I'm right here.`;
-    case "fill": return `✍️ **${title}**: some code is missing. Read the 📜 lesson, then fill in the blanks and press ▶ Run.`;
-    default: return `🔧 **${title}**: this code is broken! Press ▶ Run to see what the compiler says, then fix it.`;
+    case "quiz": return `📖 **小測驗時間！**這關不用寫程式。讀完題目、想一想，再選一個答案吧。`;
+    case "predict": return `🔮 **猜猜看！**仔細讀程式碼，先別急著在腦中跑完。想好後，選一個答案吧。`;
+    case "boss": return `👹 **頭目戰：${lv.title.replace(/^BOSS:\s*/, "")}！**這關會用到你在「${lv.world.name}」學過的內容。先讀課程，一步一步來；別忘了我會在這裡陪你。`;
+    case "fill": return `✍️ **${title}**：有些程式碼還沒補上。先讀📜課程，再填入缺少的部分，然後按▶執行。`;
+    default: return `🔧 **${title}**：這段程式有問題！按▶執行看看編譯器怎麼說，再試著修好它吧。`;
   }
 }
 
@@ -1190,7 +1203,7 @@ function renderDialogue() {
   log.innerHTML = "";
   const lv = S.level;
   addMessage("ferris", greeting(lv), { save: false });
-  for (const [role, text] of historyFor(lv.id)) addMessage(role === "user" ? "user" : "ferris", text, { save: false });
+  for (const [role, text] of historyFor(lv.id)) addMessage(role === "user" ? "user" : "ferris", localizeHistory(lv.id, role, text), { save: false });
   log.scrollTop = log.scrollHeight;
 }
 
@@ -1230,15 +1243,15 @@ function addStaticFerris(text, actions = []) {
 function quickActions() {
   const lv = S.level;
   const items = [];
-  if (!answers(lv.kind) && S.lastRun && !S.lastRun.passed) items.push(["🔍", "Explain the error", "", () => askFerris("explain")]);
+  if (!answers(lv.kind) && S.lastRun && !S.lastRun.passed) items.push(["🔍", "說明錯誤", "", () => askFerris("explain")]);
   if (!answers(lv.kind)) {
     const tier = Math.min(lv.hint_tier + 1, 3);
-    items.push(["💡", `Hint ${tier}/3`, lv.done ? "" : HINT_COST[tier], () => askFerris("hint")]);
+    items.push(["💡", `提示 ${tier}/3`, lv.done ? "" : HINT_COST[tier], () => askFerris("hint")]);
   }
-  items.push(["❓", "What do I do here?", "", () => askFerris("chat", { message: "What exactly do I need to do in this level? Explain the goal simply." })]);
-  if (!answers(lv.kind)) items.push(["🐍", "Compare with Python", "", () => askFerris("chat", { message: "How would this code look in Python, and what's different in Rust?" })]);
-  items.push(["⚙️", "Compare with C", "", () => askFerris("chat", { message: "How does this level's idea compare to how C does it?" })]);
-  if (lv.done && !answers(lv.kind)) items.push(["⭐", "Review my code", "", () => askFerris("review")]);
+  items.push(["❓", "這關要做什麼？", "", () => askFerris("chat", { message: "請用簡單的方式告訴我這一關要完成什麼。" })]);
+  if (!answers(lv.kind)) items.push(["🐍", "和 Python 比較", "", () => askFerris("chat", { message: "請用簡短例子比較這段程式在 Python 和 Rust 的寫法與差異。" })]);
+  items.push(["⚙️", "和 C 比較", "", () => askFerris("chat", { message: "請簡單比較這一關的概念在 Rust 和 C 中有什麼不同。" })]);
+  if (lv.done && !answers(lv.kind)) items.push(["⭐", "幫我看看程式碼", "", () => askFerris("review")]);
   return items;
 }
 
@@ -1247,7 +1260,7 @@ function renderQuickActions() {
   const menu = $("#quick-menu");
   menu.innerHTML = "";
   if (!S.level) return;
-  menu.append(el("div", "quick-menu-title", "Ask Ferris…"));
+  menu.append(el("div", "quick-menu-title", "問問 Ferris⋯⋯"));
   for (const [icon, label, note, fn] of quickActions()) {
     const b = el("button", "quick-item", `<span class="qi-icon">${icon}</span><span>${escapeHtml(label)}</span>${note ? `<span class="qi-note">${note}</span>` : ""}`);
     b.setAttribute("role", "menuitem");
@@ -1273,13 +1286,19 @@ function closeQuickMenu() {
 /** While Ferris answers: show what he's doing, lock the chat actions, offer Stop. */
 function setFerrisBusy(state) {
   const busy = !!state;
-  $("#ferris-status").textContent = state === "thinking" ? "Thinking…" : state === "talking" ? "Talking…" : "";
+  $("#ferris-status").textContent = state === "thinking" ? "思考中⋯⋯" : state === "talking" ? "回答中⋯⋯" : "";
   $("#ask-input").disabled = busy;
   $("#btn-quick").disabled = busy;
   $("#btn-ask").classList.toggle("hidden", busy);
   $("#btn-stop").classList.toggle("hidden", !busy);
   if (busy) closeQuickMenu();
   if (S.level) buildHotbar();
+}
+
+function localizedTeacherError(message) {
+  if (/OAuth session expired|Failed to authenticate/i.test(message)) return "Claude Code 登入已過期，請在終端機重新登入後再試。";
+  if (/not found|command not found/i.test(message)) return "找不到 Claude Code 指令，請確認已安裝並可在終端機執行。";
+  return "連線或驗證失敗，請稍後再試，或檢查 Claude Code 登入狀態。";
 }
 
 async function askFerris(mode, { message = "", choice = null, label = "" } = {}) {
@@ -1289,8 +1308,8 @@ async function askFerris(mode, { message = "", choice = null, label = "" } = {})
   S.ferrisStop = new AbortController();
   setFerrisBusy("thinking");
 
-  const tags = { explain: "🔍 Explaining", hint: "💡 Hint", review: "⭐ Code review", chat: "", quiz: "🔮 Let's think" };
-  const userText = mode === "chat" ? message : label || { explain: "Can you explain what went wrong?", hint: "Can I have a hint?", review: "Can you review my code?" }[mode];
+  const tags = { explain: "🔍 錯誤說明", hint: "💡 提示", review: "⭐ 程式碼檢視", chat: "", quiz: "🔮 一起想想" };
+  const userText = mode === "chat" ? message : label || { explain: "可以說明哪裡出錯了嗎？", hint: "可以給我一點提示嗎？", review: "可以幫我檢視程式碼嗎？" }[mode];
   if (userText) addMessage("user", userText);
 
   const history = historyFor(lv.id).slice(0, -1).slice(-8);
@@ -1330,20 +1349,20 @@ async function askFerris(mode, { message = "", choice = null, label = "" } = {})
             break;
           case "hint_tier":
             lv.hint_tier = ev.tier;
-            m.querySelector(".msg-tag").textContent = `💡 Hint ${ev.tier}/3${lv.done ? "" : ` (${HINT_COST[ev.tier]} on this level)`}`;
+            m.querySelector(".msg-tag").textContent = `💡 提示 ${ev.tier}/3${lv.done ? "" : `（本關 ${HINT_COST[ev.tier]}）`}`;
             buildHotbar();
             break;
           case "error":
-            addMessage("system", `Couldn't reach Claude: ${ev.message}`, { save: false });
+            addMessage("system", `Ferris 暫時連不上 Claude：${localizedTeacherError(ev.message)}`, { save: false });
             m.classList.add("error");
             break;
           case "offline":
-            m.querySelector(".msg-tag").textContent += " · offline notes";
+            m.querySelector(".msg-tag").textContent += " · 離線提示";
             break;
           case "bonus":
             floatXP(ev.xp, m);
             sound.coin();
-            toast("✨", `Idiomatic Rust! +${ev.xp} bonus XP`);
+            toast("✨", `符合 Rust 慣用寫法！額外獲得 ${ev.xp} XP`);
             refreshState();
             break;
         }
@@ -1352,11 +1371,11 @@ async function askFerris(mode, { message = "", choice = null, label = "" } = {})
     );
   } catch (e) {
     if (S.ferrisStop?.signal.aborted && e.name === "AbortError") {
-      text = (text ? text + "\n\n" : "") + "_(You stopped me there.)_";
+      text = (text ? text + "\n\n" : "") + "_(你剛剛把我打斷了。)_";
     } else {
       text = e.name === "AbortError" || e.name === "TimeoutError"
-        ? "Hmm, that took far too long, so I gave up. Try again, or switch to a faster model with the 🧠 button."
-        : `Oops, I couldn't think straight just now: ${e.message}`;
+        ? "嗯⋯⋯我想太久了，只好先放棄。請再試一次，或按🧠按鈕換個回覆更快的模型。"
+        : `哎呀，我現在沒辦法好好思考：${localizedTeacherError(e.message)}`;
       m.classList.add("error");
     }
   } finally {
@@ -1368,10 +1387,10 @@ async function askFerris(mode, { message = "", choice = null, label = "" } = {})
     ferris.setMood("idle");
   }
   paint();
-  if (modelName) m.querySelector(".msg-tag").title = `Answered by ${modelName}`;
+  if (modelName) m.querySelector(".msg-tag").title = `由 ${modelName} 回覆`;
   // A model the cards don't know yet (e.g. a new Opus): the server saved it, so refresh the names.
   if (modelName && !S.models.some(x => x.resolved === modelName) && S.models.some(x => x.id === S.game.settings.model)) reloadModels();
-  if (!text) body.innerHTML = renderMarkdown("_(Ferris didn't say anything. Try again?)_");
+  if (!text) body.innerHTML = renderMarkdown("_(Ferris 沒有回覆。要不要再試一次？)_");
   historyFor(lv.id).push(["assistant", text]);
   saveHistory();
   renderQuickActions();
@@ -1405,7 +1424,7 @@ function modelCards(selected, onPick) {
   input.placeholder = "or type any model Claude Code accepts, e.g. claude-opus-5-5";
   input.style.flex = "1";
   if (custom) input.value = selected;
-  const use = el("button", "wood-btn small", "Use");
+  const use = el("button", "wood-btn small", "使用");
   use.onclick = () => { if (input.value.trim()) { selected = input.value.trim(); for (const x of grid.querySelectorAll(".model-card")) x.classList.remove("selected"); onPick(selected); } };
   row.append(input, use);
   wrap.append(row);
@@ -1473,14 +1492,14 @@ function saveSettings(patch, note) {
 function openModelPicker() {
   const s = S.game.settings;
   const body = el("div");
-  body.append(el("div", "section-title", "🧠 Ferris' brain"), el("p", "muted", "Pick which Claude model Ferris thinks with. It runs through Claude Code on your subscription."));
+  body.append(el("div", "section-title", "🧠 Ferris 的大腦"), el("p", "muted", "Pick which Claude model Ferris thinks with. It runs through Claude Code on your subscription."));
   body.append(modelCards(s.model, id => saveSettings({ model: id, teacher: "claude_code" }, `🧠 Ferris is now thinking with **${modelLabel(id)}**.`)));
-  body.append(el("div", "section-title", "Effort"), el("p", "muted", "Higher effort means deeper thinking, but slower replies that use more of your limit. Low is great for hints."));
+  body.append(el("div", "section-title", "思考程度"), el("p", "muted", "Higher effort means deeper thinking, but slower replies that use more of your limit. Low is great for hints."));
   body.append(effortPicker(s.effort, e => saveSettings({ effort: e }, `Effort set to **${e}**.`)));
   const off = el("label", "toggle", `<input type="checkbox" ${s.teacher === "offline" ? "checked" : ""}> 💤 Offline mode (built-in hints only, uses none of your Claude limit)`);
   off.querySelector("input").onchange = e => saveSettings({ teacher: e.target.checked ? "offline" : "claude_code" }, e.target.checked ? "💤 Ferris switched to offline mode." : "🧠 Ferris is back online.");
-  body.append(el("div", "section-title", "Mode"), off);
-  openModal({ title: "Switch model", body });
+  body.append(el("div", "section-title", "模式"), off);
+  openModal({ title: "切換模型", body });
 }
 
 function openSettings() {
@@ -1492,8 +1511,8 @@ function openSettings() {
   const name = el("input", "text-input");
   name.value = S.game.player.name || "";
   name.maxLength = 24;
-  const saveName = el("button", "wood-btn small", "Save");
-  saveName.onclick = async () => { await api.setName(name.value); await refreshState(); toast("👤", "Name saved"); };
+  const saveName = el("button", "wood-btn small", "儲存");
+  saveName.onclick = async () => { await api.setName(name.value); await refreshState(); toast("👤", "名字已儲存"); };
   nameRow.append(name, saveName);
   body.append(nameRow);
 
@@ -1501,28 +1520,28 @@ function openSettings() {
   body.append(el("p", "muted", "Ferris uses Claude Code on your Claude subscription, so there's no API key. Aliases always mean the newest version."));
   body.append(modelCards(s.model, id => saveSettings({ model: id, teacher: "claude_code" })));
 
-  body.append(el("div", "section-title", "Effort"));
+  body.append(el("div", "section-title", "思考程度"));
   body.append(effortPicker(s.effort, e => saveSettings({ effort: e })));
 
   const testRow = el("div", "row");
   testRow.style.marginTop = "10px";
-  const testBtn = el("button", "wood-btn small purple", "🔌 Test connection");
+  const testBtn = el("button", "wood-btn small purple", "🔌 測試連線");
   const result = el("div", "test-result hidden");
   testBtn.onclick = async () => {
     testBtn.disabled = true;
-    testBtn.textContent = "⏳ Asking Claude…";
+    testBtn.textContent = "⏳ 正在詢問 Claude⋯⋯";
     result.className = "test-result";
     result.textContent = `Sending a tiny test message to ${modelLabel(S.game.settings.model)}…`;
     const r = await api.testModel(S.game.settings.model, S.game.settings.effort);
     testBtn.disabled = false;
-    testBtn.textContent = "🔌 Test connection";
+    testBtn.textContent = "🔌 測試連線";
     if (r.ok) { result.className = "test-result ok"; result.innerHTML = `${sym("✔")}${escapeHtml(r.model)} says: “${escapeHtml(r.reply.trim())}”`; await refreshState(); }
     else { result.className = "test-result bad"; result.innerHTML = `${sym("✘")}${escapeHtml(r.error)}`; }
   };
   testRow.append(testBtn);
   body.append(testRow, result);
 
-  body.append(el("div", "section-title", "🎮 Game"));
+  body.append(el("div", "section-title", "🎮 遊戲"));
   const toggles = [
     ["teacher", s.teacher === "offline", "💤 Offline mode (built-in hints only, no Claude)", v => ({ teacher: v ? "offline" : "claude_code" })],
     ["auto_explain", s.auto_explain, "🔍 Ferris explains every failed run automatically (uses more of your limit)", v => ({ auto_explain: v })],
@@ -1537,7 +1556,7 @@ function openSettings() {
     t.querySelector("input").onchange = e => saveSettings(patch(e.target.checked));
     body.append(t);
   }
-  openModal({ title: "Settings", body, wide: true });
+  openModal({ title: "設定", body, wide: true });
 }
 
 // ---------------------------------------------------------------- codex & workshop
@@ -1547,7 +1566,7 @@ function openCodex() {
   const body = el("div");
   if (!codex.length) {
     body.innerHTML = `<p style="font-family:var(--font-talk);font-size:22px">📖 Your Error Codex is empty… for now!</p><p class="muted">Every time the compiler shows you an error code like <code>E0382</code>, it's collected here with the official explanation. Gotta catch 'em all!</p>`;
-    openModal({ title: "Error Codex", body });
+    openModal({ title: "錯誤圖鑑", body });
     return;
   }
   const grid = el("div", "codex-grid");
@@ -1572,7 +1591,7 @@ function openCodex() {
   }
   grid.append(list, view);
   body.append(el("p", "muted", `You've met ${codex.length} different compiler error${codex.length > 1 ? "s" : ""}. Each one is a lesson learned!`), grid);
-  const m = openModal({ title: "Error Codex", body, wide: true });
+  const m = openModal({ title: "錯誤圖鑑", body, wide: true });
   list.firstChild?.click();
 }
 
@@ -1612,7 +1631,7 @@ function openWorkshop() {
   });
   ed.value = starter;
   if (S.game?.settings.vim) ed.enableVim(S.game.settings.nvim_config);
-  openModal({ title: "Workshop", body, wide: true, onClose: () => ed.destroy() });
+  openModal({ title: "練習場", body, wide: true, onClose: () => ed.destroy() });
   setTimeout(() => ed.focus(), 50);
 }
 
@@ -1703,21 +1722,21 @@ async function startGame() {
   sound.click();
   if (!S.game.player.name) {
     const body = el("div");
-    body.innerHTML = `<p style="font-family:var(--font-talk);font-size:24px;margin-top:0">🦀 “Ahoy! I'm Ferris. I'll teach you Rust, one crab-step at a time. What should I call you?”</p>`;
+    body.innerHTML = `<p style="font-family:var(--font-talk);font-size:24px;margin-top:0">🦀 「嗨！我是 Ferris，會陪你一步一步學 Rust。該怎麼稱呼你呢？」</p>`;
     const row = el("div", "row");
     const input = el("input", "text-input");
-    input.placeholder = "Your name";
+    input.placeholder = "你的名字";
     input.maxLength = 24;
     input.style.flex = "1";
-    const go = el("button", "wood-btn small green", "Let's go!");
+    const go = el("button", "wood-btn small green", "出發吧！");
     row.append(input, go);
     body.append(row);
-    const m = openModal({ title: "A new adventure", body });
+    const m = openModal({ title: "新的冒險", body });
     const submit = async () => {
-      await api.setName(input.value.trim() || "Adventurer");
+      await api.setName(input.value.trim() || "冒險者");
       m.close();
       await showMap();
-      toast("🦀", "Click Tutorial Beach to begin!");
+      toast("🦀", "點選教學海灘，開始冒險吧！");
     };
     go.onclick = submit;
     input.addEventListener("keydown", e => { if (e.key === "Enter") submit(); });

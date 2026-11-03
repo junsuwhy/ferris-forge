@@ -1,22 +1,22 @@
 id = 0
-name = "Tutorial Beach"
-blurb = "Wash ashore, meet Ferris, and say your first words in Rust."
+name = "教學海灘"
+blurb = "漂流上岸、認識 Ferris，並用 Rust 說出你的第一句話。"
 
 [[level]]
 id = "0.1"
-title = "Hello, Ferris!"
+title = "嗨，Ferris！"
 kind = "fix"
 book = ["1.2"]
 xp = 20
-goal = "Make the program print exactly: Hello, Ferris!"
+goal = "讓程式完全照樣印出：Hello, Ferris!"
 lesson = '''
-Welcome to the Forge! Every Rust program starts running at `fn main()`, just like `int main()` in C.
+歡迎來到鍛造坊！每個 Rust 程式都從 `fn main()` 開始執行，就像 C 的 `int main()`。
 
-To print, Rust uses **`println!`**. The `!` matters: it means `println!` is a **macro**, a bit of code that writes more code for you at compile time. That's how Rust can check your format string while it compiles.
+要輸出文字，Rust 使用 **`println!`**。驚嘆號很重要：它表示 `println!` 是一種**巨集（macro）**，會在編譯時替你產生程式碼。這樣 Rust 就能在編譯時檢查格式字串。
 
-Statements end with a semicolon `;`, like in C.
+和 C 一樣，陳述式結尾要加分號 `;`。
 
-Press **Run** (or Ctrl+Enter) to compile. The compiler's message is your friend. Read it from the top!
+按下**執行**（或 Ctrl+Enter）開始編譯。編譯器訊息是你的好幫手，記得從上往下讀！
 '''
 c_compare = '''
 ```c
@@ -26,13 +26,13 @@ int main(void) {
     return 0;
 }
 ```
-Rust needs no `#include` for printing, and `println!` adds the newline for you.
+Rust 不需要用 `#include` 匯入輸出功能，而且 `println!` 會自動幫你換行。
 '''
 py_compare = '''
 ```python
 print("Hello, Ferris!")
 ```
-In Rust, `print` is a macro, so the `!` is required: `println!(...)`.
+在 Rust 中，`println!` 是巨集，所以名稱後面一定要加上 `!`。
 '''
 check = "output"
 expected_output = "Hello, Ferris!"
@@ -47,37 +47,37 @@ fn main() {
 }
 '''
 hints = [
-    "The compiler says it expected a *function* but found something else. What's special about how Rust prints?",
-    "`println` is a **macro**, and macros are called with a `!` right after the name.",
-    "Change line 2 to `println!(\"Hello, Ferris!\");`",
+    "編譯器說它預期看到*函式*，結果卻遇到別的東西。Rust 的輸出方式有什麼特別之處？",
+    "`println!` 是**巨集（macro）**，呼叫時要在名稱後面加上 `!`。",
+    "把第 2 行改成 `println!(\"Hello, Ferris!\");`。",
 ]
 
 [[level]]
 id = "0.2"
-title = "Filling in the blanks"
+title = "填補空白"
 kind = "fill"
 book = ["1.2"]
 xp = 25
-goal = '''Print two lines using the variables:
+goal = '''使用變數印出以下兩行：
 Hello, Ferris!
 Ferris is 9 years old.'''
 lesson = '''
-`println!` can insert values with **`{}`** placeholders, one per value, in order:
+`println!` 可以使用 **`{}`** 佔位符插入值，並依序代入：
 
 ```rust
 let food = "kelp";
 println!("I love {}!", food);   // I love kelp!
 ```
 
-You can also put the variable name inside the braces: `println!("I love {food}!")`.
+也可以直接把變數名稱放進大括號：`println!("I love {food}!")`。
 
-`let` creates a variable. Rust usually works out the type for you.
+`let` 可以建立變數。Rust 通常會自動推斷變數的型別。
 '''
 c_compare = '''
-Like `printf("%s is %d years old\n", name, age);`, except Rust's `{}` works for any printable type. You don't pick `%d` or `%s`, and a mismatch is a **compile** error, not a crash.
+類似 `printf("%s is %d years old\n", name, age);`，但 Rust 的 `{}` 可用於任何可輸出的型別。你不必選 `%d` 或 `%s`；型別不符時，Rust 會在**編譯時**回報錯誤，不會等到程式執行後才當掉。
 '''
 py_compare = '''
-Very close to Python's `print(f"{name} is {age} years old.")`, or `"{} is {}".format(name, age)`.
+這和 Python 的 `print(f"{name} is {age} years old.")` 或 `"{} is {}".format(name, age)` 非常相似。
 '''
 check = "output"
 expected_output = '''
@@ -89,8 +89,8 @@ fn main() {
     let name = "Ferris";
     let age = 9;
 
-    // TODO: print "Hello, Ferris!" using the `name` variable
-    // TODO: print "Ferris is 9 years old." using `name` and `age`
+    // TODO：使用 `name` 變數印出 "Hello, Ferris!"
+    // TODO：使用 `name` 和 `age` 印出 "Ferris is 9 years old."
 }
 '''
 solution = '''
@@ -103,35 +103,35 @@ fn main() {
 }
 '''
 hints = [
-    "You'll need two `println!` lines. How do you put a variable *inside* the text?",
-    "Use `{}` as a placeholder and pass the variable after the text, separated by commas.",
-    "`println!(\"Hello, {}!\", name);` and then `println!(\"{} is {} years old.\", name, age);`",
+    "你需要寫兩行 `println!`。要怎麼把變數放進文字*裡面*？",
+    "用 `{}` 當佔位符，並在文字後面以逗號分隔傳入變數。",
+    "接著寫 `println!(\"Hello, {}!\", name);` 和 `println!(\"{} is {} years old.\", name, age);`。",
 ]
 
 [[level]]
 id = "0.comments"
-title = "Notes in the sand"
+title = "沙灘上的註解"
 kind = "fill"
 book = ["3.4"]
 xp = 20
-goal = "Write a // comment on the line right above fn area, saying what the function does."
+goal = "在 `fn area` 正上方加上 `//` 註解，說明這個函式的用途。"
 lesson = '''
-Comments are notes for humans. The compiler skips them.
+註解是寫給人看的備註，編譯器會忽略它們。
 
 ```rust
-// This is a comment. It explains WHY the code exists.
-let speed = 3; // comments can also go at the end of a line
+// 這是一則註解，說明這段程式碼為什麼存在。
+let speed = 3; // 註解也可以寫在程式碼行尾
 ```
 
-Good comments explain the **why**, not the what. `// add 1` above `x + 1` doesn't help anyone!
+好的註解會解釋**原因**，而不是描述做了什麼。在 `x + 1` 上方寫 `// 加 1` 對任何人都沒幫助！
 
-Rust also has `///` **doc comments** that become documentation. You'll meet them on Cargo Docks.
+Rust 還有 `///` **文件註解**，可以產生文件。你會在 Cargo 碼頭學到它們。
 '''
 c_compare = '''
-Same `//` and `/* ... */` as C. Rust programmers mostly use `//`.
+和 C 一樣使用 `//` 和 `/* ... */`。Rust 程式設計師大多使用 `//`。
 '''
 py_compare = '''
-Python uses `#`. In Rust it's `//`.
+Python 使用 `#`；Rust 則使用 `//`。
 '''
 check = "tests"
 starter = '''
@@ -144,7 +144,7 @@ fn main() {
 }
 '''
 solution = '''
-// The area of a rectangle: how many square tiles fit inside it.
+// 矩形面積：裡面可以放進多少個正方形地磚。
 fn area(width: u32, height: u32) -> u32 {
     width * height
 }
@@ -177,20 +177,20 @@ mod tests {
 }
 '''
 hints = [
-    "A comment starts with two slashes. Where does this one need to go?",
-    "Add a new line just above `fn area(...)` that starts with `//`.",
-    "`// The area of a rectangle: width times height.` on the line above `fn area`.",
+    "註解以兩個斜線開頭。這則註解應該放在哪裡？",
+    "在 `fn area(...)` 正上方新增一行，並以 `//` 開頭。",
+    "在 `fn area` 上一行寫上 `// 矩形面積：寬乘以高。`。",
 ]
 
 [[level]]
 id = "0.3"
-title = "Crystal ball"
+title = "水晶球預言"
 kind = "predict"
 book = ["1.2"]
 xp = 15
-goal = "Read the code. What does it print?"
+goal = "讀讀這段程式碼。它會印出什麼？"
 lesson = '''
-**Predict** levels train you to read Rust in your head. Look closely, choose an answer, and then you can run the code to check.
+**預測題**會訓練你在腦中讀懂 Rust 程式。仔細觀察並選擇答案，再執行程式確認你的想法。
 '''
 starter = '''
 fn main() {
@@ -203,35 +203,35 @@ choices = [
     "{} + {} = {}",
     "2 + 3 = 5",
     "a + b = 5",
-    "It doesn't compile: you can't do math inside println!",
+    "無法編譯：不能在 println! 裡面做數學運算",
 ]
 answer = 1
 expected_output = "2 + 3 = 5"
-explanation = "Each `{}` is replaced by the next value: `a`, then `b`, then the result of `a + b`. Any expression can go in the value list."
+explanation = "每個 `{}` 會依序由下一個值取代：先是 `a`，再來是 `b`，最後是 `a + b` 的結果。值清單中可以放任何運算式。"
 
 [[level]]
 id = "0.rustup"
-title = "Unpacking the toolbox"
+title = "打開工具箱"
 kind = "quiz"
 book = ["1.1"]
 xp = 15
-goal = "Which tool installs Rust and keeps it up to date?"
+goal = "哪個工具可以安裝 Rust 並保持更新？"
 lesson = '''
-Rust comes with a small toolbox:
+Rust 附有一組實用的小工具：
 
-| Tool | What it does |
+| 工具 | 用途 |
 |---|---|
-| `rustup` | installs Rust and updates it (`rustup update`) |
-| `rustc` | the compiler: turns `.rs` files into programs |
-| `cargo` | builds projects, runs them, fetches libraries |
+| `rustup` | 安裝與更新 Rust（`rustup update`） |
+| `rustc` | 編譯器：把 `.rs` 檔案編譯成程式 |
+| `cargo` | 建置與執行專案，並下載程式庫 |
 
-You install `rustup` once, and it gives you the other two. `rustc --version` tells you which Rust you have.
+安裝一次 `rustup`，就能取得另外兩個工具。執行 `rustc --version` 可以查看目前安裝的 Rust 版本。
 '''
 c_compare = '''
-`rustc` is like `gcc` or `clang`. `rustup` is like a package manager just for the compiler, so you never fight with system packages.
+`rustc` 類似 `gcc` 或 `clang`。`rustup` 則像是專門管理編譯器的套件管理工具，讓你不必和系統套件互相衝突。
 '''
 py_compare = '''
-`rustup` is a bit like `pyenv` (it manages versions), and `cargo` is like `pip` plus a project tool rolled into one.
+`rustup` 有點像管理 Python 版本的 `pyenv`；`cargo` 則把 `pip` 和專案管理工具的功能結合在一起。
 '''
 choices = [
     "rustc",
@@ -240,40 +240,40 @@ choices = [
     "rustfmt",
 ]
 answer = 2
-explanation = "`rustup` installs and updates the whole toolchain. `rustc` compiles, `cargo` manages projects, and `rustfmt` formats code."
+explanation = "`rustup` 負責安裝與更新整套工具鏈；`rustc` 負責編譯，`cargo` 負責管理專案，而 `rustfmt` 會整理程式碼格式。"
 
 [[level]]
 id = "0.cargo"
-title = "Cargo, the trusty cart"
+title = "Cargo，可靠的貨車"
 kind = "quiz"
 book = ["1.3"]
 xp = 15
-goal = "What does `cargo run` do?"
+goal = "`cargo run` 會做什麼？"
 lesson = '''
-Real Rust projects use **Cargo**:
+正式的 Rust 專案會使用 **Cargo**：
 
 ```text
-$ cargo new hello_cargo     # makes a project folder
+$ cargo new hello_cargo     # 建立專案資料夾
 $ cd hello_cargo
-$ cargo run                 # build, then run
+$ cargo run                 # 先建置，再執行
 ```
 
-A new project has:
-- `Cargo.toml`: the project's name, version and dependencies
-- `src/main.rs`: your code
+新專案會包含：
+- `Cargo.toml`：專案名稱、版本與相依套件
+- `src/main.rs`：你的程式碼
 
-Other handy commands:
-- `cargo build` compiles into `target/debug/`
-- `cargo check` only checks that it compiles (fast!)
-- `cargo build --release` makes a fast, optimized build
+其他實用指令：
+- `cargo build`：編譯到 `target/debug/`
+- `cargo check`：只檢查能否編譯（速度很快！）
+- `cargo build --release`：建立經過最佳化、執行速度較快的版本
 
-In this game, the real compiler runs behind the scenes, so you just press ▶ Run.
+在這款遊戲中，真正的編譯器會在背景執行，所以你只要按下 ▶ 執行即可。
 '''
 c_compare = '''
-Cargo replaces your Makefile *and* your package manager. No more hand-written build scripts.
+Cargo 同時取代 Makefile *和* 套件管理工具，不必再手動撰寫建置指令稿。
 '''
 py_compare = '''
-Like `python main.py`, but Cargo compiles first. Think of `Cargo.toml` as `pyproject.toml`.
+類似 `python main.py`，但 Cargo 會先編譯程式。你可以把 `Cargo.toml` 想成 `pyproject.toml`。
 '''
 starter = '''
 $ cargo new hello_cargo
@@ -281,37 +281,37 @@ $ cd hello_cargo
 $ cargo run
 '''
 choices = [
-    "It only compiles the program",
-    "It compiles the program if needed, then runs it",
-    "It creates a new project",
-    "It uploads the project to crates.io",
+    "只編譯程式",
+    "必要時先編譯程式，接著執行",
+    "建立新專案",
+    "將專案上傳至 crates.io",
 ]
 answer = 1
-explanation = "`cargo run` builds (only if something changed) and then runs the program. `cargo build` only compiles, and `cargo new` creates a project."
+explanation = "`cargo run` 會在有變更時重新建置，然後執行程式。`cargo build` 只會編譯，而 `cargo new` 會建立專案。"
 
 [[level]]
 id = "0.4"
-title = "Reading the compiler"
+title = "讀懂編譯器"
 kind = "fix"
 book = ["1.2"]
 xp = 25
-goal = '''Fix every error so it prints:
+goal = '''修正所有錯誤，讓程式印出：
 Washed up on Tutorial Beach.
 Next stop: Variable Village!'''
 lesson = '''
-Rust's compiler is famous for **helpful error messages**. Each one has:
+Rust 編譯器以**清楚實用的錯誤訊息**聞名。每則訊息都包含：
 
-- `error[E0xxx]`: a code you can look up (the Codex 📖 collects them for you)
-- `-->`: the file, **line** and column
-- often a `help:` line that **suggests the fix**
+- `error[E0xxx]`：可以查詢的錯誤代碼（遊戲中的錯誤手冊 📖 有整理）
+- `-->`：檔案位置、**行號**與欄號
+- 通常還有 `help:` 行，會**建議修正方式**
 
-There are two different mistakes in this code. Fix the first error, run again, and repeat. That's the normal Rust rhythm.
+這段程式有兩個不同的錯誤。先修正第一個錯誤，再執行一次並繼續修正下一個。這就是使用 Rust 時常見的除錯步驟。
 '''
 c_compare = '''
-A C compiler might accept a misspelled function name and only fail at *link* time, with a confusing message. Rust checks names before it builds anything.
+C 編譯器可能會接受拼錯的函式名稱，直到*連結*階段才失敗，並顯示令人困惑的訊息。Rust 會在開始建置前先檢查名稱。
 '''
 py_compare = '''
-Python finds a typo like `printn` only when that line *runs*. Rust finds it before the program ever starts.
+Python 只有在那一行*執行時*才會發現 `printn` 之類的拼字錯誤。Rust 則會在程式開始執行前就找出問題。
 '''
 check = "output"
 expected_output = '''
@@ -335,7 +335,7 @@ fn main() {
 }
 '''
 hints = [
-    "Read the `help:` lines in the compiler output. Rust often suggests the fix itself!",
-    "One macro name is misspelled, and one line is missing something at the end.",
-    "Line 3 should use `println!`, and line 4 needs a `;` at the end.",
+    "看看編譯器輸出中的 `help:` 行。Rust 常會直接建議修正方式！",
+    "有一個巨集名稱拼錯了，還有一行少了結尾符號。",
+    "第 3 行應該使用 `println!`，第 4 行結尾則要加上 `;`。",
 ]
